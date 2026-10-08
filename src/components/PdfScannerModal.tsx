@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { Deck, Card } from '@/types';
-import { extractPdfHighlights, ExtractedItem, PdfScanResult } from '@/lib/pdfExtractor';
+import { extractPdfHighlights } from '@/lib/pdfExtractor';
 import { 
   X, 
   Upload, 
@@ -12,9 +12,9 @@ import {
   Layers, 
   Trash2, 
   Highlighter, 
-  StickyNote, 
   Sparkles,
-  BookOpen
+  Zap,
+  HelpCircle
 } from 'lucide-react';
 
 interface PdfScannerModalProps {
@@ -23,13 +23,24 @@ interface PdfScannerModalProps {
   onDeckCreated: (deck: Deck) => void;
 }
 
+interface ScannedCard {
+  id: string;
+  front: string;
+  back: string;
+  card_type: 'flashcard' | 'multiple_choice' | 'fill_blank';
+  distractors?: string[];
+  explanation?: string;
+}
+
 export default function PdfScannerModal({ isOpen, onClose, onDeckCreated }: PdfScannerModalProps) {
   const [file, setFile] = useState<File | null>(null);
   const [scanning, setScanning] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [scanResult, setScanResult] = useState<PdfScanResult | null>(null);
+  const [scanStatus, setScanStatus] = useState<string>('');
+  const [scanMode, setScanMode] = useState<'ai' | 'offline'>('ai');
+  const [targetCount, setTargetCount] = useState<number>(15);
+  const [scannedCards, setScannedCards] = useState<ScannedCard[]>([]);
   const [deckTitle, setDeckTitle] = useState('');
-  const [deckCategory, setDeckCategory] = useState('PDF Notes');
+  const [deckCategory, setDeckCategory] = useState('Medical / Science');
   const [error, setError] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -41,7 +52,6 @@ export default function PdfScannerModal({ isOpen, onClose, onDeckCreated }: PdfS
     if (selected && selected.type === 'application/pdf') {
       setFile(selected);
       setError(null);
-      // Auto-populate title from file name
       const cleanName = selected.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
       setDeckTitle(cleanName);
     } else if (selected) {
@@ -66,73 +76,101 @@ export default function PdfScannerModal({ isOpen, onClose, onDeckCreated }: PdfS
     if (!file) return;
 
     setScanning(true);
-    setProgress(0);
     setError(null);
+    setScanStatus('Reading PDF pages and extracting text...');
 
     try {
       const buffer = await file.arrayBuffer();
-      const result = await extractPdfHighlights(buffer, file.name, (p) => setProgress(p));
 
-      if (result.items.length === 0) {
-        setError('No highlights or clear definitions found in this PDF. Try a document with text or highlights.');
+      if (scanMode === 'ai') {
+        // Step 1: Extract raw text from all pages using pdfjs-dist
+        const pdfjs = await import('pdfjs-dist');
+        if (!pdfjs.GlobalWorkerOptions.workerSrc) {
+          pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+        }
+        const loadingTask = pdfjs.getDocument({ data: buffer });
+        const doc = await loadingTask.promise;
+
+        let fullText = '';
+        for (let i = 1; i <= doc.numPages; i++) {
+          const page = await doc.getPage(i);
+          const content = await page.getTextContent();
+          const pageStr = content.items.map((it: any) => it.str).join(' ');
+          fullText += `\n--- Page ${i} ---\n` + pageStr;
+        }
+
+        // Step 2: Call the smart AI scan API
+        setScanStatus(`Analyzing with Gemini 3.8 Flash to extract ${targetCount} high-yield cards...`);
+        const res = await fetch('/api/ai-scan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: fullText,
+            cardCount: targetCount,
+            title: deckTitle || file.name,
+          }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to generate cards with AI');
+        }
+
+        if (!data.cards || data.cards.length === 0) {
+          throw new Error('AI could not extract cards from this document.');
+        }
+
+        setScannedCards(data.cards);
       } else {
-        setScanResult(result);
+        // Offline heuristic mode
+        const result = await extractPdfHighlights(buffer, file.name);
+        if (result.items.length === 0) {
+          throw new Error('No clear definitions found in offline mode. Try AI Smart Scan.');
+        }
+        setScannedCards(
+          result.items.map((item) => ({
+            id: item.id,
+            front: item.suggestedCard?.front || item.text,
+            back: item.suggestedCard?.back || item.text,
+            card_type: item.suggestedCard?.type || 'flashcard',
+          }))
+        );
       }
     } catch (err: any) {
       console.error(err);
-      setError(err?.message || 'Failed to parse PDF file.');
+      setError(err?.message || 'Failed to process PDF.');
     } finally {
       setScanning(false);
+      setScanStatus('');
     }
   };
 
-  const updateCardFront = (id: string, newFront: string) => {
-    if (!scanResult) return;
-    setScanResult({
-      ...scanResult,
-      items: scanResult.items.map((item) =>
-        item.id === id && item.suggestedCard
-          ? { ...item, suggestedCard: { ...item.suggestedCard, front: newFront } }
-          : item
-      ),
-    });
+  const updateCard = (id: string, field: 'front' | 'back', val: string) => {
+    setScannedCards((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, [field]: val } : c))
+    );
   };
 
-  const updateCardBack = (id: string, newBack: string) => {
-    if (!scanResult) return;
-    setScanResult({
-      ...scanResult,
-      items: scanResult.items.map((item) =>
-        item.id === id && item.suggestedCard
-          ? { ...item, suggestedCard: { ...item.suggestedCard, back: newBack } }
-          : item
-      ),
-    });
-  };
-
-  const removeItem = (id: string) => {
-    if (!scanResult) return;
-    setScanResult({
-      ...scanResult,
-      items: scanResult.items.filter((item) => item.id !== id),
-    });
+  const removeCard = (id: string) => {
+    setScannedCards((prev) => prev.filter((c) => c.id !== id));
   };
 
   const handleSaveDeck = () => {
-    if (!scanResult || scanResult.items.length === 0) return;
+    if (scannedCards.length === 0) return;
     if (!deckTitle.trim()) {
       setError('Please provide a title for the deck.');
       return;
     }
 
     const deckId = `deck-${Date.now()}`;
-    const cards: Card[] = scanResult.items.map((item, idx) => ({
+    const cards: Card[] = scannedCards.map((c, idx) => ({
       id: `card-${Date.now()}-${idx}`,
       deck_id: deckId,
-      card_type: item.suggestedCard?.type || 'flashcard',
-      front: item.suggestedCard?.front || item.text,
-      back: item.suggestedCard?.back || item.text,
-      explanation: `From PDF page ${item.pageNumber} (${item.type})`,
+      card_type: c.card_type,
+      front: c.front.trim(),
+      back: c.back.trim(),
+      distractors: c.distractors,
+      explanation: c.explanation,
       ease_factor: 2.5,
       interval: 0,
       repetitions: 0,
@@ -143,8 +181,8 @@ export default function PdfScannerModal({ isOpen, onClose, onDeckCreated }: PdfS
     const newDeck: Deck = {
       id: deckId,
       title: deckTitle.trim(),
-      description: `Scanned from "${scanResult.fileName}" (${cards.length} cards)`,
-      category: deckCategory.trim() || 'PDF Notes',
+      description: `Generated from "${file?.name || 'PDF'}" (${cards.length} cards)`,
+      category: deckCategory.trim() || 'General',
       cards_count: cards.length,
       due_count: cards.length,
       created_at: new Date().toISOString(),
@@ -158,8 +196,7 @@ export default function PdfScannerModal({ isOpen, onClose, onDeckCreated }: PdfS
   const handleClose = () => {
     setFile(null);
     setScanning(false);
-    setProgress(0);
-    setScanResult(null);
+    setScannedCards([]);
     setError(null);
     onClose();
   };
@@ -171,15 +208,15 @@ export default function PdfScannerModal({ isOpen, onClose, onDeckCreated }: PdfS
         {/* Header */}
         <div className="flex items-center justify-between border-b border-stone-100 pb-4 dark:border-stone-800">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
-              <Highlighter className="h-5 w-5" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-teal-500/10 text-teal-600 dark:bg-teal-950/40 dark:text-teal-400">
+              <Sparkles className="h-5 w-5" />
             </div>
             <div>
               <h2 className="text-lg font-bold text-stone-900 dark:text-white">
-                Scan PDF & Highlights
+                Scan PDF into Study Cards
               </h2>
               <p className="text-xs text-stone-500 dark:text-stone-400">
-                Extracts your yellow/green highlights and notes into flashcards
+                Powered by Gemini 3.8 Flash — automatically excludes titles and extracts exam concepts
               </p>
             </div>
           </div>
@@ -200,14 +237,16 @@ export default function PdfScannerModal({ isOpen, onClose, onDeckCreated }: PdfS
 
         {/* Content Body */}
         <div className="mt-4 flex flex-1 flex-col overflow-y-auto pr-1">
-          {!scanResult ? (
-            /* Upload & Scan Screen */
+          {scannedCards.length === 0 ? (
+            /* Upload Screen */
             <div className="space-y-4">
+              
+              {/* Dropzone */}
               <div
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-stone-200 bg-stone-50/50 p-8 text-center transition hover:border-amber-400 hover:bg-amber-50/20 cursor-pointer dark:border-stone-800 dark:bg-stone-800/20"
+                className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-stone-200 bg-stone-50/50 p-8 text-center transition hover:border-teal-400 hover:bg-teal-50/20 cursor-pointer dark:border-stone-800 dark:bg-stone-800/20"
               >
                 <input
                   ref={fileInputRef}
@@ -218,19 +257,19 @@ export default function PdfScannerModal({ isOpen, onClose, onDeckCreated }: PdfS
                 />
                 
                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm text-stone-600 dark:bg-stone-800 dark:text-stone-300">
-                  <FileText className="h-7 w-7 text-amber-500" />
+                  <FileText className="h-7 w-7 text-teal-600" />
                 </div>
 
                 <p className="mt-3 text-sm font-bold text-stone-800 dark:text-stone-200">
                   {file ? file.name : 'Click to select or drop your lecture PDF'}
                 </p>
                 <p className="mt-1 text-xs text-stone-400">
-                  Supports highlighted textbooks, PDFs from Adobe, Edge, Chrome, or lecture slides.
+                  Works with textbooks, medical modules, lecture slides, and research notes.
                 </p>
 
                 {file && (
                   <div className="mt-3 flex items-center gap-2">
-                    <span className="rounded-full bg-amber-100 px-3 py-1 text-[11px] font-semibold text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+                    <span className="rounded-full bg-teal-100 px-3 py-1 text-[11px] font-semibold text-teal-800 dark:bg-teal-950 dark:text-teal-300">
                       {(file.size / (1024 * 1024)).toFixed(2)} MB ready
                     </span>
                     {!scanning && (
@@ -251,38 +290,81 @@ export default function PdfScannerModal({ isOpen, onClose, onDeckCreated }: PdfS
                 )}
               </div>
 
-              {scanning && (
-                <div className="space-y-2 rounded-2xl bg-stone-50 p-4 dark:bg-stone-800/40">
-                  <div className="flex items-center justify-between text-xs font-bold text-stone-700 dark:text-stone-300">
-                    <span className="flex items-center gap-1.5">
-                      <Loader2 className="h-3.5 w-3.5 animate-spin text-amber-500" />
-                      Scanning pages & extracting annotations...
-                    </span>
-                    <span>{progress}%</span>
+              {/* Mode and Card Count Selector */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-1">
+                    Scan Engine
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setScanMode('ai')}
+                      className={`flex items-center justify-center gap-1.5 rounded-xl border p-2 text-xs font-bold transition cursor-pointer ${
+                        scanMode === 'ai'
+                          ? 'border-teal-500 bg-teal-50 text-teal-900 dark:bg-teal-950/60 dark:text-teal-300'
+                          : 'border-stone-200 bg-stone-50 text-stone-600 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300'
+                      }`}
+                    >
+                      <Sparkles className="h-3.5 w-3.5 text-teal-600" />
+                      <span>AI Smart (Gemini)</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setScanMode('offline')}
+                      className={`flex items-center justify-center gap-1.5 rounded-xl border p-2 text-xs font-bold transition cursor-pointer ${
+                        scanMode === 'offline'
+                          ? 'border-teal-500 bg-teal-50 text-teal-900 dark:bg-teal-950/60 dark:text-teal-300'
+                          : 'border-stone-200 bg-stone-50 text-stone-600 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300'
+                      }`}
+                    >
+                      <Zap className="h-3.5 w-3.5" />
+                      <span>Offline Heuristic</span>
+                    </button>
                   </div>
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-stone-200 dark:bg-stone-700">
-                    <div
-                      className="h-full bg-amber-500 transition-all duration-300"
-                      style={{ width: `${progress}%` }}
-                    />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-1">
+                    Target Card Count
+                  </label>
+                  <select
+                    value={targetCount}
+                    onChange={(e) => setTargetCount(Number(e.target.value))}
+                    className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-semibold text-stone-800 outline-none focus:border-teal-600 dark:border-stone-700 dark:bg-stone-800 dark:text-white cursor-pointer"
+                  >
+                    <option value={10}>10 Cards (Quick Overview)</option>
+                    <option value={15}>15 Cards (Standard Module)</option>
+                    <option value={20}>20 Cards (Deep Exam Prep)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Progress State */}
+              {scanning && (
+                <div className="space-y-2 rounded-2xl bg-teal-50/50 p-4 border border-teal-100 dark:bg-teal-950/30 dark:border-teal-900/40">
+                  <div className="flex items-center gap-2 text-xs font-bold text-teal-900 dark:text-teal-200">
+                    <Loader2 className="h-4 w-4 animate-spin text-teal-600" />
+                    <span>{scanStatus}</span>
                   </div>
                 </div>
               )}
 
+              {/* Submit Scan Button */}
               <button
                 disabled={!file || scanning}
                 onClick={startScan}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-stone-900 py-3 text-sm font-bold text-white shadow transition hover:bg-neutral-800 disabled:opacity-40 cursor-pointer dark:bg-white dark:text-stone-900"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-neutral-900 py-3 text-sm font-bold text-white shadow transition hover:bg-neutral-800 disabled:opacity-40 cursor-pointer dark:bg-white dark:text-stone-900"
               >
                 {scanning ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Scanning Document...</span>
+                    <span>Processing Document...</span>
                   </>
                 ) : (
                   <>
-                    <Highlighter className="h-4 w-4 text-amber-400" />
-                    <span>Scan PDF Highlights & Notes</span>
+                    <Sparkles className="h-4 w-4 text-teal-400" />
+                    <span>Scan with Gemini AI ({targetCount} Cards)</span>
                   </>
                 )}
               </button>
@@ -313,46 +395,34 @@ export default function PdfScannerModal({ isOpen, onClose, onDeckCreated }: PdfS
                 </div>
               </div>
 
-              {/* Items List */}
-              <div className="flex items-center justify-between pt-2">
-                <span className="text-xs font-bold text-stone-600 dark:text-stone-400">
-                  Extracted Cards ({scanResult.items.length})
+              {/* Cards Count Banner */}
+              <div className="flex items-center justify-between pt-1">
+                <span className="text-xs font-bold text-stone-800 dark:text-stone-200">
+                  Generated Cards ({scannedCards.length})
                 </span>
                 <span className="text-[11px] font-medium text-stone-400">
-                  Click text to edit before saving
+                  Review and edit before saving
                 </span>
               </div>
 
+              {/* Card List */}
               <div className="space-y-3">
-                {scanResult.items.map((item, idx) => (
+                {scannedCards.map((card, idx) => (
                   <div
-                    key={item.id}
+                    key={card.id}
                     className="rounded-2xl border border-stone-200 bg-stone-50/70 p-4 dark:border-stone-800 dark:bg-stone-800/40 relative"
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-1.5">
-                        {item.type === 'highlight' && (
-                          <span className="flex items-center gap-1 rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
-                            <Highlighter className="h-3 w-3" />
-                            Highlight (p. {item.pageNumber})
-                          </span>
-                        )}
-                        {item.type === 'sticky_note' && (
-                          <span className="flex items-center gap-1 rounded-md bg-sky-100 px-2 py-0.5 text-[10px] font-bold text-sky-800 dark:bg-sky-950/60 dark:text-sky-300">
-                            <StickyNote className="h-3 w-3" />
-                            Sticky Note (p. {item.pageNumber})
-                          </span>
-                        )}
-                        {item.type === 'key_definition' && (
-                          <span className="flex items-center gap-1 rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                            <Sparkles className="h-3 w-3" />
-                            Key Definition (p. {item.pageNumber})
-                          </span>
-                        )}
-                      </div>
+                      <span className="rounded-md bg-teal-100 px-2 py-0.5 text-[10px] font-bold text-teal-800 dark:bg-teal-950/60 dark:text-teal-300">
+                        {card.card_type === 'multiple_choice'
+                          ? 'Multiple Choice'
+                          : card.card_type === 'fill_blank'
+                          ? 'Fill in Blank'
+                          : 'Flashcard'} #{idx + 1}
+                      </span>
 
                       <button
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => removeCard(card.id)}
                         className="text-stone-400 hover:text-rose-500 cursor-pointer p-1"
                         title="Remove card"
                       >
@@ -360,28 +430,32 @@ export default function PdfScannerModal({ isOpen, onClose, onDeckCreated }: PdfS
                       </button>
                     </div>
 
-                    {/* Question / Front */}
                     <div className="space-y-2">
                       <div>
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-stone-400">Question / Front</label>
+                        <label className="text-[10px] font-bold uppercase tracking-wider text-stone-400">Question / Prompt</label>
                         <input
                           type="text"
-                          value={item.suggestedCard?.front || ''}
-                          onChange={(e) => updateCardFront(item.id, e.target.value)}
+                          value={card.front}
+                          onChange={(e) => updateCard(card.id, 'front', e.target.value)}
                           className="w-full rounded-lg border border-stone-200 bg-white px-2.5 py-1.5 text-xs text-stone-900 outline-none focus:border-stone-500 dark:border-stone-700 dark:bg-stone-900 dark:text-white"
                         />
                       </div>
 
-                      {/* Answer / Back */}
                       <div>
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-stone-400">Answer / Back</label>
+                        <label className="text-[10px] font-bold uppercase tracking-wider text-stone-400">Answer</label>
                         <textarea
                           rows={2}
-                          value={item.suggestedCard?.back || ''}
-                          onChange={(e) => updateCardBack(item.id, e.target.value)}
+                          value={card.back}
+                          onChange={(e) => updateCard(card.id, 'back', e.target.value)}
                           className="w-full rounded-lg border border-stone-200 bg-white px-2.5 py-1.5 text-xs text-stone-900 outline-none focus:border-stone-500 dark:border-stone-700 dark:bg-stone-900 dark:text-white"
                         />
                       </div>
+
+                      {card.explanation && (
+                        <p className="text-[11px] text-stone-500 italic">
+                          💡 {card.explanation}
+                        </p>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -391,7 +465,7 @@ export default function PdfScannerModal({ isOpen, onClose, onDeckCreated }: PdfS
               <div className="sticky bottom-0 bg-white pt-3 dark:bg-stone-900 border-t border-stone-100 dark:border-stone-800 flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={() => setScanResult(null)}
+                  onClick={() => setScannedCards([])}
                   className="rounded-2xl border border-stone-200 px-4 py-2.5 text-xs font-bold text-stone-700 hover:bg-stone-100 cursor-pointer dark:border-stone-700 dark:text-stone-300"
                 >
                   Scan Another PDF
@@ -399,10 +473,10 @@ export default function PdfScannerModal({ isOpen, onClose, onDeckCreated }: PdfS
                 <button
                   type="button"
                   onClick={handleSaveDeck}
-                  className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-stone-900 py-3 text-xs font-bold text-white shadow transition hover:bg-neutral-800 active:scale-95 cursor-pointer dark:bg-white dark:text-stone-900"
+                  className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-neutral-900 py-3 text-xs font-bold text-white shadow transition hover:bg-neutral-800 active:scale-95 cursor-pointer dark:bg-white dark:text-stone-900"
                 >
                   <CheckCircle className="h-4 w-4" />
-                  <span>Save as Study Deck ({scanResult.items.length} Cards)</span>
+                  <span>Save as Study Deck ({scannedCards.length} Cards)</span>
                 </button>
               </div>
             </div>
