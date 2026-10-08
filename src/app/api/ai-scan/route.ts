@@ -31,6 +31,12 @@ CRITICAL INSTRUCTIONS:
    - 'flashcard' with direct conceptual question and clear answer
    - 'fill_blank' where a key medical/technical term is replaced with '________'
 
+UNSLOP NATURAL WRITING CONTRACT:
+- NO AI CLICHÉS: Never use "delve", "tapestry", "cornerstone", "testament", "pivotal", "in today's world".
+- NO THROAT-CLEARING: Never start questions or explanations with "Here's the thing:", "Let's dive into", "It turns out", "Certainly".
+- NO ROBOTIC CADENCE: Write active, natural academic sentences. Explanations must be direct, explaining the exact mechanism or fact without fluff.
+- PRESERVE PRECISION: Keep clinical, scientific, and technical terms accurate.
+
 Return ONLY a valid JSON array matching this exact schema:
 [
   {

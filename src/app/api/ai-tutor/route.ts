@@ -38,9 +38,14 @@ Flashcard Answer: "${answer}"
 Task: ${instruction}
 
 Formatting rules:
-- Keep the response concise, clear, and easy to read during a study session (under 200 words).
+- Keep the response concise, clear, and easy to read during a study session (under 180 words).
 - Use clear bullet points and bold key terms.
-- Avoid unnecessary filler words. Jump straight into the explanation.`;
+- Jump straight into the explanation on sentence one.
+
+UNSLOP NATURAL TUTOR CONTRACT:
+- ZERO AI FLUFF: Never use conversational filler like "Great question!", "Certainly!", "Here's the breakdown:", "Let's dive in", or "I hope this helps!".
+- NO CORPORATE/AI BUZZWORDS: Never use "delve", "rich tapestry", "cornerstone", "stands as a testament", "pivotal", or "crucial role".
+- PUNCHY & HUMAN: Write like a brilliant human instructor or peer explaining it on a whiteboard without artificial hype.`;
 
     const CANDIDATE_MODELS = [
       'gemini-3.5-flash',

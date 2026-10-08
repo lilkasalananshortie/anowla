@@ -160,6 +160,11 @@ CRITICAL INSTRUCTIONS:
    - 'flashcard' with direct question and answer
    - 'fill_blank' where a key medical/technical term is replaced with '________'
 
+UNSLOP NATURAL WRITING CONTRACT:
+- NO AI CLICHÉS OR BUZZWORDS: Never use "delve", "rich tapestry", "cornerstone", "testament", "pivotal", "in today's world".
+- NO THROAT-CLEARING: Ban "Here's the thing:", "Let's unpack", "Remember that", "Certainly".
+- DIRECT & PRECISE: Extract sharp questions that test actual recall and comprehension, not trivia. Explanations must explain the mechanism directly without fluff.
+
 Return ONLY a valid JSON array matching this exact schema:
 [
   {
