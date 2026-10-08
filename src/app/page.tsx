@@ -5,18 +5,20 @@ import Navbar, { ThemeColor } from '@/components/Navbar';
 import DeckCard from '@/components/DeckCard';
 import StudySession from '@/components/StudySession';
 import CreateDeckModal from '@/components/CreateDeckModal';
+import PdfScannerModal from '@/components/PdfScannerModal';
 import StreakWidget from '@/components/StreakWidget';
 import BadgesWidget from '@/components/BadgesWidget';
 import BottomDock from '@/components/BottomDock';
 import { INITIAL_DECKS } from '@/lib/mockData';
 import { Deck, UserStats } from '@/types';
-import { Search, BookOpen, Layers } from 'lucide-react';
+import { Search, BookOpen, Layers, Highlighter } from 'lucide-react';
 
 export default function Home() {
   const [theme, setTheme] = useState<ThemeColor>('slate');
   const [decks, setDecks] = useState<Deck[]>(INITIAL_DECKS);
   const [selectedDeck, setSelectedDeck] = useState<Deck | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isPdfScannerOpen, setIsPdfScannerOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
@@ -108,6 +110,7 @@ export default function Home() {
         currentTheme={theme}
         onThemeChange={handleThemeChange}
         onOpenCreate={() => setIsCreateOpen(true)}
+        onOpenScanPdf={() => setIsPdfScannerOpen(true)}
         onGoHome={() => setSelectedDeck(null)}
       />
 
@@ -138,16 +141,26 @@ export default function Home() {
                   </p>
                 </div>
 
-                {/* Search Bar */}
-                <div className="relative w-full sm:w-64">
-                  <Search className="absolute left-3.5 top-2.5 h-3.5 w-3.5 text-zinc-400" />
-                  <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search decks..."
-                    className="w-full rounded-full bg-white/95 py-2 pl-9 pr-4 text-xs font-semibold text-zinc-900 outline-none placeholder:text-zinc-400 shadow-sm"
-                  />
+                {/* Search and Scan PDF Actions */}
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <button
+                    onClick={() => setIsPdfScannerOpen(true)}
+                    className="flex items-center gap-1.5 rounded-full bg-amber-500/25 px-4 py-2 text-xs font-bold text-amber-200 backdrop-blur-md border border-amber-400/30 shadow-sm transition hover:bg-amber-500/35 active:scale-95 cursor-pointer whitespace-nowrap"
+                  >
+                    <Highlighter className="h-3.5 w-3.5" />
+                    <span>Scan PDF</span>
+                  </button>
+
+                  <div className="relative flex-1 sm:w-60">
+                    <Search className="absolute left-3.5 top-2.5 h-3.5 w-3.5 text-zinc-400" />
+                    <input
+                      type="text"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      placeholder="Search decks..."
+                      className="w-full rounded-full bg-white/95 py-2 pl-9 pr-4 text-xs font-semibold text-zinc-900 outline-none placeholder:text-zinc-400 shadow-sm"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -206,10 +219,16 @@ export default function Home() {
         onGoHome={() => setSelectedDeck(null)}
       />
 
-      {/* Modal */}
+      {/* Modals */}
       <CreateDeckModal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
+        onDeckCreated={handleDeckCreated}
+      />
+
+      <PdfScannerModal
+        isOpen={isPdfScannerOpen}
+        onClose={() => setIsPdfScannerOpen(false)}
         onDeckCreated={handleDeckCreated}
       />
     </div>

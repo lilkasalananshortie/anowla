@@ -11,6 +11,7 @@ interface NavbarProps {
   currentTheme: ThemeColor;
   onThemeChange: (theme: ThemeColor) => void;
   onOpenCreate: () => void;
+  onOpenScanPdf: () => void;
   onGoHome: () => void;
 }
 
@@ -20,6 +21,7 @@ export default function Navbar({
   currentTheme,
   onThemeChange,
   onOpenCreate,
+  onOpenScanPdf,
   onGoHome,
 }: NavbarProps) {
   const themes: { id: ThemeColor; label: string; color: string }[] = [
@@ -82,6 +84,16 @@ export default function Navbar({
             <span className="text-amber-200 text-xs">⭐</span>
             <span>{xp} XP</span>
           </div>
+
+          {/* Scan PDF Pill */}
+          <button
+            onClick={onOpenScanPdf}
+            className="flex items-center gap-1.5 rounded-full bg-amber-500/20 px-3.5 py-1.5 text-xs font-semibold text-amber-200 backdrop-blur-md border border-amber-400/30 shadow-sm transition hover:bg-amber-500/30 cursor-pointer"
+            title="Scan PDF & Highlights"
+          >
+            <span>📄</span>
+            <span className="hidden sm:inline">Scan PDF</span>
+          </button>
 
           {/* Quick Icons */}
           <button 
