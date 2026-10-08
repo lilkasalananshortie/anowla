@@ -1,6 +1,6 @@
-# 🚀 Alwinyah (Gizmo Alternative)
+# 🚀 Alwinyah
 
-**Alwinyah** is a free, open-source, AI-powered gamified study app inspired by **Gizmo**. It features automated flashcard and quiz generation from notes, active recall study modes, spaced repetition (SM-2 algorithm), and an interactive AI tutor.
+**Alwinyah** is a free, fast, gamified flashcards and active recall study web app. It uses the **SM-2 Spaced Repetition algorithm** to help you memorize content efficiently with multiple choice quizzes, 3D flip cards, fill-in-the-blank modes, study streaks, and XP points.
 
 ---
 
@@ -8,16 +8,15 @@
 
 | Layer | Service | Cost |
 | :--- | :--- | :--- |
-| **Frontend & API** | Next.js (App Router) on **Vercel** | **$0** (Hobby Tier) |
+| **Frontend** | Next.js (React + Tailwind CSS) on **Vercel** | **$0** (Hobby Tier) |
 | **Database & Auth** | **Supabase** (PostgreSQL) | **$0** (Free Tier - 500MB DB, 50k MAU) |
-| **AI Generation** | **Google Gemini API** (`gemini-2.5-flash`) | **$0** (15 RPM, 1,500 RPD on Google AI Studio) |
-| **SRS Engine** | SM-2 Algorithm (Built-in) | **$0** (Runs client & server-side) |
+| **SRS Engine** | SM-2 Spaced Repetition (Built-in) | **$0** (Client-side / zero external APIs) |
 
 ---
 
 ## 🏃 Getting Started Locally
 
-1. **Install dependencies** (already done):
+1. **Install dependencies**:
    ```bash
    npm install
    ```
@@ -30,9 +29,8 @@
 
 ---
 
-## 🛠️ Free Services Setup
+## 🛠️ Free Supabase Setup (Optional Cloud Sync)
 
-### 1. Supabase (Free Database)
 1. Go to [supabase.com](https://supabase.com) and create a free project.
 2. Open the **SQL Editor** in the Supabase Dashboard.
 3. Open [`supabase-schema.sql`](./supabase-schema.sql) in this repository, copy its contents, and run it.
@@ -45,15 +43,6 @@
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
    ```
 
-### 2. Google Gemini API (Free Flashcard Generation & AI Tutor)
-1. Go to [Google AI Studio](https://aistudio.google.com/app/apikey) and create a free API key.
-2. Add it to `.env.local`:
-   ```env
-   GEMINI_API_KEY=AIzaSy...
-   ```
-
-*(Note: Even without API keys configured, Alwinyah includes an offline smart card generator and sample decks so you can immediately play and test!)*
-
 ---
 
 ## 🚀 Deploying to Vercel ($0)
@@ -61,12 +50,10 @@
 1. Push your repository to GitHub:
    ```bash
    git add .
-   git commit -m "Initial commit for Alwinyah"
-   # Create a repo on GitHub, then:
-   git remote add origin https://github.com/your-username/alwinyah.git
+   git commit -m "Update Alwinyah study app"
    git push -u origin main
    ```
 2. Go to [vercel.com](https://vercel.com) and click **"Add New Project"**.
 3. Import your `alwinyah` GitHub repository.
-4. Add your Environment Variables (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `GEMINI_API_KEY`).
-5. Click **Deploy**! Your site will be live at `https://alwinyah.vercel.app`.
+4. Add your Supabase environment variables if using cloud sync.
+5. Click **Deploy**!

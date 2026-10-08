@@ -8,12 +8,9 @@ import {
   RotateCw, 
   Check, 
   X, 
-  Sparkles, 
-  Bot, 
   Trophy, 
   ChevronRight,
-  Flame,
-  HelpCircle
+  Flame
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -31,11 +28,6 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
   const [typedAnswer, setTypedAnswer] = useState('');
   const [isAnswerChecked, setIsAnswerChecked] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
-
-  // AI Tutor state
-  const [tutorOpen, setTutorOpen] = useState(false);
-  const [tutorLoading, setTutorLoading] = useState(false);
-  const [tutorExplanation, setTutorExplanation] = useState<string | null>(null);
 
   // Performance tracking
   const [correctCount, setCorrectCount] = useState(0);
@@ -65,7 +57,7 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
   }, [currentIndex, currentCard]);
 
   const handleRating = (rating: ReviewRating) => {
-    // SRS update
+    // SRS update using SM-2 algorithm
     const updated = calculateNextReview(currentCard, rating);
     Object.assign(currentCard, updated);
 
@@ -101,8 +93,6 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
     setTypedAnswer('');
     setIsAnswerChecked(false);
     setIsCorrect(null);
-    setTutorExplanation(null);
-    setTutorOpen(false);
 
     if (currentIndex + 1 < cards.length) {
       setCurrentIndex(prev => prev + 1);
@@ -123,31 +113,7 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
         origin: { y: 0.6 },
       });
     } catch (e) {
-      // Ignore in non-browser context
-    }
-  };
-
-  const askAiTutor = async () => {
-    setTutorOpen(true);
-    if (tutorExplanation) return;
-
-    setTutorLoading(true);
-    try {
-      const res = await fetch('/api/explain', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          question: currentCard.front,
-          answer: currentCard.back,
-          explanation: currentCard.explanation,
-        }),
-      });
-      const data = await res.json();
-      setTutorExplanation(data.explanation);
-    } catch {
-      setTutorExplanation(currentCard.explanation || 'Review the core definition for retention.');
-    } finally {
-      setTutorLoading(false);
+      // Ignore in non-browser environment
     }
   };
 
@@ -218,15 +184,6 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
             {currentIndex + 1} / {cards.length}
           </span>
         </div>
-
-        {/* AI Tutor Button */}
-        <button
-          onClick={askAiTutor}
-          className="flex items-center gap-1 rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-xs font-semibold text-indigo-700 hover:bg-indigo-100 dark:border-indigo-900 dark:bg-indigo-950 dark:text-indigo-300 cursor-pointer"
-        >
-          <Bot className="h-3.5 w-3.5" />
-          <span>Tutor</span>
-        </button>
       </div>
 
       {/* Main Card Container */}
@@ -292,7 +249,7 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
               disabled={isAnswerChecked}
               value={typedAnswer}
               onChange={(e) => setTypedAnswer(e.target.value)}
-              placeholder="Type the missing word..."
+              placeholder="Type the answer here..."
               className="w-full rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none focus:border-indigo-600 focus:bg-white dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
             />
             {!isAnswerChecked && (
@@ -321,7 +278,7 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
                 className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-zinc-300 p-8 text-center text-sm font-semibold text-indigo-600 transition hover:border-indigo-500 hover:bg-indigo-50/30 dark:border-zinc-700 dark:text-indigo-400 cursor-pointer"
               >
                 <RotateCw className="h-4 w-4" />
-                <span>Tap or press to reveal answer</span>
+                <span>Tap or click to reveal answer</span>
               </button>
             ) : (
               <div className="rounded-2xl bg-zinc-50 p-6 dark:bg-zinc-800/60">
@@ -333,35 +290,12 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
             )}
           </div>
         )}
-
-        {/* Explanation Banner when answered */}
-        {isAnswerChecked && currentCard.explanation && (
-          <div className="mt-4 rounded-xl bg-indigo-50/60 p-3.5 text-xs text-indigo-900 border border-indigo-100 dark:bg-indigo-950/40 dark:border-indigo-900/50 dark:text-indigo-300">
-            <span className="font-bold">Why: </span>
-            {currentCard.explanation}
-          </div>
-        )}
-
-        {/* AI Tutor Card */}
-        {tutorOpen && (
-          <div className="mt-4 rounded-2xl border border-violet-200 bg-violet-50/80 p-4 text-xs text-violet-950 dark:border-violet-900/60 dark:bg-violet-950/40 dark:text-violet-200">
-            <div className="flex items-center gap-1.5 font-bold text-violet-700 dark:text-violet-400">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Alwinyah AI Tutor Explanation</span>
-            </div>
-            {tutorLoading ? (
-              <p className="mt-2 text-zinc-500 animate-pulse">Consulting AI tutor...</p>
-            ) : (
-              <p className="mt-2 leading-relaxed">{tutorExplanation}</p>
-            )}
-          </div>
-        )}
       </div>
 
       {/* Bottom Action Controls */}
       <div className="mt-6 flex items-center justify-between">
         {currentCard.card_type === 'flashcard' && isFlipped ? (
-          /* SM-2 Rating Buttons */
+          /* SM-2 Spaced Repetition Rating Buttons */
           <div className="grid w-full grid-cols-4 gap-2">
             <button
               onClick={() => handleRating(1)}

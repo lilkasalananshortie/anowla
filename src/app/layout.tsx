@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Alwinyah - AI Flashcards & Spaced Repetition",
-  description: "Gamified active recall and AI-powered study flashcards inspired by Gizmo.",
+  title: "Alwinyah - Flashcards & Spaced Repetition",
+  description: "Gamified active recall and spaced repetition flashcards.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -8,7 +8,7 @@ import CreateDeckModal from '@/components/CreateDeckModal';
 import StreakWidget from '@/components/StreakWidget';
 import { INITIAL_DECKS } from '@/lib/mockData';
 import { Deck, UserStats } from '@/types';
-import { Sparkles, Plus, Search, BookOpen, Database, ExternalLink } from 'lucide-react';
+import { Plus, Search, BookOpen, Database } from 'lucide-react';
 
 export default function Home() {
   const [decks, setDecks] = useState<Deck[]>(INITIAL_DECKS);
@@ -104,7 +104,7 @@ export default function Home() {
                   Study Decks
                 </h1>
                 <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                  Active recall & spaced repetition flashcards powered by AI.
+                  Active recall and spaced repetition flashcards for efficient memorization.
                 </p>
               </div>
 
@@ -112,8 +112,8 @@ export default function Home() {
                 onClick={() => setIsCreateOpen(true)}
                 className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 active:scale-95 cursor-pointer"
               >
-                <Sparkles className="h-4 w-4" />
-                <span>Create with AI</span>
+                <Plus className="h-4 w-4" />
+                <span>New Deck</span>
               </button>
             </div>
 
@@ -174,16 +174,16 @@ export default function Home() {
               </div>
             )}
 
-            {/* Free Tier Integration Guide Helper Card */}
+            {/* Supabase Integration Helper Card */}
             <div className="rounded-2xl border border-indigo-100 bg-indigo-50/40 p-5 dark:border-indigo-950 dark:bg-indigo-950/20">
               <div className="flex items-start justify-between">
                 <div>
                   <h4 className="flex items-center gap-1.5 text-sm font-bold text-indigo-950 dark:text-indigo-200">
                     <Database className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-                    Supabase & Google Gemini API Integration Ready
+                    Supabase Free Database Ready
                   </h4>
                   <p className="mt-1 text-xs text-indigo-800/80 dark:text-indigo-300/80 leading-relaxed max-w-2xl">
-                    Alwinyah is currently running in local offline demo mode with sample decks and smart card generator. To connect your <strong>100% free Supabase database</strong> and <strong>Gemini Flash AI API</strong>, simply add your keys to <code className="rounded bg-indigo-100/80 px-1 py-0.5 dark:bg-indigo-900/60 font-mono">.env.local</code>.
+                    Alwinyah persists your decks and stats locally in your browser. Whenever you want to sync your decks to cloud storage across devices, add your free <strong>Supabase</strong> credentials to <code className="rounded bg-indigo-100/80 px-1 py-0.5 dark:bg-indigo-900/60 font-mono">.env.local</code>.
                   </p>
                 </div>
               </div>
