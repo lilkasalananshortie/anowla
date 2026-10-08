@@ -2,18 +2,19 @@
 
 import React from 'react';
 import { Deck } from '@/types';
-import { Play, Heart, Clock, Layers } from 'lucide-react';
+import { Play, Heart, Clock, Layers, Trash2 } from 'lucide-react';
 
 interface DeckCardProps {
   deck: Deck;
   accentIndex?: number;
   onSelect: (deck: Deck) => void;
+  onDelete?: (deckId: string) => void;
 }
 
-export default function DeckCard({ deck, accentIndex = 0, onSelect }: DeckCardProps) {
+export default function DeckCard({ deck, accentIndex = 0, onSelect, onDelete }: DeckCardProps) {
   const [liked, setLiked] = React.useState(false);
 
-  // Soft, muted, calm header palettes (easy on the eyes, zero striking/neon)
+  // Soft, muted, calm header palettes (easy on the eyes)
   const mutedStyles = [
     {
       bg: 'bg-[#dbe7dc]', // Soft muted sage
@@ -48,19 +49,38 @@ export default function DeckCard({ deck, accentIndex = 0, onSelect }: DeckCardPr
   return (
     <div className="group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-white shadow-md shadow-black/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-stone-100">
       
-      {/* Top Banner (Gentle Muted Tone) */}
+      {/* Top Banner */}
       <div className={`relative flex flex-col justify-between p-6 ${currentAccent.bg} min-h-[135px]`}>
         
-        {/* Top Badges */}
+        {/* Top Badges & Delete Action */}
         <div className="flex items-center justify-between">
           <span className={`rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide ${currentAccent.tag}`}>
             {deck.category || 'General'}
           </span>
-          {dueCount > 0 && (
-            <span className="rounded-full bg-stone-900/80 px-2.5 py-0.5 text-[10px] font-bold text-white">
-              {dueCount} due
-            </span>
-          )}
+          
+          <div className="flex items-center gap-1.5">
+            {dueCount > 0 && (
+              <span className="rounded-full bg-stone-900/80 px-2.5 py-0.5 text-[10px] font-bold text-white">
+                {dueCount} due
+              </span>
+            )}
+
+            {onDelete && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (confirm(`Are you sure you want to delete the deck "${deck.title}"?`)) {
+                    onDelete(deck.id);
+                  }
+                }}
+                className="p-1 rounded-full text-stone-400 hover:text-rose-600 hover:bg-black/5 transition cursor-pointer"
+                title="Delete Deck"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Clean Headline */}
@@ -103,7 +123,7 @@ export default function DeckCard({ deck, accentIndex = 0, onSelect }: DeckCardPr
 
             <button
               onClick={() => onSelect(deck)}
-              className="flex items-center gap-1.5 rounded-full bg-stone-850 bg-neutral-800 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-neutral-700 active:scale-95 cursor-pointer"
+              className="flex items-center gap-1.5 rounded-full bg-neutral-800 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-neutral-700 active:scale-95 cursor-pointer"
             >
               <Play className="h-3 w-3 fill-current" />
               <span>Study</span>

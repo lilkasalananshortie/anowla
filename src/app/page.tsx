@@ -75,6 +75,14 @@ export default function Home() {
     } catch (e) {}
   };
 
+  const handleDeleteDeck = (deckId: string) => {
+    const updated = decks.filter((d) => d.id !== deckId);
+    setDecks(updated);
+    try {
+      localStorage.setItem('alwinyah_decks', JSON.stringify(updated));
+    } catch (e) {}
+  };
+
   const handleSessionComplete = (xpGained: number, cardsStudied: number) => {
     setStats((prev) => {
       const newStats = {
@@ -190,6 +198,7 @@ export default function Home() {
                       deck={deck}
                       accentIndex={idx}
                       onSelect={(d) => setSelectedDeck(d)}
+                      onDelete={handleDeleteDeck}
                     />
                   ))}
                 </div>

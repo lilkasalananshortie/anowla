@@ -229,9 +229,25 @@ export default function PdfScannerModal({ isOpen, onClose, onDeckCreated }: PdfS
                 </p>
 
                 {file && (
-                  <span className="mt-3 rounded-full bg-amber-100 px-3 py-1 text-[11px] font-semibold text-amber-800 dark:bg-amber-950 dark:text-amber-300">
-                    {(file.size / (1024 * 1024)).toFixed(2)} MB ready
-                  </span>
+                  <div className="mt-3 flex items-center gap-2">
+                    <span className="rounded-full bg-amber-100 px-3 py-1 text-[11px] font-semibold text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+                      {(file.size / (1024 * 1024)).toFixed(2)} MB ready
+                    </span>
+                    {!scanning && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setFile(null);
+                          if (fileInputRef.current) fileInputRef.current.value = '';
+                        }}
+                        className="flex items-center gap-1 rounded-full bg-rose-50 px-2.5 py-1 text-[11px] font-semibold text-rose-600 hover:bg-rose-100 transition cursor-pointer dark:bg-rose-950/40 dark:text-rose-400"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                        <span>Remove</span>
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
 

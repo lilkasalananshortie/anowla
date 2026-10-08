@@ -55,8 +55,13 @@ const STOP_WORDS = new Set([
 function isJunkOrTitle(str: string): boolean {
   const clean = str.trim().toLowerCase();
 
-  if (clean.length < 15) return true; // Too short to be an informative concept
+  if (clean.length < 18) return true; // Too short to be an informative concept
   if (clean.split(/\s+/).length < 4) return true; // Fewer than 4 words
+
+  // Check if it's a chapter heading, numbered section, or slide label (e.g. "1.1 Introduction", "Chapter 3")
+  if (/^(\d+(\.\d+)*\s+[A-Za-z]|(chapter|lecture|unit|module|section|slide|figure|fig|table|page|topic|part)\b)/i.test(clean)) {
+    return true;
+  }
 
   // Check against blacklisted prefixes (e.g., "Chapter 1: ...", "Figure 2.1: ...")
   for (const label of JUNK_LABELS) {
@@ -64,12 +69,12 @@ function isJunkOrTitle(str: string): boolean {
     if (regex.test(clean)) return true;
   }
 
-  // Check if it's a URL or copyright/page number
-  if (/^(https?:\/\/|www\.|copyright|©|\(c\)|page\s+\d+|slide\s+\d+)/i.test(clean)) {
+  // Check if it's a URL, copyright, or email
+  if (/^(https?:\/\/|www\.|copyright|©|\(c\)|page\s+\d+|slide\s+\d+|email)/i.test(clean)) {
     return true;
   }
 
-  // Check if it's purely a rhetorical question or slide prompt
+  // Check if it's purely a question
   if (/^(why|how|what|did you know|can you|let's|do you)\b.*\?$/i.test(clean)) {
     return true;
   }
@@ -77,6 +82,12 @@ function isJunkOrTitle(str: string): boolean {
   // Check if it's ALL CAPS (likely a slide title like "COMPUTER NETWORKS OVERVIEW")
   const lettersOnly = str.replace(/[^a-zA-Z]/g, '');
   if (lettersOnly.length > 5 && lettersOnly === lettersOnly.toUpperCase()) {
+    return true;
+  }
+
+  // Must contain at least one verb predicate to be an informative concept
+  const hasVerb = /\b(is|are|was|were|has|have|refers|defined|means|consists|contains|describes|performs|provides|manages|handles|regulates|generates|converts|transfers|functions|serves|enables|allows|causes|occurs|includes|operates|maintains|stores|transmits|executes|acts)\b/i.test(clean);
+  if (!hasVerb) {
     return true;
   }
 
