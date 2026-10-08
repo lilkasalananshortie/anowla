@@ -9,7 +9,7 @@ export interface Card {
   front: string; // Question or prompt
   back: string; // Correct answer
   distractors?: string[]; // Incorrect options for multiple choice
-  explanation?: string; // AI explanation
+  explanation?: string; // High-yield rationale
   hint?: string;
   // Spaced Repetition (SRS) data
   ease_factor: number; // Default 2.5
@@ -19,15 +19,33 @@ export interface Card {
   created_at: string;
 }
 
+export interface Folder {
+  id: string;
+  name: string;
+  icon?: string;
+  color?: string;
+  created_at: string;
+}
+
 export interface Deck {
   id: string;
   title: string;
   description: string;
   category?: string;
+  folder_id?: string;
   cards_count: number;
   due_count: number;
   created_at: string;
   cards?: Card[];
+}
+
+export interface StudyDocument {
+  id: string;
+  title: string;
+  content: string;
+  folder_id?: string;
+  file_name?: string;
+  created_at: string;
 }
 
 export interface UserStats {

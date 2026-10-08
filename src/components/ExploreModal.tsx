@@ -179,11 +179,11 @@ const COMMUNITY_DECKS: CommunityDeck[] = [
   },
   {
     id: 'comm_3',
-    title: 'Data Structures & Algorithms: LeetCode Patterns',
-    description: 'Sliding window, two pointers, BFS/DFS tree traversals, and dynamic programming.',
-    category: 'Computer Science',
-    author: 'Alex Rivera',
-    authorBadge: 'Senior SWE',
+    title: 'Pediatric Nursing: Milestones, Vital Signs & Dehydration',
+    description: 'Fontanelle assessment, dehydration severity, pediatric vitals, and developmental reflexes.',
+    category: 'Pediatrics',
+    author: 'Sarah Jenkins, BSN, RN',
+    authorBadge: 'Pediatric Nurse Specialist',
     downloadsCount: 2310,
     cards_count: 4,
     due_count: 4,
@@ -193,9 +193,9 @@ const COMMUNITY_DECKS: CommunityDeck[] = [
         id: 'c3_1',
         deck_id: 'comm_3',
         card_type: 'flashcard',
-        front: 'What is the time complexity of searching in a balanced Binary Search Tree (AVL / Red-Black)?',
-        back: 'O(log n) time complexity, with O(1) space auxiliary.',
-        explanation: 'Height of a balanced BST with n elements is guaranteed to be log2(n).',
+        front: 'At what age does the anterior fontanelle typically close in a healthy infant?',
+        back: 'Between 12 and 18 months of age (the posterior fontanelle closes by 2 to 3 months).',
+        explanation: 'A sunken anterior fontanelle suggests severe dehydration; a bulging fontanelle at rest indicates increased intracranial pressure.',
         ease_factor: 2.5,
         interval: 0,
         repetitions: 0,
@@ -206,10 +206,14 @@ const COMMUNITY_DECKS: CommunityDeck[] = [
         id: 'c3_2',
         deck_id: 'comm_3',
         card_type: 'multiple_choice',
-        front: 'Which algorithmic pattern is best suited for finding the shortest path in an unweighted graph?',
-        back: 'Breadth-First Search (BFS)',
-        distractors: ['Depth-First Search (DFS)', 'Dijkstra Algorithm', 'Greedy Choice'],
-        explanation: 'BFS explores nodes layer by layer, guaranteeing shortest path in unweighted graphs.',
+        front: 'Which clinical finding is the most sensitive and earliest indicator of severe dehydration in an infant?',
+        back: 'Tachycardia and prolonged capillary refill (> 3 seconds)',
+        distractors: [
+          'Hypotension (late, decompensated sign)',
+          'Flushed dry skin with fever',
+          'Bradycardia with hypertension'
+        ],
+        explanation: 'Infants compensate for hypovolemia by increasing heart rate. Hypotension is a late sign preceding cardiovascular collapse.',
         ease_factor: 2.5,
         interval: 0,
         repetitions: 0,
@@ -220,9 +224,9 @@ const COMMUNITY_DECKS: CommunityDeck[] = [
         id: 'c3_3',
         deck_id: 'comm_3',
         card_type: 'fill_blank',
-        front: 'Dijkstra algorithm uses a priority queue / ________ to achieve O((V + E) log V) time.',
-        back: 'min-heap',
-        explanation: 'Min-heap efficiently extracts the vertex with minimum distance in O(log V).',
+        front: 'The Moro (startle) reflex should normally disappear by ________ months of age.',
+        back: '4',
+        explanation: 'Persistence of primitive reflexes like Moro or Palmar grasp beyond 4-6 months signals potential neurological dysfunction or cerebral palsy.',
         ease_factor: 2.5,
         interval: 0,
         repetitions: 0,
@@ -233,9 +237,9 @@ const COMMUNITY_DECKS: CommunityDeck[] = [
         id: 'c3_4',
         deck_id: 'comm_3',
         card_type: 'flashcard',
-        front: 'What data structure enables O(1) average lookup, insertion, and deletion by key?',
-        back: 'Hash Table / Hash Map (using hash function and collision resolution).',
-        explanation: 'Worst-case is O(n) under high collision frequency without re-hashing.',
+        front: 'What is the classic triad of symptoms seen in pediatric Intussusception?',
+        back: 'Severe colicky abdominal pain, sausage-shaped right upper quadrant mass, and "currant jelly" stools.',
+        explanation: 'Telescoping of bowel segment compromises venous blood flow, leading to mucosal sloughing with blood and mucus (currant jelly stool).',
         ease_factor: 2.5,
         interval: 0,
         repetitions: 0,
@@ -324,7 +328,7 @@ export default function ExploreModal({
 
   if (!isOpen) return null;
 
-  const categories = ['All', 'Pharmacology', 'Emergency', 'Computer Science', 'Neuroscience'];
+  const categories = ['All', 'Pharmacology', 'Emergency', 'Pediatrics', 'Neuroscience'];
 
   const filtered = COMMUNITY_DECKS.filter((deck) => {
     const matchesSearch =

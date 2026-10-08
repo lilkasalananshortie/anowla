@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Deck, Card, CardType } from '@/types';
-import { X, Plus, Trash2, Layers, CheckCircle } from 'lucide-react';
+import { Deck, Card, CardType, Folder } from '@/types';
+import { X, Plus, Trash2, Layers, CheckCircle, Folder as FolderIcon } from 'lucide-react';
 
 interface CreateDeckModalProps {
   isOpen: boolean;
   onClose: () => void;
   onDeckCreated: (deck: Deck) => void;
+  folders?: Folder[];
 }
 
 interface NewCardItem {
@@ -18,9 +19,10 @@ interface NewCardItem {
   distractors: string[];
 }
 
-export default function CreateDeckModal({ isOpen, onClose, onDeckCreated }: CreateDeckModalProps) {
+export default function CreateDeckModal({ isOpen, onClose, onDeckCreated, folders = [] }: CreateDeckModalProps) {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
+  const [selectedFolderId, setSelectedFolderId] = useState<string>(folders[0]?.id || '');
   const [description, setDescription] = useState('');
   const [cards, setCards] = useState<NewCardItem[]>([
     { id: '1', card_type: 'flashcard', front: '', back: '', distractors: ['', '', ''] },
@@ -113,6 +115,7 @@ export default function CreateDeckModal({ isOpen, onClose, onDeckCreated }: Crea
       title: title.trim(),
       description: description.trim() || `Created with ${validCards.length} cards`,
       category: category.trim() || 'General',
+      folder_id: selectedFolderId || undefined,
       cards_count: validCards.length,
       due_count: validCards.length,
       created_at: new Date().toISOString(),
@@ -164,27 +167,29 @@ export default function CreateDeckModal({ isOpen, onClose, onDeckCreated }: Crea
           )}
 
           {/* Deck Details */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="sm:col-span-2">
               <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">Deck Title *</label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. IT 101: Networking Basics"
-                className="mt-1 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5 text-sm text-zinc-900 outline-none focus:border-indigo-600 focus:bg-white dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                placeholder="e.g. Pharmacology: Beta Blockers & Digoxin"
+                className="mt-1 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5 text-sm text-zinc-900 outline-none focus:border-teal-600 focus:bg-white dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">Category</label>
-              <input
-                type="text"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                placeholder="e.g. Computer Science"
-                className="mt-1 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5 text-sm text-zinc-900 outline-none focus:border-indigo-600 focus:bg-white dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-              />
+              <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">Folder</label>
+              <select
+                value={selectedFolderId}
+                onChange={(e) => setSelectedFolderId(e.target.value)}
+                className="mt-1 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5 text-sm text-zinc-900 outline-none focus:border-teal-600 focus:bg-white dark:border-zinc-700 dark:bg-zinc-800 dark:text-white cursor-pointer"
+              >
+                {folders.map(f => (
+                  <option key={f.id} value={f.id}>{f.name}</option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -194,8 +199,8 @@ export default function CreateDeckModal({ isOpen, onClose, onDeckCreated }: Crea
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="e.g. OSI model layers and protocol summaries"
-              className="mt-1 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2 text-sm text-zinc-900 outline-none focus:border-indigo-600 focus:bg-white dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+              placeholder="e.g. Mechanisms of action, contraindications, and nursing considerations"
+              className="mt-1 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2 text-sm text-zinc-900 outline-none focus:border-teal-600 focus:bg-white dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
             />
           </div>
 

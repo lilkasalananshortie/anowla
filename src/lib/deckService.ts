@@ -1,9 +1,10 @@
 import { supabase, isSupabaseConfigured } from './supabase';
-import { Deck, Card, UserStats } from '@/types';
-import { INITIAL_DECKS } from './mockData';
+import { Deck, Card, UserStats, Folder } from '@/types';
+import { INITIAL_DECKS, INITIAL_FOLDERS } from './mockData';
 
 const LOCAL_STORAGE_DECKS_KEY = 'alwinyah_decks';
 const LOCAL_STORAGE_STATS_KEY = 'alwinyah_stats';
+const LOCAL_STORAGE_FOLDERS_KEY = 'alwinyah_folders';
 
 /**
  * Fetch all decks for the user.
@@ -304,3 +305,26 @@ export function saveLocalDecks(decks: Deck[]): void {
     console.warn('Error saving local decks', e);
   }
 }
+
+export function getLocalFolders(): Folder[] {
+  if (typeof window === 'undefined') return INITIAL_FOLDERS;
+  try {
+    const raw = localStorage.getItem(LOCAL_STORAGE_FOLDERS_KEY);
+    if (raw) {
+      return JSON.parse(raw);
+    }
+  } catch (e) {
+    console.warn('Error reading local folders', e);
+  }
+  return INITIAL_FOLDERS;
+}
+
+export function saveLocalFolders(folders: Folder[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(LOCAL_STORAGE_FOLDERS_KEY, JSON.stringify(folders));
+  } catch (e) {
+    console.warn('Error saving local folders', e);
+  }
+}
+

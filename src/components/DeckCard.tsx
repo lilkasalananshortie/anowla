@@ -9,10 +9,11 @@ interface DeckCardProps {
   accentIndex?: number;
   onSelect: (deck: Deck) => void;
   onDelete?: (deckId: string) => void;
-  onInspect?: (deck: Deck) => void;
+  onInspect?: (deckId: Deck) => void;
+  folderName?: string;
 }
 
-export default function DeckCard({ deck, accentIndex = 0, onSelect, onDelete, onInspect }: DeckCardProps) {
+export default function DeckCard({ deck, accentIndex = 0, onSelect, onDelete, onInspect, folderName }: DeckCardProps) {
   const [liked, setLiked] = React.useState(false);
 
   // Soft, muted, calm header palettes (easy on the eyes)
@@ -54,10 +55,17 @@ export default function DeckCard({ deck, accentIndex = 0, onSelect, onDelete, on
       <div className={`relative flex flex-col justify-between p-6 ${currentAccent.bg} min-h-[135px]`}>
         
         {/* Top Badges & Delete Action */}
-        <div className="flex items-center justify-between">
-          <span className={`rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide ${currentAccent.tag}`}>
-            {deck.category || 'General'}
-          </span>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className={`rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide ${currentAccent.tag}`}>
+              {deck.category || 'General'}
+            </span>
+            {folderName && (
+              <span className="rounded-full bg-black/15 px-2.5 py-0.5 text-[10px] font-semibold text-stone-800">
+                📁 {folderName}
+              </span>
+            )}
+          </div>
           
           <div className="flex items-center gap-1.5">
             {dueCount > 0 && (

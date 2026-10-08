@@ -367,3 +367,38 @@ export async function extractPdfHighlights(
     items,
   };
 }
+
+/**
+ * Extracts all raw text from a PDF document across all pages for the interactive editor.
+ */
+export async function extractFullTextFromPdf(
+  file: File,
+  onProgress?: (progress: number) => void
+): Promise<{ text: string; totalPages: number }> {
+  const pdfjs = await getPdfJs();
+  const arrayBuffer = await file.arrayBuffer();
+  const loadingTask = pdfjs.getDocument({ data: new Uint8Array(arrayBuffer) });
+  const pdf = await loadingTask.promise;
+  const totalPages = pdf.numPages;
+
+  const pageTexts: string[] = [];
+
+  for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+    if (onProgress) {
+      onProgress(Math.round((pageNum / totalPages) * 100));
+    }
+    const page = await pdf.getPage(pageNum);
+    const textContent = await page.getTextContent();
+    const items = textContent.items as any[];
+    const pageString = items.map((i: any) => i.str).join(' ');
+    if (pageString.trim().length > 0) {
+      pageTexts.push(`--- Page ${pageNum} ---\n${pageString.trim()}`);
+    }
+  }
+
+  return {
+    text: pageTexts.join('\n\n'),
+    totalPages,
+  };
+}
+
