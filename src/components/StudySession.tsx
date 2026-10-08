@@ -174,9 +174,9 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
 
         {/* Progress Tracker */}
         <div className="flex flex-1 items-center gap-3 px-6">
-          <div className="h-2.5 w-full overflow-hidden rounded-full bg-white/20">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-white/15">
             <div 
-              className="h-full bg-[#d8f967] transition-all duration-300"
+              className="h-full bg-teal-400 transition-all duration-300"
               style={{ width: `${progressPercent}%` }}
             />
           </div>

@@ -13,7 +13,7 @@ import { Deck, UserStats } from '@/types';
 import { Search, BookOpen, Layers } from 'lucide-react';
 
 export default function Home() {
-  const [theme, setTheme] = useState<ThemeColor>('indigo');
+  const [theme, setTheme] = useState<ThemeColor>('slate');
   const [decks, setDecks] = useState<Deck[]>(INITIAL_DECKS);
   const [selectedDeck, setSelectedDeck] = useState<Deck | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -28,15 +28,15 @@ export default function Home() {
     daily_goal: 10,
   });
 
-  // Theme Background Map (Replicating the side-by-side screens in the inspiration image)
+  // Calm, muted theme background palettes (easy on the eyes)
   const themeStyles: Record<ThemeColor, { bg: string; secondary: string }> = {
-    indigo: { bg: 'bg-[#161152]', secondary: 'bg-[#221b6a]' },
-    plum: { bg: 'bg-[#52163b]', secondary: 'bg-[#67214c]' },
-    violet: { bg: 'bg-[#5c3db7]', secondary: 'bg-[#6c4cc9]' },
-    sage: { bg: 'bg-[#4e6853]', secondary: 'bg-[#5c7a62]' },
+    slate: { bg: 'bg-[#18202d]', secondary: 'bg-[#222c3d]' },
+    mocha: { bg: 'bg-[#25201e]', secondary: 'bg-[#332c2a]' },
+    sage: { bg: 'bg-[#1e2620]', secondary: 'bg-[#2a342d]' },
+    charcoal: { bg: 'bg-[#1c1d22]', secondary: 'bg-[#26282f]' },
   };
 
-  const currentThemeStyle = themeStyles[theme];
+  const currentThemeStyle = themeStyles[theme] || themeStyles.slate;
 
   // Load persisted decks and stats from localStorage
   useEffect(() => {

@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Flame, Bell, Settings, Plus, Sparkles, BookOpen } from 'lucide-react';
+import { Flame, Bell, Settings, BookOpen } from 'lucide-react';
 
-export type ThemeColor = 'indigo' | 'plum' | 'violet' | 'sage';
+export type ThemeColor = 'slate' | 'mocha' | 'sage' | 'charcoal';
 
 interface NavbarProps {
   streak: number;
@@ -23,10 +23,10 @@ export default function Navbar({
   onGoHome,
 }: NavbarProps) {
   const themes: { id: ThemeColor; label: string; color: string }[] = [
-    { id: 'indigo', label: 'Midnight Indigo', color: '#1a125e' },
-    { id: 'plum', label: 'Plum Wine', color: '#541539' },
-    { id: 'violet', label: 'Royal Violet', color: '#5b3cb5' },
-    { id: 'sage', label: 'Sage Olive', color: '#506a54' },
+    { id: 'slate', label: 'Calm Slate', color: '#1a2230' },
+    { id: 'mocha', label: 'Warm Mocha', color: '#272320' },
+    { id: 'sage', label: 'Muted Sage', color: '#202922' },
+    { id: 'charcoal', label: 'Soft Charcoal', color: '#1f2126' },
   ];
 
   return (
@@ -38,14 +38,14 @@ export default function Navbar({
           onClick={onGoHome}
           className="flex items-center gap-3 text-left transition hover:opacity-90 cursor-pointer"
         >
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/15 text-white shadow-inner backdrop-blur-md border border-white/20">
-            <BookOpen className="h-5 w-5" />
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-white shadow-sm backdrop-blur-md border border-white/10">
+            <BookOpen className="h-5 w-5 text-white/90" />
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-tight text-white drop-shadow-sm sm:text-3xl">
+            <h1 className="text-2xl font-bold tracking-tight text-white/95 sm:text-3xl">
               Insights
             </h1>
-            <p className="text-[11px] font-bold text-white/70 uppercase tracking-widest">
+            <p className="text-[11px] font-semibold text-white/60 uppercase tracking-wider">
               Alwinyah Study Hub
             </p>
           </div>
@@ -54,8 +54,8 @@ export default function Navbar({
         {/* Right: Theme Switcher & Actions */}
         <div className="flex items-center gap-2.5 sm:gap-4">
           
-          {/* Theme Color Selector Dots (Matches screenshot's colorways) */}
-          <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-black/25 p-1.5 backdrop-blur-md border border-white/10">
+          {/* Soft Theme Color Selector */}
+          <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-black/20 p-1.5 backdrop-blur-md border border-white/10">
             {themes.map((t) => (
               <button
                 key={t.id}
@@ -63,8 +63,8 @@ export default function Navbar({
                 title={t.label}
                 className={`h-5 w-5 rounded-full transition-transform cursor-pointer ${
                   currentTheme === t.id
-                    ? 'ring-2 ring-white scale-110 shadow-md'
-                    : 'opacity-70 hover:opacity-100 hover:scale-105'
+                    ? 'ring-2 ring-white/90 scale-110 shadow-sm'
+                    : 'opacity-60 hover:opacity-100 hover:scale-105'
                 }`}
                 style={{ backgroundColor: t.color }}
               />
@@ -72,27 +72,27 @@ export default function Navbar({
           </div>
 
           {/* Streak Pill */}
-          <div className="flex items-center gap-1.5 rounded-full bg-white/15 px-3.5 py-1.5 text-xs font-bold text-white backdrop-blur-md border border-white/15 shadow-sm">
-            <Flame className="h-4 w-4 fill-amber-400 text-amber-400 animate-pulse" />
+          <div className="flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-md border border-white/10 shadow-sm">
+            <Flame className="h-3.5 w-3.5 fill-amber-300 text-amber-300" />
             <span>{streak}d</span>
           </div>
 
           {/* XP Pill */}
-          <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-white/15 px-3.5 py-1.5 text-xs font-bold text-white backdrop-blur-md border border-white/15 shadow-sm">
-            <span className="text-amber-300">⭐</span>
+          <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-md border border-white/10 shadow-sm">
+            <span className="text-amber-200 text-xs">⭐</span>
             <span>{xp} XP</span>
           </div>
 
           {/* Quick Icons */}
           <button 
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md border border-white/15 transition hover:bg-white/25 cursor-pointer"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white/80 backdrop-blur-md border border-white/10 transition hover:bg-white/15 hover:text-white cursor-pointer"
             title="Notifications"
           >
             <Bell className="h-4 w-4" />
           </button>
 
           <button 
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md border border-white/15 transition hover:bg-white/25 cursor-pointer"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white/80 backdrop-blur-md border border-white/10 transition hover:bg-white/15 hover:text-white cursor-pointer"
             title="Settings"
           >
             <Settings className="h-4 w-4" />
