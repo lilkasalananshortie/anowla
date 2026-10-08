@@ -11,6 +11,8 @@ import BadgesWidget from '@/components/BadgesWidget';
 import BottomDock from '@/components/BottomDock';
 import LandingPage from '@/components/LandingPage';
 import AuthModal from '@/components/AuthModal';
+import DeckDetailModal from '@/components/DeckDetailModal';
+import MasteryAnalyticsModal from '@/components/MasteryAnalyticsModal';
 import { INITIAL_DECKS } from '@/lib/mockData';
 import { Deck, UserStats } from '@/types';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
@@ -32,6 +34,11 @@ export default function Home() {
   const [isPdfScannerOpen, setIsPdfScannerOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+
+  // Deck inspection and Mastery analytics states
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [inspectingDeck, setInspectingDeck] = useState<Deck | null>(null);
+  const [isMasteryOpen, setIsMasteryOpen] = useState(false);
 
   // Authentication & View States
   const [user, setUser] = useState<User | null>(null);
@@ -169,6 +176,15 @@ export default function Home() {
     await deleteUserDeck(deckId, user?.id);
   };
 
+  const handleDeckUpdated = async (updatedDeck: Deck) => {
+    const updated = decks.map((d) => (d.id === updatedDeck.id ? updatedDeck : d));
+    setDecks(updated);
+    if (inspectingDeck?.id === updatedDeck.id) {
+      setInspectingDeck(updatedDeck);
+    }
+    await saveUserDeck(updatedDeck, user?.id);
+  };
+
   const handleSessionComplete = async (xpGained: number, cardsStudied: number) => {
     const newStats: UserStats = {
       ...stats,
@@ -250,6 +266,7 @@ export default function Home() {
         user={user}
         onOpenAuth={handleOpenAuth}
         onSignOut={handleSignOut}
+        onOpenMastery={() => setIsMasteryOpen(true)}
         onGoLanding={() => {
           setIsGuestMode(false);
           sessionStorage.removeItem('alwinyah_guest_mode');
@@ -361,6 +378,10 @@ export default function Home() {
                       accentIndex={idx}
                       onSelect={(d) => setSelectedDeck(d)}
                       onDelete={handleDeleteDeck}
+                      onInspect={(d) => {
+                        setInspectingDeck(d);
+                        setIsDetailModalOpen(true);
+                      }}
                     />
                   ))}
                 </div>
@@ -388,6 +409,7 @@ export default function Home() {
       <BottomDock
         onOpenCreate={() => setIsCreateOpen(true)}
         onGoHome={() => setSelectedDeck(null)}
+        onOpenMastery={() => setIsMasteryOpen(true)}
         onOpenProfile={() => {
           if (!user) {
             handleOpenAuth('login');
@@ -415,6 +437,26 @@ export default function Home() {
         onAuthSuccess={() => {
           setIsAuthModalOpen(false);
         }}
+      />
+
+      {/* Deck Detail & Card Manager Modal */}
+      <DeckDetailModal
+        isOpen={isDetailModalOpen}
+        deck={inspectingDeck}
+        onClose={() => setIsDetailModalOpen(false)}
+        onUpdateDeck={handleDeckUpdated}
+        onStartStudy={(d) => {
+          setSelectedDeck(d);
+          setIsDetailModalOpen(false);
+        }}
+      />
+
+      {/* Mastery & Memory Analytics Modal */}
+      <MasteryAnalyticsModal
+        isOpen={isMasteryOpen}
+        onClose={() => setIsMasteryOpen(false)}
+        decks={decks}
+        stats={stats}
       />
     </div>
   );

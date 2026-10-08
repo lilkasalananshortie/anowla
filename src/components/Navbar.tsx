@@ -18,6 +18,7 @@ interface NavbarProps {
   onOpenAuth: (mode: 'login' | 'signup') => void;
   onSignOut: () => void;
   onGoLanding?: () => void;
+  onOpenMastery?: () => void;
 }
 
 export default function Navbar({
@@ -32,6 +33,7 @@ export default function Navbar({
   onOpenAuth,
   onSignOut,
   onGoLanding,
+  onOpenMastery,
 }: NavbarProps) {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
 
@@ -94,16 +96,24 @@ export default function Navbar({
           </div>
 
           {/* Streak Pill */}
-          <div className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-md border border-white/10 shadow-sm">
+          <button
+            onClick={onOpenMastery}
+            className="flex items-center gap-1.5 rounded-full bg-white/10 hover:bg-white/15 px-3 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-md border border-white/10 shadow-sm transition cursor-pointer"
+            title="View Streak & Mastery"
+          >
             <Flame className="h-3.5 w-3.5 fill-amber-300 text-amber-300" />
             <span>{streak}d</span>
-          </div>
+          </button>
 
           {/* XP Pill */}
-          <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-md border border-white/10 shadow-sm">
+          <button
+            onClick={onOpenMastery}
+            className="hidden sm:flex items-center gap-1.5 rounded-full bg-white/10 hover:bg-white/15 px-3 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-md border border-white/10 shadow-sm transition cursor-pointer"
+            title="View XP & Analytics"
+          >
             <span className="text-amber-200 text-xs">⭐</span>
             <span>{xp} XP</span>
-          </div>
+          </button>
 
           {/* Scan PDF Pill */}
           <button

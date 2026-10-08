@@ -2,16 +2,17 @@
 
 import React from 'react';
 import { Deck } from '@/types';
-import { Play, Heart, Clock, Layers, Trash2 } from 'lucide-react';
+import { Play, Heart, Clock, Layers, Trash2, Edit3 } from 'lucide-react';
 
 interface DeckCardProps {
   deck: Deck;
   accentIndex?: number;
   onSelect: (deck: Deck) => void;
   onDelete?: (deckId: string) => void;
+  onInspect?: (deck: Deck) => void;
 }
 
-export default function DeckCard({ deck, accentIndex = 0, onSelect, onDelete }: DeckCardProps) {
+export default function DeckCard({ deck, accentIndex = 0, onSelect, onDelete, onInspect }: DeckCardProps) {
   const [liked, setLiked] = React.useState(false);
 
   // Soft, muted, calm header palettes (easy on the eyes)
@@ -120,6 +121,21 @@ export default function DeckCard({ deck, accentIndex = 0, onSelect, onDelete }: 
                 }`}
               />
             </button>
+
+            {onInspect && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onInspect(deck);
+                }}
+                className="flex items-center gap-1 rounded-full bg-stone-100 hover:bg-stone-200 px-3 py-1.5 text-xs font-semibold text-stone-800 transition cursor-pointer"
+                title="View & Edit Cards"
+              >
+                <Edit3 className="h-3 w-3" />
+                <span className="hidden sm:inline">Cards</span>
+              </button>
+            )}
 
             <button
               onClick={() => onSelect(deck)}

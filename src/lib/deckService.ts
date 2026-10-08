@@ -200,6 +200,19 @@ export async function deleteUserDeck(deckId: string, userId?: string | null): Pr
 }
 
 /**
+ * Delete a single card from Supabase.
+ */
+export async function deleteCardFromDeck(cardId: string): Promise<void> {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      await supabase.from('cards').delete().eq('id', cardId);
+    } catch (e) {
+      console.warn('Error deleting card from Supabase:', e);
+    }
+  }
+}
+
+/**
  * Sync guest decks to Supabase upon logging in.
  */
 export async function syncDecksToSupabase(decks: Deck[], userId: string): Promise<void> {

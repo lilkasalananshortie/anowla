@@ -7,9 +7,15 @@ interface BottomDockProps {
   onOpenCreate: () => void;
   onGoHome: () => void;
   onOpenProfile?: () => void;
+  onOpenMastery?: () => void;
 }
 
-export default function BottomDock({ onOpenCreate, onGoHome, onOpenProfile }: BottomDockProps) {
+export default function BottomDock({ 
+  onOpenCreate, 
+  onGoHome, 
+  onOpenProfile, 
+  onOpenMastery 
+}: BottomDockProps) {
   return (
     <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2">
       <nav className="flex items-center gap-4 sm:gap-6 rounded-full bg-stone-900/60 px-6 py-2.5 shadow-xl backdrop-blur-xl border border-white/10 text-white">
@@ -26,10 +32,11 @@ export default function BottomDock({ onOpenCreate, onGoHome, onOpenProfile }: Bo
 
         {/* Stats / Achievements */}
         <button
-          className="flex flex-col items-center justify-center p-1.5 text-white/50 hover:text-white transition cursor-pointer"
-          title="Mastery"
+          onClick={onOpenMastery}
+          className="flex flex-col items-center justify-center p-1.5 text-white/70 hover:text-white transition cursor-pointer"
+          title="Mastery & Analytics"
         >
-          <Trophy className="h-5 w-5" />
+          <Trophy className="h-5 w-5 text-amber-300" />
         </button>
 
         {/* Big Center "+" Action Button (Soft muted white/stone pill) */}
