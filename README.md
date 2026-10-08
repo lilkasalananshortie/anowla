@@ -9,7 +9,7 @@
 | Layer | Service | Cost |
 | :--- | :--- | :--- |
 | **Frontend** | Next.js (React + Tailwind CSS) on **Vercel** | **$0** (Hobby Tier) |
-| **Database & Auth** | **Supabase** (PostgreSQL) | **$0** (Free Tier - 500MB DB, 50k MAU) |
+| **AI PDF Scanner** | **Google Gemini 3.8 Flash** | **$0** (1,500 requests/day free quota) |
 | **SRS Engine** | SM-2 Spaced Repetition (Built-in) | **$0** (Client-side / zero external APIs) |
 
 ---
