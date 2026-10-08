@@ -166,21 +166,21 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
       <div className="mb-6 flex items-center justify-between">
         <button
           onClick={onExit}
-          className="flex items-center gap-1.5 text-sm font-semibold text-zinc-500 hover:text-zinc-900 dark:hover:text-white cursor-pointer"
+          className="flex items-center gap-1.5 rounded-full bg-white/15 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-white/25 transition cursor-pointer backdrop-blur-md"
         >
           <ArrowLeft className="h-4 w-4" />
-          <span>Exit</span>
+          <span>Exit Session</span>
         </button>
 
         {/* Progress Tracker */}
         <div className="flex flex-1 items-center gap-3 px-6">
-          <div className="h-2.5 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+          <div className="h-2.5 w-full overflow-hidden rounded-full bg-white/20">
             <div 
-              className="h-full bg-indigo-600 transition-all duration-300 dark:bg-indigo-500"
+              className="h-full bg-[#d8f967] transition-all duration-300"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
-          <span className="text-xs font-semibold text-zinc-500 whitespace-nowrap">
+          <span className="text-xs font-bold text-white/80 whitespace-nowrap">
             {currentIndex + 1} / {cards.length}
           </span>
         </div>

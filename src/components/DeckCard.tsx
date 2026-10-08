@@ -2,55 +2,115 @@
 
 import React from 'react';
 import { Deck } from '@/types';
-import { Play, Sparkles, Layers, Clock } from 'lucide-react';
+import { Play, Heart, Clock, Layers } from 'lucide-react';
 
 interface DeckCardProps {
   deck: Deck;
+  accentIndex?: number;
   onSelect: (deck: Deck) => void;
 }
 
-export default function DeckCard({ deck, onSelect }: DeckCardProps) {
+export default function DeckCard({ deck, accentIndex = 0, onSelect }: DeckCardProps) {
+  const [liked, setLiked] = React.useState(false);
+
+  // Pastel header colors inspired by the reference screens
+  const pastelStyles = [
+    {
+      bg: 'bg-[#d8f967]', // Volt Lime
+      text: 'text-zinc-900',
+      tag: 'bg-black/10 text-zinc-900',
+    },
+    {
+      bg: 'bg-[#b6effe]', // Sky Blue
+      text: 'text-zinc-900',
+      tag: 'bg-black/10 text-zinc-900',
+    },
+    {
+      bg: 'bg-[#dccaff]', // Soft Lilac
+      text: 'text-zinc-900',
+      tag: 'bg-black/10 text-zinc-900',
+    },
+    {
+      bg: 'bg-[#ffc5d8]', // Blush Pink
+      text: 'text-zinc-900',
+      tag: 'bg-black/10 text-zinc-900',
+    },
+  ];
+
+  const currentAccent = pastelStyles[accentIndex % pastelStyles.length];
   const cardsCount = deck.cards?.length || deck.cards_count || 0;
-  const dueCount = deck.cards ? deck.cards.filter(c => !c.due_date || new Date(c.due_date) <= new Date()).length : deck.due_count;
+  const dueCount = deck.cards
+    ? deck.cards.filter((c) => !c.due_date || new Date(c.due_date) <= new Date()).length
+    : deck.due_count;
+
+  // Approximate study time: ~1 min per 2 cards
+  const estMinutes = Math.max(2, Math.round(cardsCount * 0.8));
 
   return (
-    <div className="group relative flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-indigo-300 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900/60 dark:hover:border-indigo-500/50">
-      <div>
-        {/* Category & Badge */}
+    <div className="group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-white shadow-lg shadow-black/5 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl">
+      
+      {/* Top Banner (Pastel Graphic Style from Reference) */}
+      <div className={`relative flex flex-col justify-between p-6 ${currentAccent.bg} min-h-[140px]`}>
+        
+        {/* Top Badges */}
         <div className="flex items-center justify-between">
-          <span className="rounded-md bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+          <span className={`rounded-full px-3 py-1 text-[11px] font-bold ${currentAccent.tag}`}>
             {deck.category || 'General'}
           </span>
           {dueCount > 0 && (
-            <span className="flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
-              <Clock className="h-3 w-3" />
+            <span className="rounded-full bg-black/80 px-2.5 py-0.5 text-[10px] font-extrabold text-white">
               {dueCount} due
             </span>
           )}
         </div>
 
-        {/* Title & Description */}
-        <h3 className="mt-4 text-lg font-bold text-zinc-900 group-hover:text-indigo-600 transition-colors dark:text-zinc-100 dark:group-hover:text-indigo-400">
+        {/* Big Bold Headline */}
+        <h3 className={`mt-3 text-xl font-black tracking-tight leading-tight ${currentAccent.text} line-clamp-2`}>
           {deck.title}
         </h3>
-        <p className="mt-1.5 text-sm text-zinc-500 line-clamp-2 dark:text-zinc-400">
-          {deck.description || 'No description provided.'}
-        </p>
       </div>
 
-      <div className="mt-6 flex items-center justify-between border-t border-zinc-100 pt-4 dark:border-zinc-800">
-        <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
-          <Layers className="h-3.5 w-3.5" />
-          <span>{cardsCount} cards</span>
-        </div>
+      {/* Card Details & Actions */}
+      <div className="flex flex-1 flex-col justify-between p-5">
+        <p className="text-xs font-medium text-zinc-500 line-clamp-2 leading-relaxed">
+          {deck.description || 'Active recall flashcards for deep memorization.'}
+        </p>
 
-        <button
-          onClick={() => onSelect(deck)}
-          className="flex items-center gap-1.5 rounded-xl bg-zinc-900 px-4 py-2 text-xs font-semibold text-white shadow transition hover:bg-indigo-600 active:scale-95 cursor-pointer dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-indigo-500 dark:hover:text-white"
-        >
-          <Play className="h-3.5 w-3.5 fill-current" />
-          <span>Study</span>
-        </button>
+        {/* Footer info: time, cards, study button, heart */}
+        <div className="mt-5 flex items-center justify-between border-t border-zinc-100 pt-3.5">
+          <div className="flex items-center gap-3 text-[11px] font-bold text-zinc-400">
+            <span className="flex items-center gap-1">
+              <Clock className="h-3.5 w-3.5" />
+              {estMinutes} min
+            </span>
+            <span className="flex items-center gap-1">
+              <Layers className="h-3.5 w-3.5" />
+              {cardsCount} cards
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setLiked(!liked)}
+              className="p-1 text-zinc-300 hover:text-rose-500 transition cursor-pointer"
+              title="Save to favorites"
+            >
+              <Heart
+                className={`h-4 w-4 transition-colors ${
+                  liked ? 'fill-rose-500 text-rose-500' : 'text-zinc-300'
+                }`}
+              />
+            </button>
+
+            <button
+              onClick={() => onSelect(deck)}
+              className="flex items-center gap-1.5 rounded-full bg-zinc-900 px-3.5 py-1.5 text-xs font-bold text-white shadow transition hover:bg-indigo-600 active:scale-95 cursor-pointer"
+            >
+              <Play className="h-3 w-3 fill-current" />
+              <span>Study</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
