@@ -8,13 +8,15 @@ interface BottomDockProps {
   onGoHome: () => void;
   onOpenProfile?: () => void;
   onOpenMastery?: () => void;
+  onOpenExplore?: () => void;
 }
 
 export default function BottomDock({ 
   onOpenCreate, 
   onGoHome, 
   onOpenProfile, 
-  onOpenMastery 
+  onOpenMastery,
+  onOpenExplore,
 }: BottomDockProps) {
   return (
     <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2">
@@ -50,10 +52,11 @@ export default function BottomDock({
 
         {/* Discover / Explore */}
         <button
-          className="flex flex-col items-center justify-center p-1.5 text-white/50 hover:text-white transition cursor-pointer"
-          title="Explore Decks"
+          onClick={onOpenExplore}
+          className="flex flex-col items-center justify-center p-1.5 text-white/70 hover:text-white transition cursor-pointer"
+          title="Explore Community Decks"
         >
-          <Compass className="h-5 w-5" />
+          <Compass className="h-5 w-5 text-teal-300" />
         </button>
 
         {/* Profile */}

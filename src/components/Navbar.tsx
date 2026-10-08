@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Flame, BookOpen, LogOut, User as UserIcon, LogIn, Sparkles } from 'lucide-react';
+import { Flame, BookOpen, LogOut, User as UserIcon, LogIn, Sparkles, Video, Bell, Settings } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
 
 export type ThemeColor = 'slate' | 'mocha' | 'sage' | 'charcoal';
@@ -19,6 +19,9 @@ interface NavbarProps {
   onSignOut: () => void;
   onGoLanding?: () => void;
   onOpenMastery?: () => void;
+  onOpenUrlScanner?: () => void;
+  onOpenSettings?: () => void;
+  onOpenNotifications?: () => void;
 }
 
 export default function Navbar({
@@ -34,6 +37,9 @@ export default function Navbar({
   onSignOut,
   onGoLanding,
   onOpenMastery,
+  onOpenUrlScanner,
+  onOpenSettings,
+  onOpenNotifications,
 }: NavbarProps) {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
 
@@ -119,11 +125,45 @@ export default function Navbar({
           <button
             onClick={onOpenScanPdf}
             className="flex items-center gap-1.5 rounded-full bg-amber-500/20 px-3.5 py-1.5 text-xs font-semibold text-amber-200 backdrop-blur-md border border-amber-400/30 shadow-sm transition hover:bg-amber-500/30 cursor-pointer"
-            title="Scan PDF & Highlights"
+            title="Scan PDF & Notes"
           >
             <span>📄</span>
             <span className="hidden sm:inline">Scan PDF</span>
           </button>
+
+          {/* Import YouTube / Web URL Pill */}
+          {onOpenUrlScanner && (
+            <button
+              onClick={onOpenUrlScanner}
+              className="flex items-center gap-1.5 rounded-full bg-red-500/20 px-3.5 py-1.5 text-xs font-semibold text-red-200 backdrop-blur-md border border-red-400/30 shadow-sm transition hover:bg-red-500/30 cursor-pointer"
+              title="Import YouTube Lecture or Web URL"
+            >
+              <Video className="h-3.5 w-3.5 text-red-400" />
+              <span className="hidden sm:inline">URL / Video</span>
+            </button>
+          )}
+
+          {/* Notifications Bell */}
+          {onOpenNotifications && (
+            <button
+              onClick={onOpenNotifications}
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/80 backdrop-blur-md border border-white/10 transition hover:bg-white/20 hover:text-white cursor-pointer"
+              title="Notifications"
+            >
+              <Bell className="h-3.5 w-3.5" />
+            </button>
+          )}
+
+          {/* Settings Button */}
+          {onOpenSettings && (
+            <button
+              onClick={onOpenSettings}
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/80 backdrop-blur-md border border-white/10 transition hover:bg-white/20 hover:text-white cursor-pointer"
+              title="Settings & Audio"
+            >
+              <Settings className="h-3.5 w-3.5" />
+            </button>
+          )}
 
           {/* User Account / Auth Section */}
           {user ? (

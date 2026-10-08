@@ -22,6 +22,12 @@ import {
   Layers
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { 
+  playCardFlipSound, 
+  playSuccessChime, 
+  playErrorTone, 
+  playFanfare 
+} from '@/lib/audioService';
 
 interface StudySessionProps {
   deck: Deck;
@@ -51,8 +57,9 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
   const [isAnswerChecked, setIsAnswerChecked] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
 
-  // Session metrics
+  // Session metrics & combo streak
   const [correctCount, setCorrectCount] = useState(0);
+  const [comboStreak, setComboStreak] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
 
   // AI Tutor drawer states
@@ -124,6 +131,11 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
 
     if (rating >= 3) {
       setCorrectCount((prev) => prev + 1);
+      setComboStreak((prev) => prev + 1);
+      playSuccessChime();
+    } else {
+      setComboStreak(0);
+      playErrorTone();
     }
     advanceCard();
   };
@@ -135,7 +147,14 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
 
     const match = option.trim().toLowerCase() === currentCard.back.trim().toLowerCase();
     setIsCorrect(match);
-    if (match) setCorrectCount((prev) => prev + 1);
+    if (match) {
+      setCorrectCount((prev) => prev + 1);
+      setComboStreak((prev) => prev + 1);
+      playSuccessChime();
+    } else {
+      setComboStreak(0);
+      playErrorTone();
+    }
   };
 
   const handleCheckTypedAnswer = (e: React.FormEvent) => {
@@ -145,8 +164,48 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
 
     const match = typedAnswer.trim().toLowerCase() === currentCard.back.trim().toLowerCase();
     setIsCorrect(match);
-    if (match) setCorrectCount((prev) => prev + 1);
+    if (match) {
+      setCorrectCount((prev) => prev + 1);
+      setComboStreak((prev) => prev + 1);
+      playSuccessChime();
+    } else {
+      setComboStreak(0);
+      playErrorTone();
+    }
   };
+
+  // Keyboard navigation shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if typing inside input or textarea
+      if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) {
+        return;
+      }
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        if (effectiveMode === 'flashcard') {
+          setIsFlipped((prev) => {
+            if (!prev) playCardFlipSound();
+            return !prev;
+          });
+        }
+      } else if (e.key === '1' && isFlipped && effectiveMode === 'flashcard') {
+        handleRating(1);
+      } else if (e.key === '2' && isFlipped && effectiveMode === 'flashcard') {
+        handleRating(2);
+      } else if (e.key === '3' && isFlipped && effectiveMode === 'flashcard') {
+        handleRating(3);
+      } else if (e.key === '4' && isFlipped && effectiveMode === 'flashcard') {
+        handleRating(4);
+      } else if ((e.key === 'ArrowRight' || e.key === 'Enter') && isAnswerChecked) {
+        advanceCard();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [effectiveMode, isFlipped, isAnswerChecked, currentCard]);
 
   const advanceCard = () => {
     setIsFlipped(false);
@@ -169,6 +228,7 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
     const xp = cards.length * 20;
     onSessionComplete(xp, cards.length);
 
+    playFanfare();
     try {
       confetti({
         particleCount: 100,
@@ -328,13 +388,22 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
         
         {/* Card Header Tag & TTS */}
         <div className="flex items-center justify-between text-xs">
-          <span className="rounded-full bg-white/10 px-3 py-1 font-bold text-amber-200 border border-white/5">
-            {effectiveMode === 'multiple_choice' 
-              ? 'Multiple Choice Quiz' 
-              : effectiveMode === 'fill_blank' 
-              ? 'Typing Active Recall' 
-              : 'Flashcard'}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="rounded-full bg-white/10 px-3 py-1 font-bold text-amber-200 border border-white/5">
+              {effectiveMode === 'multiple_choice' 
+                ? 'Multiple Choice Quiz' 
+                : effectiveMode === 'fill_blank' 
+                ? 'Typing Active Recall' 
+                : 'Flashcard'}
+            </span>
+
+            {comboStreak >= 2 && (
+              <span className="animate-pulse flex items-center gap-1 rounded-full bg-amber-500/25 px-2.5 py-0.5 text-[10px] font-extrabold text-amber-300 border border-amber-400/30">
+                <span>🔥</span>
+                <span>{comboStreak} Streak!</span>
+              </span>
+            )}
+          </div>
 
           <div className="flex items-center gap-2">
             <button

@@ -13,6 +13,10 @@ import LandingPage from '@/components/LandingPage';
 import AuthModal from '@/components/AuthModal';
 import DeckDetailModal from '@/components/DeckDetailModal';
 import MasteryAnalyticsModal from '@/components/MasteryAnalyticsModal';
+import UrlScannerModal from '@/components/UrlScannerModal';
+import ExploreModal from '@/components/ExploreModal';
+import SettingsModal from '@/components/SettingsModal';
+import NotificationsModal from '@/components/NotificationsModal';
 import { INITIAL_DECKS } from '@/lib/mockData';
 import { Deck, UserStats } from '@/types';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
@@ -39,6 +43,12 @@ export default function Home() {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [inspectingDeck, setInspectingDeck] = useState<Deck | null>(null);
   const [isMasteryOpen, setIsMasteryOpen] = useState(false);
+
+  // URL Scanner, Community Explore, Settings, Notifications states
+  const [isUrlScannerOpen, setIsUrlScannerOpen] = useState(false);
+  const [isExploreOpen, setIsExploreOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   // Authentication & View States
   const [user, setUser] = useState<User | null>(null);
@@ -185,6 +195,19 @@ export default function Home() {
     await saveUserDeck(updatedDeck, user?.id);
   };
 
+  const handleResetDecks = async () => {
+    setDecks(INITIAL_DECKS);
+    try {
+      localStorage.setItem('alwinyah_decks', JSON.stringify(INITIAL_DECKS));
+    } catch (e) {}
+  };
+
+  const handleCloneCommunityDeck = async (clonedDeck: Deck) => {
+    const updated = [clonedDeck, ...decks];
+    setDecks(updated);
+    await saveUserDeck(clonedDeck, user?.id);
+  };
+
   const handleSessionComplete = async (xpGained: number, cardsStudied: number) => {
     const newStats: UserStats = {
       ...stats,
@@ -267,6 +290,9 @@ export default function Home() {
         onOpenAuth={handleOpenAuth}
         onSignOut={handleSignOut}
         onOpenMastery={() => setIsMasteryOpen(true)}
+        onOpenUrlScanner={() => setIsUrlScannerOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenNotifications={() => setIsNotificationsOpen(true)}
         onGoLanding={() => {
           setIsGuestMode(false);
           sessionStorage.removeItem('alwinyah_guest_mode');
@@ -332,10 +358,18 @@ export default function Home() {
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                   <button
                     onClick={() => setIsPdfScannerOpen(true)}
-                    className="flex items-center gap-1.5 rounded-full bg-amber-500/25 px-4 py-2 text-xs font-bold text-amber-200 backdrop-blur-md border border-amber-400/30 shadow-sm transition hover:bg-amber-500/35 active:scale-95 cursor-pointer whitespace-nowrap"
+                    className="flex items-center gap-1.5 rounded-full bg-amber-500/25 px-3.5 py-2 text-xs font-bold text-amber-200 backdrop-blur-md border border-amber-400/30 shadow-sm transition hover:bg-amber-500/35 active:scale-95 cursor-pointer whitespace-nowrap"
                   >
                     <Highlighter className="h-3.5 w-3.5" />
                     <span>Scan PDF</span>
+                  </button>
+
+                  <button
+                    onClick={() => setIsUrlScannerOpen(true)}
+                    className="flex items-center gap-1.5 rounded-full bg-red-500/20 px-3.5 py-2 text-xs font-bold text-red-200 backdrop-blur-md border border-red-400/30 shadow-sm transition hover:bg-red-500/30 active:scale-95 cursor-pointer whitespace-nowrap"
+                  >
+                    <span>▶️</span>
+                    <span>Video / URL</span>
                   </button>
 
                   <div className="relative flex-1 sm:w-60">
@@ -410,6 +444,7 @@ export default function Home() {
         onOpenCreate={() => setIsCreateOpen(true)}
         onGoHome={() => setSelectedDeck(null)}
         onOpenMastery={() => setIsMasteryOpen(true)}
+        onOpenExplore={() => setIsExploreOpen(true)}
         onOpenProfile={() => {
           if (!user) {
             handleOpenAuth('login');
@@ -428,6 +463,37 @@ export default function Home() {
         isOpen={isPdfScannerOpen}
         onClose={() => setIsPdfScannerOpen(false)}
         onDeckCreated={handleDeckCreated}
+      />
+
+      <UrlScannerModal
+        isOpen={isUrlScannerOpen}
+        onClose={() => setIsUrlScannerOpen(false)}
+        onDeckCreated={handleDeckCreated}
+      />
+
+      <ExploreModal
+        isOpen={isExploreOpen}
+        onClose={() => setIsExploreOpen(false)}
+        onCloneDeck={handleCloneCommunityDeck}
+      />
+
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        stats={stats}
+        onUpdateStats={(s) => {
+          setStats(s);
+          syncUserProfileStats(s, user?.id);
+        }}
+        decks={decks}
+        onResetDecks={handleResetDecks}
+      />
+
+      <NotificationsModal
+        isOpen={isNotificationsOpen}
+        onClose={() => setIsNotificationsOpen(false)}
+        stats={stats}
+        decks={decks}
       />
 
       <AuthModal
