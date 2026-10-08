@@ -6,9 +6,10 @@ import { Home, Trophy, Plus, Compass, User } from 'lucide-react';
 interface BottomDockProps {
   onOpenCreate: () => void;
   onGoHome: () => void;
+  onOpenProfile?: () => void;
 }
 
-export default function BottomDock({ onOpenCreate, onGoHome }: BottomDockProps) {
+export default function BottomDock({ onOpenCreate, onGoHome, onOpenProfile }: BottomDockProps) {
   return (
     <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2">
       <nav className="flex items-center gap-4 sm:gap-6 rounded-full bg-stone-900/60 px-6 py-2.5 shadow-xl backdrop-blur-xl border border-white/10 text-white">
@@ -50,6 +51,7 @@ export default function BottomDock({ onOpenCreate, onGoHome }: BottomDockProps) 
 
         {/* Profile */}
         <button
+          onClick={onOpenProfile}
           className="flex flex-col items-center justify-center p-1.5 text-white/50 hover:text-white transition cursor-pointer"
           title="Profile"
         >

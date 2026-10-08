@@ -10,8 +10,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Alwinyah - Flashcards & Spaced Repetition",
-  description: "Gamified active recall and spaced repetition flashcards.",
+  title: "Alwinyah - AI Flashcards & Spaced Repetition",
+  description: "Turn PDFs, lecture slides, and notes into mastered flashcards with Google Gemini AI and SM-2 spaced repetition.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

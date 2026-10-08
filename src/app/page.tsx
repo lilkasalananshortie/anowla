@@ -9,9 +9,20 @@ import PdfScannerModal from '@/components/PdfScannerModal';
 import StreakWidget from '@/components/StreakWidget';
 import BadgesWidget from '@/components/BadgesWidget';
 import BottomDock from '@/components/BottomDock';
+import LandingPage from '@/components/LandingPage';
+import AuthModal from '@/components/AuthModal';
 import { INITIAL_DECKS } from '@/lib/mockData';
 import { Deck, UserStats } from '@/types';
-import { Search, BookOpen, Layers, Highlighter } from 'lucide-react';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { 
+  fetchUserDecks, 
+  saveUserDeck, 
+  deleteUserDeck, 
+  syncUserProfileStats,
+  getLocalDecks 
+} from '@/lib/deckService';
+import { User } from '@supabase/supabase-js';
+import { Search, BookOpen, Layers, Highlighter, Sparkles, CloudCheck, Info, X } from 'lucide-react';
 
 export default function Home() {
   const [theme, setTheme] = useState<ThemeColor>('slate');
@@ -22,6 +33,14 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
+  // Authentication & View States
+  const [user, setUser] = useState<User | null>(null);
+  const [authChecking, setAuthChecking] = useState(true);
+  const [isGuestMode, setIsGuestMode] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('signup');
+  const [dismissGuestBanner, setDismissGuestBanner] = useState(false);
+
   const [stats, setStats] = useState<UserStats>({
     streak: 3,
     last_study_date: null,
@@ -30,7 +49,7 @@ export default function Home() {
     daily_goal: 10,
   });
 
-  // Calm, muted theme background palettes (easy on the eyes)
+  // Soft muted theme background palettes
   const themeStyles: Record<ThemeColor, { bg: string; secondary: string }> = {
     slate: { bg: 'bg-[#18202d]', secondary: 'bg-[#222c3d]' },
     mocha: { bg: 'bg-[#25201e]', secondary: 'bg-[#332c2a]' },
@@ -40,13 +59,65 @@ export default function Home() {
 
   const currentThemeStyle = themeStyles[theme] || themeStyles.slate;
 
-  // Load persisted decks and stats from localStorage
+  // 1. Initial auth check & session subscription
+  useEffect(() => {
+    let mounted = true;
+
+    async function initAuth() {
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (mounted) {
+            if (session?.user) {
+              setUser(session.user);
+              setIsGuestMode(false);
+            } else {
+              // Check if guest mode was previously toggled in this browser session
+              const guestStored = sessionStorage.getItem('alwinyah_guest_mode');
+              if (guestStored === 'true') {
+                setIsGuestMode(true);
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('Supabase getSession error:', e);
+        }
+      }
+
+      if (mounted) {
+        setAuthChecking(false);
+      }
+    }
+
+    initAuth();
+
+    // Listen for auth state changes (sign in, sign out, email verification redirect)
+    if (isSupabaseConfigured && supabase) {
+      const { data: authSubscription } = supabase.auth.onAuthStateChange(async (event, session) => {
+        if (!mounted) return;
+        if (session?.user) {
+          setUser(session.user);
+          setIsGuestMode(false);
+          // Load cloud decks for the user
+          loadDecks(session.user.id);
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+          sessionStorage.removeItem('alwinyah_guest_mode');
+          setIsGuestMode(false);
+          setDecks(INITIAL_DECKS);
+        }
+      });
+
+      return () => {
+        mounted = false;
+        authSubscription?.subscription.unsubscribe();
+      };
+    }
+  }, []);
+
+  // 2. Load persisted stats and theme
   useEffect(() => {
     try {
-      const savedDecks = localStorage.getItem('alwinyah_decks');
-      if (savedDecks) {
-        setDecks(JSON.parse(savedDecks));
-      }
       const savedStats = localStorage.getItem('alwinyah_stats');
       if (savedStats) {
         setStats(JSON.parse(savedStats));
@@ -60,6 +131,23 @@ export default function Home() {
     }
   }, []);
 
+  // 3. Load user decks (Cloud or Local)
+  const loadDecks = async (userId?: string | null) => {
+    try {
+      const loadedDecks = await fetchUserDecks(userId);
+      setDecks(loadedDecks);
+    } catch (e) {
+      console.warn('Error loading decks:', e);
+      setDecks(getLocalDecks());
+    }
+  };
+
+  useEffect(() => {
+    if (!authChecking) {
+      loadDecks(user?.id);
+    }
+  }, [user, authChecking]);
+
   const handleThemeChange = (newTheme: ThemeColor) => {
     setTheme(newTheme);
     try {
@@ -67,34 +155,51 @@ export default function Home() {
     } catch (e) {}
   };
 
-  const handleDeckCreated = (newDeck: Deck) => {
+  const handleDeckCreated = async (newDeck: Deck) => {
     const updated = [newDeck, ...decks];
     setDecks(updated);
-    try {
-      localStorage.setItem('alwinyah_decks', JSON.stringify(updated));
-    } catch (e) {}
+    // Sync to Supabase if logged in, and update localStorage cache
+    await saveUserDeck(newDeck, user?.id);
   };
 
-  const handleDeleteDeck = (deckId: string) => {
+  const handleDeleteDeck = async (deckId: string) => {
     const updated = decks.filter((d) => d.id !== deckId);
     setDecks(updated);
+    // Delete from Supabase if logged in, and update localStorage cache
+    await deleteUserDeck(deckId, user?.id);
+  };
+
+  const handleSessionComplete = async (xpGained: number, cardsStudied: number) => {
+    const newStats: UserStats = {
+      ...stats,
+      xp: stats.xp + xpGained,
+      cards_studied_today: stats.cards_studied_today + cardsStudied,
+      last_study_date: new Date().toISOString(),
+    };
+    setStats(newStats);
+    await syncUserProfileStats(newStats, user?.id);
+  };
+
+  const handleOpenAuth = (mode: 'login' | 'signup') => {
+    setAuthModalMode(mode);
+    setIsAuthModalOpen(true);
+  };
+
+  const handleEnterGuestMode = () => {
+    setIsGuestMode(true);
     try {
-      localStorage.setItem('alwinyah_decks', JSON.stringify(updated));
+      sessionStorage.setItem('alwinyah_guest_mode', 'true');
     } catch (e) {}
   };
 
-  const handleSessionComplete = (xpGained: number, cardsStudied: number) => {
-    setStats((prev) => {
-      const newStats = {
-        ...prev,
-        xp: prev.xp + xpGained,
-        cards_studied_today: prev.cards_studied_today + cardsStudied,
-      };
-      try {
-        localStorage.setItem('alwinyah_stats', JSON.stringify(newStats));
-      } catch (e) {}
-      return newStats;
-    });
+  const handleSignOut = async () => {
+    if (isSupabaseConfigured && supabase) {
+      await supabase.auth.signOut();
+    }
+    setUser(null);
+    setIsGuestMode(false);
+    sessionStorage.removeItem('alwinyah_guest_mode');
+    setSelectedDeck(null);
   };
 
   const categories = ['All', ...Array.from(new Set(decks.map((d) => d.category || 'General')))];
@@ -107,6 +212,28 @@ export default function Home() {
     return matchesSearch && matchesCat;
   });
 
+  // If user is NOT logged in and has NOT toggled guest mode -> Show high-converting Landing Page
+  if (!user && !isGuestMode) {
+    return (
+      <>
+        <LandingPage
+          onOpenAuth={handleOpenAuth}
+          onEnterGuestMode={handleEnterGuestMode}
+        />
+
+        <AuthModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+          defaultMode={authModalMode}
+          onAuthSuccess={() => {
+            setIsAuthModalOpen(false);
+          }}
+        />
+      </>
+    );
+  }
+
+  // If user IS logged in or is exploring in Guest Mode -> Show Study Hub Dashboard
   return (
     <div
       className={`min-h-screen text-zinc-900 transition-colors duration-500 pb-28 ${currentThemeStyle.bg}`}
@@ -120,9 +247,44 @@ export default function Home() {
         onOpenCreate={() => setIsCreateOpen(true)}
         onOpenScanPdf={() => setIsPdfScannerOpen(true)}
         onGoHome={() => setSelectedDeck(null)}
+        user={user}
+        onOpenAuth={handleOpenAuth}
+        onSignOut={handleSignOut}
+        onGoLanding={() => {
+          setIsGuestMode(false);
+          sessionStorage.removeItem('alwinyah_guest_mode');
+        }}
       />
 
-      <main className="mx-auto max-w-5xl px-4 sm:px-8 space-y-7">
+      {/* Guest Mode Notification Banner */}
+      {!user && !dismissGuestBanner && (
+        <div className="mx-auto max-w-5xl px-4 sm:px-8 pt-2">
+          <div className="flex items-center justify-between gap-3 rounded-2xl bg-amber-500/15 border border-amber-400/25 px-4 py-2.5 text-xs text-amber-200 backdrop-blur-md shadow-sm">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 shrink-0 text-amber-300" />
+              <span>
+                <strong>Guest Mode:</strong> Your decks are saved locally in this browser.{' '}
+                <button
+                  onClick={() => handleOpenAuth('signup')}
+                  className="font-bold underline text-white hover:text-amber-100 cursor-pointer ml-1"
+                >
+                  Create a free verified account
+                </button>{' '}
+                to sync decks with Supabase Cloud.
+              </span>
+            </div>
+            <button
+              onClick={() => setDismissGuestBanner(true)}
+              className="text-amber-300/70 hover:text-amber-100 cursor-pointer"
+              title="Dismiss"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      <main className="mx-auto max-w-5xl px-4 sm:px-8 space-y-7 pt-4">
         {selectedDeck ? (
           <StudySession
             deck={selectedDeck}
@@ -131,10 +293,10 @@ export default function Home() {
           />
         ) : (
           <>
-            {/* 1. Badges Section (Top of Reference Image) */}
+            {/* 1. Badges Section */}
             <BadgesWidget stats={stats} />
 
-            {/* 2. Donut & Weekly Activity Metrics (Middle of Reference Image) */}
+            {/* 2. Donut & Weekly Activity Metrics */}
             <StreakWidget stats={stats} />
 
             {/* 3. Study Decks Section */}
@@ -226,6 +388,11 @@ export default function Home() {
       <BottomDock
         onOpenCreate={() => setIsCreateOpen(true)}
         onGoHome={() => setSelectedDeck(null)}
+        onOpenProfile={() => {
+          if (!user) {
+            handleOpenAuth('login');
+          }
+        }}
       />
 
       {/* Modals */}
@@ -239,6 +406,15 @@ export default function Home() {
         isOpen={isPdfScannerOpen}
         onClose={() => setIsPdfScannerOpen(false)}
         onDeckCreated={handleDeckCreated}
+      />
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        defaultMode={authModalMode}
+        onAuthSuccess={() => {
+          setIsAuthModalOpen(false);
+        }}
       />
     </div>
   );
