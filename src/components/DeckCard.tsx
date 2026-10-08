@@ -93,7 +93,7 @@ export default function DeckCard({ deck, accentIndex = 0, onSelect, onDelete, on
       {/* Card Details & Actions */}
       <div className="flex flex-1 flex-col justify-between p-5">
         <p className="text-xs font-normal text-stone-500 line-clamp-2 leading-relaxed">
-          {deck.description || 'Active recall flashcards for deep memorization.'}
+          {deck.description || 'Spaced repetition flashcard deck.'}
         </p>
 
         {/* Footer info: time, cards, study button, heart */}

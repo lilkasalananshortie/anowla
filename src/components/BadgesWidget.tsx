@@ -11,16 +11,16 @@ export default function BadgesWidget({ stats }: BadgesWidgetProps) {
   const badges = [
     {
       id: 'badge-1',
-      title: 'Study Machine',
+      title: 'Daily Target',
       progress: Math.min(100, Math.round((stats.cards_studied_today / stats.daily_goal) * 100)),
-      subtitle: `${stats.cards_studied_today} of ${stats.daily_goal} Cards reviewed today`,
+      subtitle: `${stats.cards_studied_today} of ${stats.daily_goal} cards reviewed today`,
       iconBg: 'from-emerald-600/70 to-teal-700/70',
       barColor: 'bg-teal-600/70',
       shape: 'clover',
     },
     {
       id: 'badge-2',
-      title: 'Double Down',
+      title: 'Weekly Consistency',
       progress: 65,
       subtitle: '2 of 3 study goals achieved this week',
       iconBg: 'from-slate-500 to-indigo-600/70',
@@ -29,7 +29,7 @@ export default function BadgesWidget({ stats }: BadgesWidgetProps) {
     },
     {
       id: 'badge-3',
-      title: 'Streak Legend',
+      title: 'Streak Milestone',
       progress: Math.min(100, Math.round((stats.streak / 7) * 100)),
       subtitle: `${stats.streak} of 7 days milestone streak`,
       iconBg: 'from-stone-500 to-rose-600/60',

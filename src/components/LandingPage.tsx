@@ -108,21 +108,20 @@ export default function LandingPage({
           {/* Eyebrow Badge */}
           <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-semibold text-amber-200 backdrop-blur-md border border-white/10 shadow-sm mb-6 animate-in fade-in duration-300">
             <Sparkles className="h-3.5 w-3.5 text-amber-300" />
-            <span>Google Gemini AI & SM-2 Spaced Repetition</span>
+            <span>Spaced Repetition & Browser-Native PDF Parsing</span>
           </div>
 
           {/* Headline */}
           <h1 className="text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white max-w-4xl mx-auto leading-[1.15]">
-            Turn Any PDF or Lecture Notes into{' '}
+            Turn Lecture Slides and PDFs into{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-300 to-amber-100">
-              Mastered Flashcards
-            </span>{' '}
-            in Seconds.
+              Active Recall Flashcards
+            </span>
           </h1>
 
           {/* Subheadline */}
           <p className="mt-6 text-sm sm:text-base text-white/70 max-w-2xl mx-auto leading-relaxed">
-            Stop wasting hours manually formatting cards. Alwinyah extracts high-yield medical, academic, and technical concepts from PDFs—and schedules your reviews with active recall to maximize long-term retention.
+            Formatting flashcards by hand takes hours. Drop in your course notes, slides, or clinical papers. Alwinyah extracts definitions and mechanisms, then schedules daily reviews so you never forget them.
           </p>
 
           {/* Dual CTAs */}
@@ -147,13 +146,13 @@ export default function LandingPage({
           {/* Micro value badges */}
           <div className="mt-7 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-white/60">
             <span className="flex items-center gap-1.5">
-              <Check className="h-3.5 w-3.5 text-emerald-400" /> 100% Free Forever
+              <Check className="h-3.5 w-3.5 text-emerald-400" /> Free forever
             </span>
             <span className="flex items-center gap-1.5">
-              <Check className="h-3.5 w-3.5 text-emerald-400" /> Email Verified Accounts
+              <Check className="h-3.5 w-3.5 text-emerald-400" /> No credit card required
             </span>
             <span className="flex items-center gap-1.5">
-              <Check className="h-3.5 w-3.5 text-emerald-400" /> No Credit Card Required
+              <Check className="h-3.5 w-3.5 text-emerald-400" /> Works offline & in browser
             </span>
           </div>
 
@@ -166,13 +165,13 @@ export default function LandingPage({
           
           <div className="text-center mb-10">
             <h2 className="text-xs font-bold uppercase tracking-wider text-amber-300 mb-1">
-              Experience Active Recall
+              Interactive preview
             </h2>
             <h3 className="text-2xl sm:text-3xl font-bold text-white">
-              Try a Live Flashcard Right Here
+              How study sessions work
             </h3>
             <p className="mt-1 text-xs text-white/60">
-              Click the card below to flip between clinical prompt and explanation.
+              Flip the card to test recall, then rate difficulty to adjust the SM-2 interval.
             </p>
           </div>
 
@@ -311,13 +310,13 @@ export default function LandingPage({
           
           <div className="text-center mb-14">
             <h2 className="text-xs font-bold uppercase tracking-wider text-amber-300 mb-1">
-              Engineered For Retention
+              Core capabilities
             </h2>
             <h3 className="text-2xl sm:text-4xl font-bold text-white">
-              Everything You Need to Ace Exams
+              Built for high-volume studying
             </h3>
             <p className="mt-2 text-xs sm:text-sm text-white/60 max-w-lg mx-auto">
-              Built with cognitive neuroscience principles: active recall, spaced repetition, and gamified consistency.
+              Everything you need to memorize dense technical or medical material without the friction of manual card entry.
             </p>
           </div>
 
@@ -328,14 +327,14 @@ export default function LandingPage({
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-300 border border-amber-400/20 mb-5">
                 <FileText className="h-6 w-6" />
               </div>
-              <h4 className="text-lg font-bold text-white">Intelligent AI PDF & Note Scanner</h4>
+              <h4 className="text-lg font-bold text-white">Browser-Native Document Parsing</h4>
               <p className="mt-2 text-xs sm:text-sm text-white/70 leading-relaxed max-w-xl">
-                Upload course syllabi, lecture slides, or dense clinical research papers. Our AI strips formatting noise, chapter numbers, and rhetorical questions, distilling the text into clean, high-yield flashcard decks.
+                Upload course syllabi, lecture slides, or dense clinical research papers. Text is extracted directly in your browser and distilled into focused, high-yield flashcard decks without fluff.
               </p>
               <div className="mt-4 flex flex-wrap gap-2 text-[11px] font-semibold text-amber-200/90">
-                <span className="rounded-full bg-white/5 px-3 py-1 border border-white/10">Zero Server Uploads</span>
-                <span className="rounded-full bg-white/5 px-3 py-1 border border-white/10">Client-Side PDF Parsing</span>
-                <span className="rounded-full bg-white/5 px-3 py-1 border border-white/10">Clinical Grade Filtering</span>
+                <span className="rounded-full bg-white/5 px-3 py-1 border border-white/10">In-Browser Extraction</span>
+                <span className="rounded-full bg-white/5 px-3 py-1 border border-white/10">No File Storage Overhead</span>
+                <span className="rounded-full bg-white/5 px-3 py-1 border border-white/10">Clean Mechanism Cards</span>
               </div>
             </div>
 
@@ -346,7 +345,7 @@ export default function LandingPage({
               </div>
               <h4 className="text-lg font-bold text-white">SM-2 Spaced Repetition</h4>
               <p className="mt-2 text-xs text-white/70 leading-relaxed">
-                Counteract the Ebbinghaus forgetting curve. Cards are automatically scheduled according to your personal recall ease factor.
+                Reviews are scheduled dynamically based on your ease rating. Hard cards reappear quickly; mastered cards space out over weeks.
               </p>
             </div>
 
@@ -355,9 +354,9 @@ export default function LandingPage({
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/20 mb-5">
                 <Layers className="h-6 w-6" />
               </div>
-              <h4 className="text-lg font-bold text-white">Versatile Study Modes</h4>
+              <h4 className="text-lg font-bold text-white">Multiple Study Modes</h4>
               <p className="mt-2 text-xs text-white/70 leading-relaxed">
-                Test yourself with traditional flip flashcards, AI-generated multiple-choice questions, and clinical fill-in-the-blank drills.
+                Test yourself with traditional flip cards, multiple-choice drills with realistic distractors, and cloze fill-in-the-blank prompts.
               </p>
             </div>
 
@@ -366,9 +365,9 @@ export default function LandingPage({
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-300 border border-amber-400/20 mb-5">
                 <Flame className="h-6 w-6" />
               </div>
-              <h4 className="text-lg font-bold text-white">Gamified Streaks & Habit Building</h4>
+              <h4 className="text-lg font-bold text-white">Daily Targets & Habit Tracking</h4>
               <p className="mt-2 text-xs sm:text-sm text-white/70 leading-relaxed max-w-xl">
-                Maintain your daily study momentum with XP points, streak counters, and weekly goal donuts. Consistent 15-minute daily reviews beat 8-hour cramming sessions every single time.
+                Stay consistent with daily card goals, streak tracking, and XP progression. Short daily study intervals build lasting recall far better than cramming.
               </p>
               <div className="mt-4 flex items-center gap-3">
                 <div className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/90">
@@ -377,11 +376,11 @@ export default function LandingPage({
                 </div>
                 <div className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/90">
                   <Trophy className="h-3.5 w-3.5 text-amber-200" />
-                  <span>XP & Badges</span>
+                  <span>Daily Goals</span>
                 </div>
                 <div className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/90">
                   <Shield className="h-3.5 w-3.5 text-emerald-300" />
-                  <span>Cloud Backup</span>
+                  <span>Cloud Sync</span>
                 </div>
               </div>
             </div>
@@ -397,10 +396,10 @@ export default function LandingPage({
           
           <div className="text-center mb-12">
             <h2 className="text-xs font-bold uppercase tracking-wider text-amber-300 mb-1">
-              Simple 3-Step Workflow
+              Workflow
             </h2>
             <h3 className="text-2xl sm:text-3xl font-bold text-white">
-              From PDF to Mastered Memory
+              From notes to scheduled reviews
             </h3>
           </div>
 
@@ -410,9 +409,9 @@ export default function LandingPage({
               <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 font-mono text-sm font-bold text-amber-300 mb-4">
                 01
               </span>
-              <h4 className="text-base font-bold text-white">Drop Any PDF or Text</h4>
+              <h4 className="text-base font-bold text-white">Input your notes</h4>
               <p className="mt-2 text-xs text-white/60 leading-relaxed">
-                Drag and drop lecture slides, textbook chapters, or medical cases. All text is extracted safely inside your browser.
+                Drop in a lecture PDF, paste an article URL, or enter notes manually. Extraction runs entirely in your browser.
               </p>
             </div>
 
@@ -420,9 +419,9 @@ export default function LandingPage({
               <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 font-mono text-sm font-bold text-amber-300 mb-4">
                 02
               </span>
-              <h4 className="text-base font-bold text-white">AI Extracts High-Yield Cards</h4>
+              <h4 className="text-base font-bold text-white">Extract active-recall cards</h4>
               <p className="mt-2 text-xs text-white/60 leading-relaxed">
-                Gemini AI strips academic fluff, analyzes core diagnostic criteria or definitions, and generates ready-to-study cards.
+                The model isolates core definitions, pathophysiological mechanisms, and key criteria, discarding slide noise.
               </p>
             </div>
 
@@ -430,9 +429,9 @@ export default function LandingPage({
               <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 font-mono text-sm font-bold text-amber-300 mb-4">
                 03
               </span>
-              <h4 className="text-base font-bold text-white">Lock in Spaced Repetition</h4>
+              <h4 className="text-base font-bold text-white">Review with spaced repetition</h4>
               <p className="mt-2 text-xs text-white/60 leading-relaxed">
-                Review cards daily. Rate each card (Again, Hard, Good, Easy) and let the SM-2 algorithm schedule your review intervals.
+                Review pending cards each day and rate your recall. The SM-2 algorithm manages optimal review intervals.
               </p>
             </div>
 
@@ -447,10 +446,10 @@ export default function LandingPage({
           
           <div className="text-center mb-12">
             <h2 className="text-xs font-bold uppercase tracking-wider text-amber-300 mb-1">
-              Frequently Asked Questions
+              Frequently asked questions
             </h2>
             <h3 className="text-2xl sm:text-3xl font-bold text-white">
-              Got Questions? We’ve Got Answers.
+              Questions and answers
             </h3>
           </div>
 
@@ -490,10 +489,10 @@ export default function LandingPage({
           <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
           <h3 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Ready to Ace Your Next Exam?
+            Start studying without manual card making
           </h3>
           <p className="mt-3 text-xs sm:text-sm text-white/70 max-w-lg mx-auto leading-relaxed">
-            Create your free account today. We'll send an email confirmation to verify your inbox and give you instant access to cloud-synced study decks.
+            Create a free account to sync your study decks across devices, or try out the full platform directly in guest mode.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -514,7 +513,7 @@ export default function LandingPage({
           </div>
 
           <p className="mt-4 text-[11px] text-white/50">
-            Free forever • Verification email sent on sign-up • No credit card needed
+            Free forever • Instant setup • No credit card required
           </p>
         </div>
       </section>

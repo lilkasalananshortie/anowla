@@ -99,10 +99,10 @@ export default function MasteryAnalyticsModal({
             </div>
             <div>
               <h3 className="text-xl font-bold tracking-tight text-white">
-                Mastery & Memory Analytics
+                Review & Retention Analytics
               </h3>
               <p className="text-xs text-white/60">
-                Spaced repetition insights and retention forecasts
+                Card maturity buckets and 7-day review forecast
               </p>
             </div>
           </div>

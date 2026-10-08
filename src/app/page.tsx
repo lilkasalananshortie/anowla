@@ -347,10 +347,10 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
                 <div>
                   <h2 className="text-sm font-extrabold tracking-wide text-white/90 uppercase">
-                    Study Decks
+                    Your Decks
                   </h2>
                   <p className="text-xs text-white/60">
-                    Active recall flashcards for deep memorization
+                    Spaced repetition decks with SM-2 intervals
                   </p>
                 </div>
 

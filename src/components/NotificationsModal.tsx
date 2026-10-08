@@ -24,26 +24,26 @@ export default function NotificationsModal({
   const notifications = [
     {
       id: 'n1',
-      title: 'Maintain Your Study Streak',
-      desc: `You have an active ${stats.streak}-day streak! Review a card today to keep your streak alive.`,
+      title: 'Daily Streak',
+      desc: `Active ${stats.streak}-day streak. Review a card today to keep it going.`,
       icon: Flame,
       color: 'text-amber-400 bg-amber-500/20 border-amber-400/20',
       time: 'Today',
     },
     {
       id: 'n2',
-      title: `${totalDue > 0 ? `${totalDue} Cards Due for Review` : 'All Caught Up!'}`,
+      title: `${totalDue > 0 ? `${totalDue} Cards Due Today` : 'No Cards Due'}`,
       desc: totalDue > 0 
-        ? `Cards in your library are ready for spaced repetition recall according to your SM-2 schedule.`
-        : 'You have zero cards pending review today. Great work staying ahead!',
+        ? 'Cards are ready for review based on your scheduled intervals.'
+        : 'All reviews are completed for today.',
       icon: BookOpen,
       color: 'text-blue-400 bg-blue-500/20 border-blue-400/20',
       time: '1h ago',
     },
     {
       id: 'n3',
-      title: 'YouTube & Web to Flashcards Now Live',
-      desc: 'You can now paste YouTube lecture videos or Wikipedia links to auto-generate full decks.',
+      title: 'Video & URL Import',
+      desc: 'Paste YouTube lecture links or articles to extract study flashcards.',
       icon: Sparkles,
       color: 'text-emerald-400 bg-emerald-500/20 border-emerald-400/20',
       time: 'New',

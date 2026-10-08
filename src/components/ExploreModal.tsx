@@ -371,14 +371,14 @@ export default function ExploreModal({
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-xl font-bold tracking-tight text-white">
-                  Community Deck Library
+                  Curated Decks
                 </h3>
                 <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold text-amber-200">
-                  Verified Curated
+                  Ready to Study
                 </span>
               </div>
               <p className="text-xs text-white/60">
-                Explore pre-built high-yield decks and clone them to your personal study hub
+                Clone pre-made decks directly into your personal library
               </p>
             </div>
           </div>

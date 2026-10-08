@@ -216,7 +216,7 @@ export default function PdfScannerModal({ isOpen, onClose, onDeckCreated }: PdfS
                 Scan PDF into Study Cards
               </h2>
               <p className="text-xs text-stone-500 dark:text-stone-400">
-                Powered by Gemini 3.8 Flash — automatically excludes titles and extracts exam concepts
+                Extract definitions and mechanisms into flashcards, excluding slide titles and boilerplate.
               </p>
             </div>
           </div>

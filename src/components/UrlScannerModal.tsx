@@ -81,7 +81,7 @@ export default function UrlScannerModal({
     const newDeck: Deck = {
       id: crypto.randomUUID ? crypto.randomUUID() : `deck_${Date.now()}`,
       title: extractedTitle.slice(0, 50),
-      description: `Generated with Gemini AI from: ${url.slice(0, 45)}...`,
+      description: `Extracted from: ${url.slice(0, 45)}...`,
       category: category.trim() || 'General',
       cards_count: generatedCards.length,
       due_count: generatedCards.length,
@@ -124,12 +124,12 @@ export default function UrlScannerModal({
                 <h3 className="text-xl font-bold tracking-tight text-white">
                   Video & Web to Flashcards
                 </h3>
-                <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-200">
-                  Gemini AI
+                <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold text-amber-200">
+                  Transcript Parser
                 </span>
               </div>
               <p className="text-xs text-white/60">
-                Paste any YouTube lecture or web article to extract active recall cards
+                Convert YouTube video transcripts or web articles into study flashcards
               </p>
             </div>
           </div>
