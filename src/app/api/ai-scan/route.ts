@@ -19,17 +19,17 @@ export async function POST(request: Request) {
       );
     }
 
-    const systemPrompt = `You are a master academic study tutor for a high-yield study platform like Gizmo.
-Analyze the following text extracted from a study document/module ("${title}").
-Extract exactly ${cardCount} high-yield, conceptual, and clinical/academic study flashcards.
+    const systemPrompt = `You are an expert academic study tutor for a Gizmo-style flashcard platform.
+Analyze the following study material/module ("${title}").
+Extract exactly ${cardCount} high-yield, conceptual, clinical, or academic flashcards.
 
 CRITICAL INSTRUCTIONS:
-1. STRICTLY IGNORE document titles, module names, chapter numbers, slide headers, table of contents, author/instructor names, dates, course codes, and administrative metadata.
-2. Focus ONLY on core definitions, mechanisms, pathophysiology, clinical criteria, management/treatment steps, formulas, and key facts that could appear on an exam.
-3. Mix question formats:
-   - 'multiple_choice' with 3 plausible distractors
+1. STRICTLY IGNORE document titles, module headers, slide labels, authors, dates, course codes, table of contents, and boilerplate metadata.
+2. Focus ONLY on core definitions, pathophysiology, diagnosis, clinical manifestations, treatment protocols, key mechanisms, and formulas.
+3. Mix card formats:
+   - 'multiple_choice' with 3 plausible clinical/academic distractors
    - 'flashcard' with direct conceptual question and clear answer
-   - 'fill_blank' where a key technical term is replaced with '________'
+   - 'fill_blank' where a key medical/technical term is replaced with '________'
 
 Return ONLY a valid JSON array matching this exact schema:
 [
@@ -37,49 +37,67 @@ Return ONLY a valid JSON array matching this exact schema:
     "card_type": "flashcard" | "multiple_choice" | "fill_blank",
     "front": "string",
     "back": "string",
-    "distractors": ["string", "string", "string"], // required only if multiple_choice
+    "distractors": ["string", "string", "string"], // only for multiple_choice
     "explanation": "string (brief rationale)"
   }
 ]`;
 
     const userPrompt = `DOCUMENT CONTENT:\n${text.slice(0, 35000)}`;
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                { text: `${systemPrompt}\n\n${userPrompt}` }
-              ]
-            }
-          ],
-          generationConfig: {
-            responseMimeType: 'application/json'
+    // Automatic fallback cascade across models to prevent 503 "High Demand" errors
+    const CANDIDATE_MODELS = [
+      'gemini-3.5-flash',
+      'gemini-3.8-flash',
+      'gemini-3.7-flash',
+      'gemini-3.6-flash',
+    ];
+
+    let rawOutput: string | null = null;
+    let lastError: string | null = null;
+
+    for (const model of CANDIDATE_MODELS) {
+      try {
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [
+                {
+                  parts: [
+                    { text: `${systemPrompt}\n\n${userPrompt}` }
+                  ]
+                }
+              ],
+              generationConfig: {
+                responseMimeType: 'application/json'
+              }
+            }),
           }
-        }),
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          rawOutput = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (rawOutput) {
+            break; // Success!
+          }
+        } else {
+          const errData = await response.json();
+          console.warn(`Model ${model} returned ${response.status}:`, errData?.error?.message);
+          lastError = errData?.error?.message || `Status ${response.status}`;
+          // Continue to next model in cascade
+        }
+      } catch (err: any) {
+        lastError = err?.message || 'Network error';
       }
-    );
-
-    if (!response.ok) {
-      const errData = await response.json();
-      console.error('Gemini API Error:', errData);
-      return NextResponse.json(
-        { error: errData?.error?.message || 'Gemini API call failed' },
-        { status: response.status }
-      );
     }
-
-    const data = await response.json();
-    const rawOutput = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!rawOutput) {
       return NextResponse.json(
-        { error: 'AI did not return content' },
-        { status: 500 }
+        { error: lastError || 'All models are busy. Please try again in a few moments.' },
+        { status: 503 }
       );
     }
 
@@ -102,12 +120,11 @@ Return ONLY a valid JSON array matching this exact schema:
     return NextResponse.json({
       cards: formattedCards,
       count: formattedCards.length,
-      model: 'gemini-3.8-flash',
     });
   } catch (error: any) {
-    console.error('Error generating AI flashcards:', error);
+    console.error('Error in AI scan route:', error);
     return NextResponse.json(
-      { error: error?.message || 'Internal server error generating flashcards' },
+      { error: error?.message || 'Failed to process document with AI' },
       { status: 500 }
     );
   }
