@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Flame, BookOpen, LogOut, User as UserIcon, LogIn, Sparkles, Video, Bell, Settings } from 'lucide-react';
+import { Flame, BookOpen, LogOut, LogIn, Sparkles, Video, Bell, Settings } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
 
 export type ThemeColor = 'slate' | 'mocha' | 'sage' | 'charcoal';
@@ -44,10 +44,10 @@ export default function Navbar({
   const [showUserDropdown, setShowUserDropdown] = useState(false);
 
   const themes: { id: ThemeColor; label: string; color: string }[] = [
-    { id: 'slate', label: 'Calm Slate', color: '#1a2230' },
-    { id: 'mocha', label: 'Warm Mocha', color: '#272320' },
-    { id: 'sage', label: 'Muted Sage', color: '#202922' },
-    { id: 'charcoal', label: 'Soft Charcoal', color: '#1f2126' },
+    { id: 'slate', label: 'Navy & Cream', color: '#010736' },
+    { id: 'mocha', label: 'Royal Navy', color: '#0d1c42' },
+    { id: 'sage', label: 'Cobalt Slate', color: '#22396f' },
+    { id: 'charcoal', label: 'Warm Cream', color: '#fcf1d0' },
   ];
 
   const userDisplayName = 
@@ -67,64 +67,47 @@ export default function Navbar({
             onClick={onGoHome}
             className="flex items-center gap-3 text-left transition hover:opacity-90 cursor-pointer"
           >
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-white shadow-sm backdrop-blur-md border border-white/10">
-              <BookOpen className="h-5 w-5 text-amber-300" />
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#0d1c42] text-[#fcf1d0] shadow-sm backdrop-blur-md border border-[#22396f]">
+              <BookOpen className="h-5 w-5 text-[#fcf1d0]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight text-white/95 sm:text-3xl">
+              <h1 className="text-2xl font-bold tracking-tight text-[#fcf1d0] sm:text-3xl">
                 Alwinyah
               </h1>
-              <p className="text-[11px] font-semibold text-white/60 uppercase tracking-wider">
+              <p className="text-[11px] font-semibold text-[#fcf1d0]/60 uppercase tracking-wider">
                 {user ? 'Cloud Synced' : 'Guest Study Mode'}
               </p>
             </div>
           </button>
         </div>
 
-        {/* Right: Theme Switcher & Actions */}
+        {/* Right: Actions & Pills */}
         <div className="flex items-center gap-2 sm:gap-3">
           
-          {/* Soft Theme Color Selector */}
-          <div className="hidden lg:flex items-center gap-1.5 rounded-full bg-black/20 p-1.5 backdrop-blur-md border border-white/10">
-            {themes.map((t) => (
-              <button
-                key={t.id}
-                onClick={() => onThemeChange(t.id)}
-                title={t.label}
-                className={`h-5 w-5 rounded-full transition-transform cursor-pointer ${
-                  currentTheme === t.id
-                    ? 'ring-2 ring-white/90 scale-110 shadow-sm'
-                    : 'opacity-60 hover:opacity-100 hover:scale-105'
-                }`}
-                style={{ backgroundColor: t.color }}
-              />
-            ))}
-          </div>
-
           {/* Streak Pill */}
           <button
             onClick={onOpenMastery}
-            className="flex items-center gap-1.5 rounded-full bg-white/10 hover:bg-white/15 px-3 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-md border border-white/10 shadow-sm transition cursor-pointer"
+            className="flex items-center gap-1.5 rounded-full bg-[#0d1c42] hover:bg-[#22396f] px-3 py-1.5 text-xs font-semibold text-[#fcf1d0] backdrop-blur-md border border-[#22396f] shadow-sm transition cursor-pointer"
             title="View Streak & Mastery"
           >
-            <Flame className="h-3.5 w-3.5 fill-amber-300 text-amber-300" />
+            <Flame className="h-3.5 w-3.5 fill-[#fcf1d0] text-[#fcf1d0]" />
             <span>{streak}d</span>
           </button>
 
           {/* XP Pill */}
           <button
             onClick={onOpenMastery}
-            className="hidden sm:flex items-center gap-1.5 rounded-full bg-white/10 hover:bg-white/15 px-3 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-md border border-white/10 shadow-sm transition cursor-pointer"
+            className="hidden sm:flex items-center gap-1.5 rounded-full bg-[#0d1c42] hover:bg-[#22396f] px-3 py-1.5 text-xs font-semibold text-[#fcf1d0] backdrop-blur-md border border-[#22396f] shadow-sm transition cursor-pointer"
             title="View XP & Analytics"
           >
-            <span className="text-amber-200 text-xs">⭐</span>
+            <span className="text-[#fcf1d0] text-xs">⭐</span>
             <span>{xp} XP</span>
           </button>
 
           {/* Scan PDF Pill */}
           <button
             onClick={onOpenScanPdf}
-            className="flex items-center gap-1.5 rounded-full bg-amber-500/20 px-3.5 py-1.5 text-xs font-semibold text-amber-200 backdrop-blur-md border border-amber-400/30 shadow-sm transition hover:bg-amber-500/30 cursor-pointer"
+            className="flex items-center gap-1.5 rounded-full bg-[#0d1c42] hover:bg-[#22396f] px-3.5 py-1.5 text-xs font-semibold text-[#fcf1d0] backdrop-blur-md border border-[#22396f] shadow-sm transition cursor-pointer"
             title="Scan PDF & Notes"
           >
             <span>📄</span>
@@ -135,10 +118,10 @@ export default function Navbar({
           {onOpenUrlScanner && (
             <button
               onClick={onOpenUrlScanner}
-              className="flex items-center gap-1.5 rounded-full bg-red-500/20 px-3.5 py-1.5 text-xs font-semibold text-red-200 backdrop-blur-md border border-red-400/30 shadow-sm transition hover:bg-red-500/30 cursor-pointer"
-              title="Import YouTube Lecture or Web URL"
+              className="flex items-center gap-1.5 rounded-full bg-[#0d1c42] hover:bg-[#22396f] px-3.5 py-1.5 text-xs font-semibold text-[#fcf1d0] backdrop-blur-md border border-[#22396f] shadow-sm transition cursor-pointer"
+              title="Import Video Lecture or Web URL"
             >
-              <Video className="h-3.5 w-3.5 text-red-400" />
+              <Video className="h-3.5 w-3.5 text-rose-400" />
               <span className="hidden sm:inline">URL / Video</span>
             </button>
           )}
@@ -147,7 +130,7 @@ export default function Navbar({
           {onOpenNotifications && (
             <button
               onClick={onOpenNotifications}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/80 backdrop-blur-md border border-white/10 transition hover:bg-white/20 hover:text-white cursor-pointer"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0d1c42] text-[#fcf1d0]/80 backdrop-blur-md border border-[#22396f] transition hover:bg-[#22396f] hover:text-[#fcf1d0] cursor-pointer"
               title="Notifications"
             >
               <Bell className="h-3.5 w-3.5" />
@@ -158,7 +141,7 @@ export default function Navbar({
           {onOpenSettings && (
             <button
               onClick={onOpenSettings}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/80 backdrop-blur-md border border-white/10 transition hover:bg-white/20 hover:text-white cursor-pointer"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0d1c42] text-[#fcf1d0]/80 backdrop-blur-md border border-[#22396f] transition hover:bg-[#22396f] hover:text-[#fcf1d0] cursor-pointer"
               title="Settings & Audio"
             >
               <Settings className="h-3.5 w-3.5" />
@@ -170,9 +153,9 @@ export default function Navbar({
             <div className="relative">
               <button
                 onClick={() => setShowUserDropdown(!showUserDropdown)}
-                className="flex items-center gap-2 rounded-full bg-white/10 hover:bg-white/15 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md border border-white/10 transition cursor-pointer"
+                className="flex items-center gap-2 rounded-full bg-[#0d1c42] hover:bg-[#22396f] px-3 py-1.5 text-xs font-medium text-[#fcf1d0] backdrop-blur-md border border-[#22396f] transition cursor-pointer"
               >
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-400 font-bold text-zinc-950 text-xs">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#fcf1d0] font-bold text-[#010736] text-xs">
                   {userInitial}
                 </div>
                 <span className="hidden md:inline max-w-[100px] truncate">
@@ -183,15 +166,15 @@ export default function Navbar({
               {/* User Dropdown */}
               {showUserDropdown && (
                 <div 
-                  className="absolute right-0 mt-2 w-56 rounded-2xl bg-[#222c3d] p-2 border border-white/15 shadow-2xl backdrop-blur-xl z-50 text-white animate-in fade-in duration-150"
+                  className="absolute right-0 mt-2 w-56 rounded-2xl bg-[#0d1c42] p-2 border border-[#22396f] shadow-2xl backdrop-blur-xl z-50 text-[#fcf1d0] animate-in fade-in duration-150"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <div className="px-3 py-2 border-b border-white/10">
-                    <p className="text-xs font-bold text-white truncate">{userDisplayName}</p>
-                    <p className="text-[11px] text-white/60 truncate">{user.email}</p>
-                    <div className="mt-1 flex items-center gap-1 text-[10px] text-emerald-300 font-semibold">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                      <span>Email Verified • Cloud Synced</span>
+                  <div className="px-3 py-2 border-b border-[#22396f]">
+                    <p className="text-xs font-bold text-[#fcf1d0] truncate">{userDisplayName}</p>
+                    <p className="text-[11px] text-[#fcf1d0]/60 truncate">{user.email}</p>
+                    <div className="mt-1 flex items-center gap-1 text-[10px] text-[#fcf1d0]/80 font-semibold">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#fcf1d0]" />
+                      <span>Cloud Synced</span>
                     </div>
                   </div>
 
@@ -202,9 +185,9 @@ export default function Navbar({
                           setShowUserDropdown(false);
                           onGoLanding();
                         }}
-                        className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs text-white/80 hover:bg-white/10 hover:text-white transition cursor-pointer"
+                        className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs text-[#fcf1d0]/80 hover:bg-[#22396f] hover:text-[#fcf1d0] transition cursor-pointer"
                       >
-                        <BookOpen className="h-3.5 w-3.5 text-amber-300" />
+                        <BookOpen className="h-3.5 w-3.5 text-[#fcf1d0]" />
                         <span>Landing Page View</span>
                       </button>
                     )}
@@ -214,7 +197,7 @@ export default function Navbar({
                         setShowUserDropdown(false);
                         onSignOut();
                       }}
-                      className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs text-red-300 hover:bg-red-500/20 transition cursor-pointer"
+                      className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs text-rose-300 hover:bg-rose-950/60 transition cursor-pointer"
                     >
                       <LogOut className="h-3.5 w-3.5" />
                       <span>Log Out</span>
@@ -227,7 +210,7 @@ export default function Navbar({
             <div className="flex items-center gap-1.5">
               <button
                 onClick={() => onOpenAuth('login')}
-                className="hidden sm:flex items-center gap-1 rounded-full bg-white/10 hover:bg-white/15 px-3 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-md border border-white/10 transition cursor-pointer"
+                className="hidden sm:flex items-center gap-1 rounded-full bg-[#0d1c42] hover:bg-[#22396f] px-3 py-1.5 text-xs font-semibold text-[#fcf1d0] backdrop-blur-md border border-[#22396f] transition cursor-pointer"
               >
                 <LogIn className="h-3.5 w-3.5" />
                 <span>Log In</span>
@@ -235,9 +218,9 @@ export default function Navbar({
 
               <button
                 onClick={() => onOpenAuth('signup')}
-                className="flex items-center gap-1.5 rounded-full bg-white hover:bg-white/90 px-3.5 py-1.5 text-xs font-bold text-zinc-950 shadow-md transition active:scale-95 cursor-pointer"
+                className="flex items-center gap-1.5 rounded-full bg-[#fcf1d0] hover:bg-[#fcf1d0]/90 px-3.5 py-1.5 text-xs font-bold text-[#010736] shadow-md transition active:scale-95 cursor-pointer"
               >
-                <Sparkles className="h-3.5 w-3.5 text-amber-600" />
+                <Sparkles className="h-3.5 w-3.5" />
                 <span>Save Decks</span>
               </button>
             </div>

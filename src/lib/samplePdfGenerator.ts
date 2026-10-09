@@ -1,6 +1,6 @@
 /**
  * Generates a clean, valid PDF 1.4 Binary Blob from text pages.
- * Used to provide authentic native PDF viewer files for preloaded clinical guidelines.
+ * Used to provide authentic native PDF viewer files for preloaded academic study materials.
  */
 
 export function createValidPdfBlob(title: string, pages: string[]): Blob {

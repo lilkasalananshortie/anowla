@@ -144,7 +144,7 @@ export default function PdfEditorWorkspace({
     setDocumentText(`${before}${marked}${after}`);
   };
 
-  const handleInsertClinicalNote = () => {
+  const handleInsertStudyNote = () => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
@@ -152,7 +152,7 @@ export default function PdfEditorWorkspace({
     const before = documentText.substring(0, start);
     const after = documentText.substring(start);
 
-    const noteTag = `\n[CLINICAL PRIORITY NOTE: Key exam finding]\n`;
+    const noteTag = `\n[STUDY NOTE: Key concept or takeaway]\n`;
     setDocumentText(`${before}${noteTag}${after}`);
   };
 
@@ -474,9 +474,9 @@ export default function PdfEditorWorkspace({
 
                     <button
                       type="button"
-                      onClick={handleInsertClinicalNote}
+                      onClick={handleInsertStudyNote}
                       className="flex items-center gap-1 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200 px-2.5 py-1.5 text-xs font-bold transition cursor-pointer"
-                      title="Insert clinical memo at cursor"
+                      title="Insert study memo at cursor"
                     >
                       <Bookmark className="h-3 w-3 text-teal-600" />
                       <span>Add Note</span>

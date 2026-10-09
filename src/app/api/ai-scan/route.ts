@@ -256,7 +256,7 @@ Schema:
     if (numChunks === 1 && cleanText.length <= 30000) {
       // Single chunk for small card counts
       const prompt = `${baseSystemPrompt}
-Extract exactly ${targetNum} high-yield clinical cards.
+Extract exactly ${targetNum} high-yield study flashcards.
 
 DOCUMENT CONTENT:
 ${cleanText.slice(0, 30000)}`;
@@ -274,7 +274,7 @@ ${cleanText.slice(0, 30000)}`;
         const segmentText = cleanText.slice(start, end);
 
         chunkPrompts.push(`${baseSystemPrompt}
-Extract exactly ${cardsPerChunk} distinct, high-yield clinical cards specifically from Section ${i + 1} of ${numChunks} of this module.
+Extract exactly ${cardsPerChunk} distinct, high-yield study flashcards specifically from Section ${i + 1} of ${numChunks} of this material.
 Ensure high density and no repetition.
 
 SECTION ${i + 1} CONTENT:
@@ -300,7 +300,7 @@ ${segmentText}`);
       // Safety fallback pass if chunks returned too few
       if (aggregatedCards.length < Math.floor(targetNum * 0.5)) {
         const fallbackPrompt = `${baseSystemPrompt}
-Extract ${cardsPerChunk} high-yield clinical cards covering key points of this module.
+Extract ${cardsPerChunk} high-yield study flashcards covering key points of this material.
 
 DOCUMENT CONTENT:
 ${cleanText.slice(0, 25000)}`;

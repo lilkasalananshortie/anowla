@@ -264,33 +264,33 @@ export default function StudyPage() {
   }, [decks, activeFolderId, filterMode, searchTerm]);
 
   return (
-    <div className="min-h-screen bg-[#fefaf3] bg-grid-clinical text-[#19251a] font-sans pb-24 md:pb-16 relative">
-      {/* 1. CLEAN TOP CLINICAL NAVBAR */}
-      <header className="sticky top-0 z-40 bg-[#fefaf3]/90 backdrop-blur-md border-b border-[#dfe8dc] px-4 sm:px-8 py-3 transition-colors">
+    <div className="min-h-screen bg-[#010736] text-[#fcf1d0] font-sans pb-24 md:pb-16 relative">
+      {/* 1. CLEAN TOP STUDY NAVBAR */}
+      <header className="sticky top-0 z-40 bg-[#0d1c42]/95 backdrop-blur-md border-b border-[#22396f] px-4 sm:px-8 py-3 transition-colors">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           {/* Brand */}
           <Link
             href="/"
-            className="inline-flex items-center gap-2.5 text-[#19251a] hover:opacity-85 transition-opacity"
+            className="inline-flex items-center gap-2.5 text-[#fcf1d0] hover:opacity-85 transition-opacity"
           >
-            <div className="w-8 h-8 rounded-xl bg-[#84a282] text-white flex items-center justify-center shadow-xs">
+            <div className="w-8 h-8 rounded-xl bg-[#22396f] text-[#fcf1d0] flex items-center justify-center shadow-xs">
               <BookOpen size={16} strokeWidth={2.4} />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-bold tracking-tight text-[#19251a] leading-none">ANOWLA</span>
-              <span className="text-[10px] font-semibold text-[#84a282] uppercase tracking-wider mt-0.5">Study Studio</span>
+              <span className="text-sm font-bold tracking-tight text-[#fcf1d0] leading-none">ANOWLA</span>
+              <span className="text-[10px] font-semibold text-[#fcf1d0]/60 uppercase tracking-wider mt-0.5">Study Studio</span>
             </div>
           </Link>
 
           {/* Central Workspace Switcher */}
-          <nav className="flex items-center p-1 rounded-xl bg-[#ebf2e9] border border-[#dfe8dc]/60">
+          <nav className="flex items-center p-1 rounded-xl bg-[#010736] border border-[#22396f]">
             <Link
               href="/workspace"
-              className="px-3.5 py-1 rounded-lg text-xs font-semibold text-[#586c5a] hover:text-[#19251a] transition"
+              className="px-3.5 py-1 rounded-lg text-xs font-semibold text-[#fcf1d0]/70 hover:text-[#fcf1d0] transition"
             >
               Workspace
             </Link>
-            <span className="px-3.5 py-1 rounded-lg text-xs font-bold bg-white text-[#19251a] shadow-xs">
+            <span className="px-3.5 py-1 rounded-lg text-xs font-bold bg-[#22396f] text-[#fcf1d0] shadow-xs">
               Decks & Study
             </span>
           </nav>
@@ -300,7 +300,7 @@ export default function StudyPage() {
             <button
               type="button"
               onClick={() => setIsCreateOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-xs transition active:scale-95 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#fcf1d0] hover:bg-white text-[#010736] shadow-xs transition active:scale-95 cursor-pointer"
             >
               <Plus size={14} />
               <span className="hidden sm:inline">New Deck</span>
@@ -309,7 +309,7 @@ export default function StudyPage() {
             <button
               type="button"
               onClick={() => setIsMasteryOpen(true)}
-              className="p-2 rounded-xl text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition cursor-pointer"
+              className="p-2 rounded-xl text-[#fcf1d0]/70 hover:text-[#fcf1d0] hover:bg-white/5 transition cursor-pointer"
               title="Mastery & Memory Analytics"
             >
               <Brain size={16} />
@@ -318,7 +318,7 @@ export default function StudyPage() {
             <button
               type="button"
               onClick={() => setIsSettingsOpen(true)}
-              className="p-2 rounded-xl text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition cursor-pointer"
+              className="p-2 rounded-xl text-[#fcf1d0]/70 hover:text-[#fcf1d0] hover:bg-white/5 transition cursor-pointer"
               title="Settings"
             >
               <Settings size={16} />
@@ -330,13 +330,13 @@ export default function StudyPage() {
       {/* 2. MAIN WORKSPACE CONTAINER */}
       <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-6 space-y-6">
         
-        {/* Serene Clinical Overview Bar (Replaces noisy double banners & widget dump) */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b border-[#dfe8dc]">
+        {/* Overview Bar */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b border-[#22396f]">
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-[#19251a]">
+            <h1 className="text-xl font-bold tracking-tight text-[#fcf1d0]">
               Study Library
             </h1>
-            <p className="text-xs text-[#586c5a] mt-0.5">
+            <p className="text-xs text-[#fcf1d0]/70 mt-0.5">
               {totalDueCards > 0 
                 ? `${totalDueCards} high-yield cards scheduled for spaced repetition review.` 
                 : 'All decks are currently up to date. Excellent consistency on your review schedule.'}
@@ -345,12 +345,12 @@ export default function StudyPage() {
 
           <div className="flex items-center gap-2.5 flex-wrap">
             {stats.streak > 0 && (
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#dfe8dc] text-xs font-semibold text-[#19251a]">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0d1c42] border border-[#22396f] text-xs font-semibold text-[#fcf1d0]">
                 <span>🔥 {stats.streak} day streak</span>
               </div>
             )}
 
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#dfe8dc] text-xs font-semibold text-[#586c5a]">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0d1c42] border border-[#22396f] text-xs font-semibold text-[#fcf1d0]/80">
               <span>🎯 {stats.cards_studied_today}/{stats.daily_goal} today</span>
             </div>
 
@@ -358,7 +358,7 @@ export default function StudyPage() {
               <button
                 type="button"
                 onClick={handleStartDueReview}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-xs transition active:scale-95 cursor-pointer whitespace-nowrap"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#fcf1d0] hover:bg-white text-[#010736] shadow-xs transition active:scale-95 cursor-pointer whitespace-nowrap"
               >
                 <Zap size={13} />
                 <span>Review Due ({totalDueCards})</span>
@@ -371,15 +371,15 @@ export default function StudyPage() {
           {/* DESKTOP SIDEBAR */}
           <aside className="hidden lg:flex flex-col w-64 shrink-0 sticky top-20 space-y-5">
             {/* Folder Manager */}
-            <div className="p-4 rounded-2xl bg-white border border-[#dfe8dc] shadow-xs space-y-3">
-              <div className="flex items-center justify-between pb-2 border-b border-[#dfe8dc]">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#19251a]">
-                  Clinical Folders
+            <div className="p-4 rounded-2xl bg-[#0d1c42] border border-[#22396f] shadow-xs space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-[#22396f]">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#fcf1d0]">
+                  Folders
                 </span>
                 <button
                   type="button"
                   onClick={() => setIsFolderModalOpen(true)}
-                  className="p-1 rounded-lg hover:bg-[#ebf2e9] text-[#84a282] transition-colors cursor-pointer flex items-center gap-1"
+                  className="p-1 rounded-lg hover:bg-white/5 text-[#fcf1d0] transition-colors cursor-pointer flex items-center gap-1"
                   title="Create New Folder"
                 >
                   <FolderPlus size={15} />
@@ -388,27 +388,27 @@ export default function StudyPage() {
 
               {/* Inline Folder Creator */}
               {isCreatingFolderInline && (
-                <form onSubmit={handleCreateFolderInline} className="p-2.5 rounded-xl bg-[#fefaf3] border border-[#b8cfb3] space-y-2">
+                <form onSubmit={handleCreateFolderInline} className="p-2.5 rounded-xl bg-[#010736] border border-[#22396f] space-y-2">
                   <input
                     type="text"
                     required
                     autoFocus
-                    placeholder="e.g. Critical Care ICU"
+                    placeholder="e.g. Distributed Systems"
                     value={newFolderName}
                     onChange={(e) => setNewFolderName(e.target.value)}
-                    className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-[#dfe8dc] text-xs text-[#19251a] focus:outline-none focus:border-[#84a282]"
+                    className="w-full px-2.5 py-1.5 rounded-lg bg-[#0d1c42] border border-[#22396f] text-xs text-[#fcf1d0] placeholder-[#fcf1d0]/40 focus:outline-none focus:border-[#fcf1d0]"
                   />
                   <div className="flex items-center justify-end gap-1.5">
                     <button
                       type="button"
                       onClick={() => setIsCreatingFolderInline(false)}
-                      className="px-2.5 py-1 rounded text-[11px] text-[#586c5a] hover:bg-black/5 cursor-pointer"
+                      className="px-2.5 py-1 rounded text-[11px] text-[#fcf1d0]/70 hover:bg-white/5 cursor-pointer"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="px-2.5 py-1 rounded text-[11px] font-bold bg-[#84a282] text-white hover:bg-[#6e8c6c] cursor-pointer"
+                      className="px-2.5 py-1 rounded text-[11px] font-bold bg-[#fcf1d0] text-[#010736] hover:bg-white cursor-pointer"
                     >
                       Save
                     </button>
@@ -423,16 +423,16 @@ export default function StudyPage() {
                   onClick={() => setActiveFolderId('all')}
                   className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                     activeFolderId === 'all'
-                      ? 'bg-[#84a282] text-white shadow-xs'
-                      : 'text-[#19251a] hover:bg-[#ebf2e9]'
+                      ? 'bg-[#22396f] text-[#fcf1d0] shadow-xs'
+                      : 'text-[#fcf1d0]/80 hover:bg-white/5'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
                     <Layers size={14} />
-                    <span>All Clinical Decks</span>
+                    <span>All Study Decks</span>
                   </div>
                   <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
-                    activeFolderId === 'all' ? 'bg-white/20 text-white' : 'bg-[#fefaf3] text-[#586c5a]'
+                    activeFolderId === 'all' ? 'bg-[#fcf1d0] text-[#010736]' : 'bg-[#010736] text-[#fcf1d0]/70'
                   }`}>
                     {folderCounts.all}
                   </span>
@@ -448,16 +448,16 @@ export default function StudyPage() {
                       onClick={() => setActiveFolderId(folder.id)}
                       className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                         isSelected
-                          ? 'bg-[#84a282] text-white shadow-xs'
-                          : 'text-[#19251a] hover:bg-[#ebf2e9]'
+                          ? 'bg-[#22396f] text-[#fcf1d0] shadow-xs'
+                          : 'text-[#fcf1d0]/80 hover:bg-white/5'
                       }`}
                     >
                       <div className="flex items-center gap-2.5 truncate pr-2">
-                        <FolderIcon size={14} className={isSelected ? 'text-white' : 'text-[#84a282]'} />
+                        <FolderIcon size={14} className={isSelected ? 'text-[#fcf1d0]' : 'text-[#fcf1d0]/60'} />
                         <span className="truncate">{folder.name}</span>
                       </div>
                       <span className={`text-[10px] px-1.5 py-0.5 rounded-full shrink-0 ${
-                        isSelected ? 'bg-white/20 text-white' : 'bg-[#fefaf3] text-[#586c5a]'
+                        isSelected ? 'bg-[#fcf1d0] text-[#010736]' : 'bg-[#010736] text-[#fcf1d0]/70'
                       }`}>
                         {count}
                       </span>
@@ -470,7 +470,7 @@ export default function StudyPage() {
               <button
                 type="button"
                 onClick={() => setIsFolderModalOpen(true)}
-                className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border border-dashed border-[#b8cfb3] text-xs font-bold text-[#84a282] hover:bg-[#ebf2e9] cursor-pointer transition"
+                className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border border-dashed border-[#22396f] text-xs font-bold text-[#fcf1d0] hover:bg-white/5 cursor-pointer transition"
               >
                 <FolderPlus size={14} />
                 <span>+ New Folder</span>
@@ -478,32 +478,32 @@ export default function StudyPage() {
             </div>
 
             {/* Quick Study Tools */}
-            <div className="p-4 rounded-2xl bg-white border border-[#dfe8dc] shadow-xs space-y-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#19251a] block pb-1 border-b border-[#dfe8dc]">
+            <div className="p-4 rounded-2xl bg-[#0d1c42] border border-[#22396f] shadow-xs space-y-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#fcf1d0] block pb-1 border-b border-[#22396f]">
                 Study Tools
               </span>
               <button
                 type="button"
                 onClick={() => setIsPdfScannerOpen(true)}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-[#19251a] hover:bg-[#ebf2e9] transition text-left cursor-pointer"
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-[#fcf1d0] hover:bg-white/5 transition text-left cursor-pointer"
               >
-                <FileText size={14} className="text-[#84a282]" />
+                <FileText size={14} className="text-[#fcf1d0]" />
                 <span>Auto-Scan PDF</span>
               </button>
               <button
                 type="button"
                 onClick={() => setIsUrlScannerOpen(true)}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-[#19251a] hover:bg-[#ebf2e9] transition text-left cursor-pointer"
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-[#fcf1d0] hover:bg-white/5 transition text-left cursor-pointer"
               >
-                <Video size={14} className="text-[#84a282]" />
+                <Video size={14} className="text-[#fcf1d0]" />
                 <span>Video / URL To Cards</span>
               </button>
               <button
                 type="button"
                 onClick={() => setIsExploreOpen(true)}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-[#19251a] hover:bg-[#ebf2e9] transition text-left cursor-pointer"
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-[#fcf1d0] hover:bg-white/5 transition text-left cursor-pointer"
               >
-                <Compass size={14} className="text-[#84a282]" />
+                <Compass size={14} className="text-[#fcf1d0]" />
                 <span>Explore Community Decks</span>
               </button>
             </div>
@@ -518,8 +518,8 @@ export default function StudyPage() {
                 onClick={() => setActiveFolderId('all')}
                 className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                   activeFolderId === 'all'
-                    ? 'bg-[#84a282] text-white'
-                    : 'bg-white text-[#19251a] border border-[#dfe8dc]'
+                    ? 'bg-[#22396f] text-[#fcf1d0]'
+                    : 'bg-[#0d1c42] text-[#fcf1d0]/80 border border-[#22396f]'
                 }`}
               >
                 All Decks ({folderCounts.all})
@@ -531,8 +531,8 @@ export default function StudyPage() {
                   onClick={() => setActiveFolderId(f.id)}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                     activeFolderId === f.id
-                      ? 'bg-[#84a282] text-white'
-                      : 'bg-white text-[#19251a] border border-[#dfe8dc]'
+                      ? 'bg-[#22396f] text-[#fcf1d0]'
+                      : 'bg-[#0d1c42] text-[#fcf1d0]/80 border border-[#22396f]'
                   }`}
                 >
                   {f.name} ({folderCounts[f.id] || 0})
@@ -542,7 +542,7 @@ export default function StudyPage() {
               <button
                 type="button"
                 onClick={() => setIsFolderModalOpen(true)}
-                className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#ebf2e9] text-[#84a282] border border-[#b8cfb3] whitespace-nowrap flex items-center gap-1 cursor-pointer hover:bg-[#dfe8dc]"
+                className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#010736] text-[#fcf1d0] border border-[#22396f] whitespace-nowrap flex items-center gap-1 cursor-pointer hover:bg-white/5"
               >
                 <Plus size={13} />
                 <span>Folder</span>
@@ -550,15 +550,15 @@ export default function StudyPage() {
             </div>
 
             {/* Filter & Search Bar */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-white border border-[#dfe8dc] shadow-xs">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-[#0d1c42] border border-[#22396f] shadow-xs">
               <div className="relative flex-1">
-                <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#586c5a]" />
+                <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#fcf1d0]/50" />
                 <input
                   type="text"
-                  placeholder="Search clinical topics, drug names, mnemonics..."
+                  placeholder="Search study topics, categories, concepts..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-9 pr-4 py-1.5 rounded-xl bg-[#fefaf3] border border-[#dfe8dc] text-xs text-[#19251a] focus:outline-none focus:border-[#84a282]"
+                  className="w-full pl-9 pr-4 py-1.5 rounded-xl bg-[#010736] border border-[#22396f] text-xs text-[#fcf1d0] placeholder-[#fcf1d0]/40 focus:outline-none focus:border-[#fcf1d0]"
                 />
               </div>
 
@@ -568,8 +568,8 @@ export default function StudyPage() {
                   onClick={() => setFilterMode('all')}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                     filterMode === 'all'
-                      ? 'bg-[#84a282] text-white'
-                      : 'bg-[#fefaf3] text-[#586c5a] hover:bg-[#ebf2e9]'
+                      ? 'bg-[#22396f] text-[#fcf1d0]'
+                      : 'bg-[#010736] text-[#fcf1d0]/70 hover:bg-white/5'
                   }`}
                 >
                   All ({decks.length})
@@ -579,8 +579,8 @@ export default function StudyPage() {
                   onClick={() => setFilterMode('due')}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                     filterMode === 'due'
-                      ? 'bg-[#84a282] text-white'
-                      : 'bg-[#fefaf3] text-[#586c5a] hover:bg-[#ebf2e9]'
+                      ? 'bg-[#22396f] text-[#fcf1d0]'
+                      : 'bg-[#010736] text-[#fcf1d0]/70 hover:bg-white/5'
                   }`}
                 >
                   Due Today ({totalDueCards})
@@ -610,10 +610,10 @@ export default function StudyPage() {
             </div>
 
             {filteredDecks.length === 0 && (
-              <div className="py-16 text-center rounded-3xl bg-white border border-[#dfe8dc] p-8 shadow-xs">
-                <BookOpen size={36} className="mx-auto text-[#84a282] mb-3 opacity-60" />
-                <h3 className="text-base font-bold text-[#19251a]">No Clinical Decks Found</h3>
-                <p className="text-xs text-[#586c5a] mt-1 max-w-sm mx-auto">
+              <div className="py-16 text-center rounded-3xl bg-[#0d1c42] border border-[#22396f] p-8 shadow-xs">
+                <BookOpen size={36} className="mx-auto text-[#fcf1d0] mb-3 opacity-60" />
+                <h3 className="text-base font-bold text-[#fcf1d0]">No Study Decks Found</h3>
+                <p className="text-xs text-[#fcf1d0]/70 mt-1 max-w-sm mx-auto">
                   {decks.length === 0 
                     ? 'Your study library is currently clear. Use the PDF Markup Workspace or create a new custom deck.' 
                     : 'No flashcard decks match your search in this folder.'}
@@ -621,32 +621,32 @@ export default function StudyPage() {
                 <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
                   <Link
                     href="/workspace"
-                    className="px-5 py-2.5 rounded-full text-xs font-bold bg-[#84a282] text-white hover:bg-[#6e8c6c] transition-colors cursor-pointer shadow-xs inline-flex items-center gap-1.5"
+                    className="px-5 py-2.5 rounded-full text-xs font-bold bg-[#fcf1d0] text-[#010736] hover:bg-white transition-colors cursor-pointer shadow-xs inline-flex items-center gap-1.5"
                   >
                     <span>📄 Open PDF Markup Workspace</span>
                   </Link>
                   <button
                     type="button"
                     onClick={() => setIsFolderModalOpen(true)}
-                    className="px-4 py-2.5 rounded-full text-xs font-bold bg-[#ebf2e9] text-[#19251a] hover:bg-[#dfe8dc] transition-colors cursor-pointer"
+                    className="px-4 py-2.5 rounded-full text-xs font-bold bg-[#010736] text-[#fcf1d0] border border-[#22396f] hover:bg-white/5 transition-colors cursor-pointer"
                   >
                     📁 + New Folder
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsCreateOpen(true)}
-                    className="px-4 py-2.5 rounded-full text-xs font-bold bg-white border border-[#dfe8dc] text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer"
+                    className="px-4 py-2.5 rounded-full text-xs font-bold bg-[#22396f] text-[#fcf1d0] hover:bg-white/10 transition-colors cursor-pointer"
                   >
                     ➕ Create Manually
                   </button>
                 </div>
 
                 {decks.length === 0 && (
-                  <div className="mt-4 pt-3 border-t border-[#dfe8dc] max-w-xs mx-auto">
+                  <div className="mt-4 pt-3 border-t border-[#22396f] max-w-xs mx-auto">
                     <button
                       type="button"
                       onClick={handleResetDefaultDecks}
-                      className="text-[11px] font-semibold text-[#586c5a] hover:text-[#19251a] inline-flex items-center gap-1 cursor-pointer"
+                      className="text-[11px] font-semibold text-[#fcf1d0]/70 hover:text-[#fcf1d0] inline-flex items-center gap-1 cursor-pointer"
                     >
                       <RotateCcw size={12} />
                       <span>Restore Default Sample Decks</span>
@@ -659,9 +659,9 @@ export default function StudyPage() {
         </div>
       </main>
 
-      {/* 3. FULLSCREEN ACTIVE STUDY SESSION OVERLAY (QUIZ, MNEMONIC, FLIP, SM-2) */}
+      {/* 3. FULLSCREEN ACTIVE STUDY SESSION OVERLAY */}
       {selectedDeck && (
-        <div className="fixed inset-0 z-50 bg-[#141d16]/95 backdrop-blur-xl overflow-y-auto p-4 sm:p-8 flex flex-col items-center justify-center animate-fade-in">
+        <div className="fixed inset-0 z-50 bg-[#010736]/95 backdrop-blur-xl overflow-y-auto p-4 sm:p-8 flex flex-col items-center justify-center animate-fade-in">
           <div className="w-full max-w-2xl my-auto">
             <StudySession
               deck={selectedDeck}

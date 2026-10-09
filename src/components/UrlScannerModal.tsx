@@ -9,11 +9,7 @@ import {
   Sparkles, 
   Loader2, 
   CheckCircle, 
-  Layers, 
   Trash2, 
-  ArrowRight,
-  Play,
-  FileText,
   AlertCircle
 } from 'lucide-react';
 
@@ -30,7 +26,7 @@ export default function UrlScannerModal({
 }: UrlScannerModalProps) {
   const [url, setUrl] = useState('');
   const [cardCount, setCardCount] = useState<number>(25);
-  const [category, setCategory] = useState('Medicine');
+  const [category, setCategory] = useState('General Study');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -66,7 +62,7 @@ export default function UrlScannerModal({
         throw new Error('No flashcards could be generated from this link.');
       }
 
-      setExtractedTitle(data.title || 'Web / Video Study Deck');
+      setExtractedTitle(data.title || 'Web & Video Study Deck');
       setGeneratedCards(data.cards);
     } catch (err: any) {
       setError(err.message || 'Error processing URL');
@@ -82,7 +78,7 @@ export default function UrlScannerModal({
       id: crypto.randomUUID ? crypto.randomUUID() : `deck_${Date.now()}`,
       title: extractedTitle.slice(0, 50),
       description: `Extracted from: ${url.slice(0, 45)}...`,
-      category: category.trim() || 'General',
+      category: category.trim() || 'General Study',
       cards_count: generatedCards.length,
       due_count: generatedCards.length,
       created_at: new Date().toISOString(),
@@ -101,42 +97,42 @@ export default function UrlScannerModal({
   const handleReset = () => {
     setUrl('');
     setGeneratedCards([]);
-    setExtractedTitle('');
     setError(null);
+    setExtractedTitle('');
   };
 
   const isYouTube = url.includes('youtube.com') || url.includes('youtu.be');
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#010736]/85 backdrop-blur-md animate-in fade-in duration-200">
       <div 
-        className="relative w-full max-w-2xl max-h-[90vh] flex flex-col rounded-3xl bg-[#18202d] border border-white/10 shadow-2xl text-white overflow-hidden"
+        className="relative w-full max-w-xl max-h-[90vh] flex flex-col rounded-3xl bg-[#0d1c42] border border-[#22396f] shadow-2xl text-[#fcf1d0] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Top Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/10 bg-[#1c2534]">
+        {/* Modal Header */}
+        <div className="flex items-center justify-between p-6 border-b border-[#22396f] bg-[#010736]">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-red-500/20 text-red-400 border border-red-500/20">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#0d1c42] text-[#fcf1d0] border border-[#22396f]">
               <Video className="h-5 w-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-xl font-bold tracking-tight text-white">
+                <h3 className="text-xl font-bold tracking-tight text-[#fcf1d0]">
                   Video & Web to Flashcards
                 </h3>
-                <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold text-amber-200">
-                  Transcript Parser
+                <span className="rounded-full bg-[#0d1c42] px-2 py-0.5 text-[10px] font-bold text-[#fcf1d0] border border-[#22396f]">
+                  Transcript AI
                 </span>
               </div>
-              <p className="text-xs text-white/60">
-                Convert YouTube video transcripts or web articles into study flashcards
+              <p className="text-xs text-[#fcf1d0]/60">
+                Convert video lectures and articles into active-recall flashcards
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white/70 hover:bg-white/20 hover:text-white transition cursor-pointer"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0d1c42] text-[#fcf1d0]/70 hover:text-[#fcf1d0] transition cursor-pointer"
           >
             <X className="h-4 w-4" />
           </button>
@@ -150,15 +146,15 @@ export default function UrlScannerModal({
               
               {/* URL Input */}
               <div>
-                <label className="text-xs font-semibold text-white/80 uppercase tracking-wide block mb-1">
-                  YouTube Video or Web Article URL
+                <label className="text-xs font-semibold text-[#fcf1d0]/80 uppercase tracking-wide block mb-1">
+                  Video or Web Article URL
                 </label>
                 <div className="relative">
-                  <div className="absolute left-3.5 top-3 text-white/40">
+                  <div className="absolute left-3.5 top-3 text-[#fcf1d0]/40">
                     {isYouTube ? (
-                      <Video className="h-4 w-4 text-red-400" />
+                      <Video className="h-4 w-4 text-rose-400" />
                     ) : (
-                      <Globe className="h-4 w-4 text-blue-400" />
+                      <Globe className="h-4 w-4 text-[#fcf1d0]" />
                     )}
                   </div>
                   <input
@@ -167,36 +163,36 @@ export default function UrlScannerModal({
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}
                     placeholder="https://www.youtube.com/watch?v=... or https://en.wikipedia.org/..."
-                    className="w-full rounded-2xl bg-white/5 py-3 pl-10 pr-4 text-xs sm:text-sm text-white placeholder:text-white/30 border border-white/10 focus:border-amber-400/50 focus:outline-none"
+                    className="w-full rounded-2xl bg-[#010736] py-3 pl-10 pr-4 text-xs sm:text-sm text-[#fcf1d0] placeholder-[#fcf1d0]/30 border border-[#22396f] focus:border-[#fcf1d0] focus:outline-none"
                   />
                 </div>
               </div>
 
               {/* Quick Sample Buttons */}
               <div className="space-y-1.5">
-                <span className="text-[11px] font-semibold text-white/50">Try a sample link:</span>
+                <span className="text-[11px] font-semibold text-[#fcf1d0]/50">Try an academic sample:</span>
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
                     onClick={() => {
                       setUrl('https://www.youtube.com/watch?v=8qT6tC5VwV4');
-                      setCategory('Medicine');
+                      setCategory('Cognitive Science');
                     }}
-                    className="flex items-center gap-1.5 rounded-full bg-white/5 hover:bg-white/10 px-3 py-1 text-[11px] text-white/80 border border-white/10 transition cursor-pointer"
+                    className="flex items-center gap-1.5 rounded-full bg-[#010736] hover:bg-[#010736]/80 px-3 py-1 text-[11px] text-[#fcf1d0]/80 border border-[#22396f] transition cursor-pointer"
                   >
-                    <Video className="h-3 w-3 text-red-400" />
-                    <span>Status Asthmaticus Lecture (YouTube)</span>
+                    <Video className="h-3 w-3 text-rose-400" />
+                    <span>Memory & Spaced Repetition (Lecture)</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => {
-                      setUrl('https://en.wikipedia.org/wiki/Acute_severe_asthma');
-                      setCategory('Medicine');
+                      setUrl('https://en.wikipedia.org/wiki/Spaced_repetition');
+                      setCategory('Learning Theory');
                     }}
-                    className="flex items-center gap-1.5 rounded-full bg-white/5 hover:bg-white/10 px-3 py-1 text-[11px] text-white/80 border border-white/10 transition cursor-pointer"
+                    className="flex items-center gap-1.5 rounded-full bg-[#010736] hover:bg-[#010736]/80 px-3 py-1 text-[11px] text-[#fcf1d0]/80 border border-[#22396f] transition cursor-pointer"
                   >
-                    <Globe className="h-3 w-3 text-blue-400" />
-                    <span>Asthma Overview (Wikipedia)</span>
+                    <Globe className="h-3 w-3 text-[#fcf1d0]" />
+                    <span>Spaced Repetition (Article)</span>
                   </button>
                 </div>
               </div>
@@ -204,35 +200,34 @@ export default function UrlScannerModal({
               {/* Options Grid */}
               <div className="grid grid-cols-2 gap-3 pt-2">
                 <div>
-                  <label className="text-[11px] font-semibold text-white/70 uppercase">Cards to Extract</label>
+                  <label className="text-[11px] font-semibold text-[#fcf1d0]/70 uppercase">Cards to Extract</label>
                   <select
                     value={cardCount}
                     onChange={(e) => setCardCount(Number(e.target.value))}
-                    className="mt-1 w-full rounded-xl bg-white/5 py-2.5 px-3 text-xs text-white border border-white/10 focus:border-amber-400/50 focus:outline-none"
+                    className="mt-1 w-full rounded-xl bg-[#010736] py-2.5 px-3 text-xs text-[#fcf1d0] border border-[#22396f] focus:border-[#fcf1d0] focus:outline-none cursor-pointer"
                   >
-                    <option value={15} className="bg-[#1c2432]">15 High-Yield Cards</option>
-                    <option value={25} className="bg-[#1c2432]">25 Clinical Cards</option>
-                    <option value={40} className="bg-[#1c2432]">40 In-Depth Exam Cards</option>
-                    <option value={50} className="bg-[#1c2432]">50 Comprehensive Cards</option>
-                    <option value={60} className="bg-[#1c2432]">60 Full Mastery Cards</option>
+                    <option value={15} className="bg-[#0d1c42]">15 High-Yield Cards</option>
+                    <option value={25} className="bg-[#0d1c42]">25 Standard Cards</option>
+                    <option value={40} className="bg-[#0d1c42]">40 In-Depth Cards</option>
+                    <option value={50} className="bg-[#0d1c42]">50 Comprehensive Cards</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-semibold text-white/70 uppercase">Subject Category</label>
+                  <label className="text-[11px] font-semibold text-[#fcf1d0]/70 uppercase">Category</label>
                   <input
                     type="text"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    placeholder="e.g. Medicine, Tech, Law"
-                    className="mt-1 w-full rounded-xl bg-white/5 py-2.5 px-3 text-xs text-white border border-white/10 focus:border-amber-400/50 focus:outline-none"
+                    placeholder="e.g. History, Computer Science"
+                    className="mt-1 w-full rounded-xl bg-[#010736] py-2.5 px-3 text-xs text-[#fcf1d0] border border-[#22396f] focus:border-[#fcf1d0] focus:outline-none"
                   />
                 </div>
               </div>
 
               {error && (
-                <div className="flex items-start gap-2 rounded-xl bg-red-500/20 border border-red-500/30 p-3 text-xs text-red-200">
-                  <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-red-400" />
+                <div className="flex items-start gap-2 rounded-xl bg-rose-950/60 border border-rose-800 p-3 text-xs text-rose-200">
+                  <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-rose-400" />
                   <span>{error}</span>
                 </div>
               )}
@@ -240,16 +235,16 @@ export default function UrlScannerModal({
               <button
                 type="submit"
                 disabled={isLoading || !url.trim()}
-                className="w-full mt-3 flex items-center justify-center gap-2 rounded-xl bg-white py-3.5 text-xs font-bold text-zinc-950 shadow-lg hover:bg-white/90 active:scale-95 transition disabled:opacity-50 cursor-pointer"
+                className="w-full mt-3 flex items-center justify-center gap-2 rounded-xl bg-[#fcf1d0] py-3.5 text-xs font-bold text-[#010736] shadow-lg hover:bg-[#fcf1d0]/90 active:scale-95 transition disabled:opacity-50 cursor-pointer"
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin text-zinc-950" />
-                    <span>Extracting transcript & analyzing with Gemini AI...</span>
+                    <Loader2 className="h-4 w-4 animate-spin text-[#010736]" />
+                    <span>Extracting transcript & generating cards...</span>
                   </>
                 ) : (
                   <>
-                    <Sparkles className="h-4 w-4 text-amber-600" />
+                    <Sparkles className="h-4 w-4" />
                     <span>Generate Flashcard Deck</span>
                   </>
                 )}
@@ -259,12 +254,12 @@ export default function UrlScannerModal({
           ) : (
             /* Review & Save View */
             <div className="space-y-4 animate-in fade-in duration-200">
-              <div className="rounded-2xl bg-[#222c3d] p-4 border border-white/10 space-y-1">
+              <div className="rounded-2xl bg-[#010736] p-4 border border-[#22396f] space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#fcf1d0]/60">
                     Generated Deck Preview
                   </span>
-                  <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
+                  <span className="rounded-full bg-[#0d1c42] px-2 py-0.5 text-[10px] font-bold text-[#fcf1d0] border border-[#22396f]">
                     {generatedCards.length} Cards Extracted
                   </span>
                 </div>
@@ -272,7 +267,7 @@ export default function UrlScannerModal({
                   type="text"
                   value={extractedTitle}
                   onChange={(e) => setExtractedTitle(e.target.value)}
-                  className="w-full bg-transparent font-bold text-base text-white border-b border-white/20 focus:border-amber-300 focus:outline-none py-1"
+                  className="w-full bg-transparent font-bold text-base text-[#fcf1d0] border-b border-[#22396f] focus:border-[#fcf1d0] focus:outline-none py-1"
                 />
               </div>
 
@@ -281,25 +276,25 @@ export default function UrlScannerModal({
                 {generatedCards.map((card, idx) => (
                   <div
                     key={card.id}
-                    className="rounded-2xl bg-[#20293a] p-3.5 border border-white/10 flex items-start justify-between gap-3 text-xs"
+                    className="rounded-2xl bg-[#010736] p-3.5 border border-[#22396f] flex items-start justify-between gap-3 text-xs"
                   >
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-white/40 font-bold">#{idx + 1}</span>
-                        <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-amber-200">
+                        <span className="text-[#fcf1d0]/40 font-bold">#{idx + 1}</span>
+                        <span className="rounded-full bg-[#0d1c42] px-2 py-0.5 text-[10px] font-semibold text-[#fcf1d0] border border-[#22396f]">
                           {card.card_type}
                         </span>
                       </div>
-                      <p className="font-bold text-white">{card.front}</p>
-                      <p className="text-emerald-300 font-semibold">✓ {card.back}</p>
+                      <p className="font-bold text-[#fcf1d0]">{card.front}</p>
+                      <p className="text-[#fcf1d0]/80 font-semibold">✓ {card.back}</p>
                       {card.explanation && (
-                        <p className="text-[10px] text-white/50 italic">{card.explanation}</p>
+                        <p className="text-[10px] text-[#fcf1d0]/50 italic">{card.explanation}</p>
                       )}
                     </div>
 
                     <button
                       onClick={() => handleDeleteCard(card.id)}
-                      className="p-1 rounded-lg text-white/40 hover:text-red-400 hover:bg-red-500/20 transition cursor-pointer"
+                      className="p-1 rounded-lg text-[#fcf1d0]/40 hover:text-rose-400 hover:bg-rose-950/40 transition cursor-pointer"
                       title="Remove card"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -309,11 +304,11 @@ export default function UrlScannerModal({
               </div>
 
               {/* Bottom Actions */}
-              <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/10">
+              <div className="flex items-center justify-between gap-3 pt-2 border-t border-[#22396f]">
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="rounded-xl px-4 py-2.5 text-xs font-semibold text-white/60 hover:text-white cursor-pointer"
+                  className="rounded-xl px-4 py-2.5 text-xs font-semibold text-[#fcf1d0]/60 hover:text-[#fcf1d0] cursor-pointer"
                 >
                   Scan Another URL
                 </button>
@@ -321,10 +316,10 @@ export default function UrlScannerModal({
                 <button
                   type="button"
                   onClick={handleSaveDeck}
-                  className="flex items-center gap-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 px-6 py-2.5 text-xs font-bold text-zinc-950 transition cursor-pointer shadow-lg"
+                  className="flex items-center gap-1.5 rounded-xl bg-[#fcf1d0] hover:bg-[#fcf1d0]/90 px-6 py-2.5 text-xs font-bold text-[#010736] transition cursor-pointer shadow-lg"
                 >
                   <CheckCircle className="h-4 w-4" />
-                  <span>Save Deck to Library ({generatedCards.length})</span>
+                  <span>Save Deck ({generatedCards.length})</span>
                 </button>
               </div>
             </div>

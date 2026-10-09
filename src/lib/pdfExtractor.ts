@@ -332,20 +332,23 @@ export async function extractPdfHighlights(
 
       for (const sentence of sentences) {
         const lower = sentence.toLowerCase();
-        // High-precision definition & clinical mechanism patterns
+        // High-precision definition & conceptual mechanism patterns
         if (
           sentence.includes(':') ||
           lower.includes('is defined as') ||
           lower.includes('refers to') ||
           lower.includes('is responsible for') ||
           lower.includes('the primary function') ||
-          lower.includes('indicated for') ||
-          lower.includes('contraindicated') ||
           lower.includes('characterized by') ||
-          lower.includes('mechanism of action') ||
-          lower.includes('nursing intervention') ||
-          lower.includes('priority assessment') ||
-          lower.includes('adverse effect')
+          lower.includes('states that') ||
+          lower.includes('the principle of') ||
+          lower.includes('essential for') ||
+          lower.includes('composed of') ||
+          lower.includes('results in') ||
+          lower.includes('causes') ||
+          lower.includes('mechanism of') ||
+          lower.includes('formula for') ||
+          lower.includes('property of')
         ) {
           const card = formatSmartCard(sentence);
           if (card && !seenConcepts.has(card.front.toLowerCase())) {

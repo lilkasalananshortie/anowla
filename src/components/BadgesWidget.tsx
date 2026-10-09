@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { UserStats } from '@/types';
-import { Award, ShieldCheck, HeartPulse, Zap, CheckCircle2 } from 'lucide-react';
+import { Award, ShieldCheck, Zap, CheckCircle2, BookOpen } from 'lucide-react';
 
 interface BadgesWidgetProps {
   stats: UserStats;
@@ -16,12 +16,12 @@ export default function BadgesWidget({ stats }: BadgesWidgetProps) {
   const badges = [
     {
       id: 'badge-1',
-      title: 'Daily Clinical Quota',
+      title: 'Daily Study Quota',
       progress: goalProgress,
       subtitle: `${stats.cards_studied_today} of ${stats.daily_goal || 20} cards reviewed today`,
-      iconBg: 'bg-[#84a282] text-white',
-      barColor: 'bg-[#84a282]',
-      icon: HeartPulse,
+      iconBg: 'bg-[#22396f] text-[#fcf1d0]',
+      barColor: 'bg-[#fcf1d0]',
+      icon: BookOpen,
       isCompleted: goalProgress >= 100,
     },
     {
@@ -29,18 +29,18 @@ export default function BadgesWidget({ stats }: BadgesWidgetProps) {
       title: '7-Day Retention Streak',
       progress: streakProgress,
       subtitle: `${stats.streak} of 7 days milestone streak`,
-      iconBg: 'bg-amber-500 text-white',
-      barColor: 'bg-amber-500',
+      iconBg: 'bg-[#010736] text-[#fcf1d0] border border-[#22396f]',
+      barColor: 'bg-[#fcf1d0]',
       icon: Zap,
       isCompleted: streakProgress >= 100,
     },
     {
       id: 'badge-3',
-      title: 'NCLEX Scholar Rank (1,000 XP)',
+      title: 'Scholar Rank (1,000 XP)',
       progress: xpProgress,
       subtitle: `${stats.xp} of 1,000 XP towards Level 2`,
-      iconBg: 'bg-[#703348] text-[#f6e2e9]',
-      barColor: 'bg-[#703348]',
+      iconBg: 'bg-[#22396f] text-[#fcf1d0]',
+      barColor: 'bg-[#fcf1d0]',
       icon: Award,
       isCompleted: xpProgress >= 100,
     },
@@ -50,13 +50,13 @@ export default function BadgesWidget({ stats }: BadgesWidgetProps) {
     <section className="space-y-3">
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-2">
-          <ShieldCheck size={16} className="text-[#84a282]" />
-          <h2 className="text-xs font-bold tracking-wider text-[#19251a] uppercase">
-            Clinical Mastery Milestones
+          <ShieldCheck size={16} className="text-[#fcf1d0]" />
+          <h2 className="text-xs font-bold tracking-wider text-[#fcf1d0]/80 uppercase">
+            Mastery Milestones
           </h2>
         </div>
-        <span className="text-xs font-semibold text-[#84a282] hover:text-[#6e8c6c] cursor-pointer transition">
-          View all badges &gt;
+        <span className="text-xs font-semibold text-[#fcf1d0]/60 hover:text-[#fcf1d0] cursor-pointer transition">
+          View all milestones &gt;
         </span>
       </div>
 
@@ -66,7 +66,7 @@ export default function BadgesWidget({ stats }: BadgesWidgetProps) {
           return (
             <div
               key={b.id}
-              className="group relative flex items-center gap-4 rounded-3xl bg-white p-4 shadow-xs transition-all hover:scale-[1.01] hover:shadow-md border border-[#dfe8dc] hover:border-[#84a282]"
+              className="group relative flex items-center gap-4 rounded-2xl bg-[#0d1c42] p-4 shadow-lg transition-all hover:border-[#fcf1d0]/40 border border-[#22396f]"
             >
               {/* Squircle Badge Icon */}
               <div
@@ -74,7 +74,7 @@ export default function BadgesWidget({ stats }: BadgesWidgetProps) {
               >
                 <Icon className="h-6 w-6" />
                 {b.isCompleted && (
-                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-white ring-2 ring-white">
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#fcf1d0] text-[#010736] ring-2 ring-[#0d1c42]">
                     <CheckCircle2 size={10} />
                   </span>
                 )}
@@ -83,23 +83,23 @@ export default function BadgesWidget({ stats }: BadgesWidgetProps) {
               {/* Content & Progress Bar */}
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-1">
-                  <h3 className="text-xs font-bold text-[#19251a] tracking-tight truncate">
+                  <h3 className="text-xs font-bold text-[#fcf1d0] tracking-tight truncate">
                     {b.title}
                   </h3>
-                  <span className="text-[10px] font-extrabold text-[#586c5a]">
+                  <span className="text-[10px] font-extrabold text-[#fcf1d0]/60">
                     {b.progress}%
                   </span>
                 </div>
 
                 {/* Progress Bar */}
-                <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-[#fefaf3] border border-[#dfe8dc]">
+                <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-[#010736] border border-[#22396f]">
                   <div
                     className={`h-full rounded-full transition-all duration-500 ${b.barColor}`}
                     style={{ width: `${b.progress}%` }}
                   />
                 </div>
 
-                <p className="mt-1.5 text-[10px] font-semibold text-[#586c5a] truncate">
+                <p className="mt-1.5 text-[10px] font-semibold text-[#fcf1d0]/60 truncate">
                   {b.subtitle}
                 </p>
               </div>

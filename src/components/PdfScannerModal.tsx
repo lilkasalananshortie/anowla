@@ -13,12 +13,10 @@ import {
   Zap, 
   Folder as FolderIcon,
   Plus,
+  BookOpen,
   Sliders,
-  Stethoscope,
-  Pill,
   Activity,
-  Award,
-  Filter
+  Layers
 } from 'lucide-react';
 
 interface PdfScannerModalProps {
@@ -38,9 +36,19 @@ interface ScannedCard {
   explanation?: string;
 }
 
-type ClinicalFocus = 'comprehensive' | 'pharmacology' | 'pathophysiology' | 'nclex_priorities';
+type StudyFocus = 'comprehensive' | 'terms' | 'mechanisms' | 'exam_priorities';
 
 const CARD_COUNT_PRESETS = [15, 30, 50, 75, 100];
+
+const DEFAULT_CATEGORIES = [
+  'Computer Science',
+  'Cognitive Science',
+  'Modern History',
+  'Molecular Biology',
+  'Economics',
+  'Law & Jurisprudence',
+  'General Study',
+];
 
 export default function PdfScannerModal({
   isOpen,
@@ -55,11 +63,13 @@ export default function PdfScannerModal({
   const [scanStatus, setScanStatus] = useState<string>('');
   const [scanMode, setScanMode] = useState<'ai' | 'offline'>('ai');
   const [targetCount, setTargetCount] = useState<number>(30);
-  const [clinicalFocus, setClinicalFocus] = useState<ClinicalFocus>('comprehensive');
+  const [studyFocus, setStudyFocus] = useState<StudyFocus>('comprehensive');
   const [scannedCards, setScannedCards] = useState<ScannedCard[]>([]);
   const [cardTypeFilter, setCardTypeFilter] = useState<'all' | 'multiple_choice' | 'flashcard' | 'fill_blank'>('all');
   const [deckTitle, setDeckTitle] = useState('');
-  const [deckCategory, setDeckCategory] = useState('Pharmacology & Nursing');
+  const [category, setCategory] = useState('General Study');
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
+  const [customCategory, setCustomCategory] = useState('');
   const [selectedFolderId, setSelectedFolderId] = useState<string>(
     defaultFolderId || folders[0]?.id || ''
   );
@@ -116,16 +126,16 @@ export default function PdfScannerModal({
 
         let fullText = '';
         for (let i = 1; i <= doc.numPages; i++) {
-          setScanStatus(`Extracting clinical content: Page ${i} of ${doc.numPages}...`);
+          setScanStatus(`Extracting document content: Page ${i} of ${doc.numPages}...`);
           const page = await doc.getPage(i);
           const content = await page.getTextContent();
           const pageStr = content.items.map((it: any) => it.str).join(' ');
           fullText += `\n--- Page ${i} ---\n` + pageStr;
         }
 
-        // Step 2: Send to AI Scan Route with target card count and clinical focus
+        // Step 2: Send to AI Scan Route with target card count and focus
         setScanStep(2);
-        setScanStatus(`Analyzing with Gemini Flash for ${targetCount} high-yield clinical cards...`);
+        setScanStatus(`Analyzing with AI for ${targetCount} high-yield study cards...`);
 
         const res = await fetch('/api/ai-scan', {
           method: 'POST',
@@ -134,12 +144,12 @@ export default function PdfScannerModal({
             text: fullText,
             cardCount: targetCount,
             title: deckTitle || file.name,
-            clinicalFocus,
+            focus: studyFocus,
           }),
         });
 
         setScanStep(3);
-        setScanStatus('Formulating distractors, rationales, and NCLEX priorities...');
+        setScanStatus('Formulating questions, key definitions, and active recall cards...');
 
         const data = await res.json();
         if (!res.ok) {
@@ -153,10 +163,10 @@ export default function PdfScannerModal({
         setScannedCards(data.cards);
       } else {
         // Offline heuristic mode with expanded capacity
-        setScanStatus(`Extracting up to ${targetCount} clinical concepts offline...`);
+        setScanStatus(`Extracting up to ${targetCount} concepts offline...`);
         const result = await extractPdfHighlights(buffer, file.name, undefined, targetCount);
         if (result.items.length === 0) {
-          throw new Error('No clear definitions found in offline mode. Try AI Smart Scan with Gemini.');
+          throw new Error('No clear definitions found in offline mode. Try AI Smart Scan.');
         }
         setScannedCards(
           result.items.map((item) => ({
@@ -190,10 +200,10 @@ export default function PdfScannerModal({
   const addManualCard = () => {
     const newCard: ScannedCard = {
       id: `manual-card-${Date.now()}`,
-      front: 'New clinical assessment or priority:',
-      back: 'Clinical answer and nursing rationale.',
+      front: 'New study concept or question:',
+      back: 'Core answer and detailed explanation.',
       card_type: 'flashcard',
-      explanation: 'Key point for NCLEX review.',
+      explanation: 'Key takeaway for active recall.',
     };
     setScannedCards((prev) => [newCard, ...prev]);
   };
@@ -204,6 +214,10 @@ export default function PdfScannerModal({
       setError('Please provide a title for the deck.');
       return;
     }
+
+    const finalCategory = isCustomCategory
+      ? (customCategory.trim() || 'General Study')
+      : category;
 
     const deckId = `deck-${Date.now()}`;
     const cards: Card[] = scannedCards.map((c, idx) => ({
@@ -224,8 +238,8 @@ export default function PdfScannerModal({
     const newDeck: Deck = {
       id: deckId,
       title: deckTitle.trim(),
-      description: `Generated from "${file?.name || 'PDF'}" (${cards.length} high-yield clinical cards)`,
-      category: deckCategory.trim() || 'General',
+      description: `Generated from "${file?.name || 'PDF'}" (${cards.length} cards)`,
+      category: finalCategory,
       folder_id: selectedFolderId || undefined,
       cards_count: cards.length,
       due_count: cards.length,
@@ -247,27 +261,27 @@ export default function PdfScannerModal({
   const fbCount = scannedCards.filter((c) => c.card_type === 'fill_blank').length;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#141d16]/80 p-4 backdrop-blur-md animate-fade-in">
-      <div className="relative flex max-h-[92vh] w-full max-w-3xl flex-col rounded-3xl bg-[#fefaf3] p-6 shadow-2xl border border-[#dfe8dc] overflow-hidden text-[#19251a]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#010736]/85 p-4 backdrop-blur-md animate-fade-in">
+      <div className="relative flex max-h-[92vh] w-full max-w-3xl flex-col rounded-3xl bg-[#0d1c42] p-6 shadow-2xl border border-[#22396f] overflow-hidden text-[#fcf1d0]">
         
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#dfe8dc] pb-4">
+        <div className="flex items-center justify-between border-b border-[#22396f] pb-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#84a282] text-white shadow-md shadow-[#84a282]/30">
-              <Sparkles className="h-5 w-5 text-amber-200" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#010736] text-[#fcf1d0] border border-[#22396f] shadow-md">
+              <Sparkles className="h-5 w-5 text-[#fcf1d0]" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-[#19251a] tracking-tight">
-                AI Clinical PDF Scanner
+              <h2 className="text-base sm:text-lg font-bold text-[#fcf1d0] tracking-tight">
+                AI PDF Scanner
               </h2>
-              <p className="text-xs text-[#586c5a]">
-                High-density NCLEX & pharmacology card generator
+              <p className="text-xs text-[#fcf1d0]/60">
+                Generate high-retention active recall study flashcards directly from PDF
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-full text-[#586c5a] hover:bg-black/5 hover:text-[#19251a] transition cursor-pointer"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-[#fcf1d0]/70 hover:bg-[#010736] hover:text-[#fcf1d0] transition cursor-pointer"
           >
             <X className="h-4 w-4" />
           </button>
@@ -284,7 +298,7 @@ export default function PdfScannerModal({
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className="group flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-[#b8cfb3] bg-white p-7 text-center transition-all hover:border-[#84a282] hover:bg-[#ebf2e9]/50 cursor-pointer shadow-xs"
+                className="group flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#22396f] bg-[#010736]/60 p-7 text-center transition-all hover:border-[#fcf1d0]/60 hover:bg-[#010736] cursor-pointer shadow-inner"
               >
                 <input
                   ref={fileInputRef}
@@ -294,20 +308,20 @@ export default function PdfScannerModal({
                   className="hidden"
                 />
                 
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#ebf2e9] text-[#84a282] group-hover:scale-105 transition-transform">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#0d1c42] text-[#fcf1d0] border border-[#22396f] group-hover:scale-105 transition-transform">
                   <FileText className="h-7 w-7" />
                 </div>
 
-                <p className="mt-3 text-sm font-bold text-[#19251a]">
-                  {file ? file.name : 'Click to upload or drag & drop lecture PDF'}
+                <p className="mt-3 text-sm font-bold text-[#fcf1d0]">
+                  {file ? file.name : 'Click to select or drag & drop study PDF'}
                 </p>
-                <p className="mt-1 text-xs text-[#586c5a]">
-                  Medical textbooks, NCLEX modules, pharmacology slides, clinical protocols.
+                <p className="mt-1 text-xs text-[#fcf1d0]/60">
+                  Lecture slides, textbooks, research papers, syllabus chapters.
                 </p>
 
                 {file && (
                   <div className="mt-3 flex items-center gap-2">
-                    <span className="rounded-full bg-[#b8cfb3]/40 px-3 py-1 text-[11px] font-bold text-[#19251a] border border-[#84a282]/30">
+                    <span className="rounded-full bg-[#0d1c42] px-3 py-1 text-[11px] font-bold text-[#fcf1d0] border border-[#22396f]">
                       {(file.size / (1024 * 1024)).toFixed(2)} MB loaded
                     </span>
                     {!scanning && (
@@ -318,7 +332,7 @@ export default function PdfScannerModal({
                           setFile(null);
                           if (fileInputRef.current) fileInputRef.current.value = '';
                         }}
-                        className="flex items-center gap-1 rounded-full bg-rose-50 px-2.5 py-1 text-[11px] font-bold text-rose-600 hover:bg-rose-100 transition cursor-pointer"
+                        className="flex items-center gap-1 rounded-full bg-rose-950/60 px-2.5 py-1 text-[11px] font-bold text-rose-300 hover:bg-rose-900 border border-rose-800 transition cursor-pointer"
                       >
                         <Trash2 className="h-3 w-3" />
                         <span>Remove</span>
@@ -329,10 +343,10 @@ export default function PdfScannerModal({
               </div>
 
               {/* Engine Selection */}
-              <div className="p-3.5 rounded-2xl bg-white border border-[#dfe8dc] space-y-3">
+              <div className="p-3.5 rounded-2xl bg-[#010736] border border-[#22396f] space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-[#19251a]">Scan Engine</label>
-                  <span className="text-[11px] text-[#586c5a]">Select intelligence level</span>
+                  <label className="text-xs font-bold text-[#fcf1d0]">Scan Engine</label>
+                  <span className="text-[11px] text-[#fcf1d0]/50">Choose extraction method</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <button
@@ -340,20 +354,20 @@ export default function PdfScannerModal({
                     onClick={() => setScanMode('ai')}
                     className={`flex items-center justify-center gap-2 rounded-xl border p-2.5 text-xs font-bold transition-all cursor-pointer ${
                       scanMode === 'ai'
-                        ? 'border-[#84a282] bg-[#84a282] text-white shadow-sm'
-                        : 'border-[#dfe8dc] bg-[#fefaf3] text-[#586c5a] hover:bg-[#ebf2e9]'
+                        ? 'border-[#fcf1d0] bg-[#fcf1d0] text-[#010736] shadow-sm'
+                        : 'border-[#22396f] bg-[#0d1c42] text-[#fcf1d0]/70 hover:bg-[#0d1c42]/80'
                     }`}
                   >
                     <Sparkles className="h-4 w-4" />
-                    <span>AI Smart (Gemini Flash)</span>
+                    <span>AI Smart Scan</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setScanMode('offline')}
                     className={`flex items-center justify-center gap-2 rounded-xl border p-2.5 text-xs font-bold transition-all cursor-pointer ${
                       scanMode === 'offline'
-                        ? 'border-[#84a282] bg-[#84a282] text-white shadow-sm'
-                        : 'border-[#dfe8dc] bg-[#fefaf3] text-[#586c5a] hover:bg-[#ebf2e9]'
+                        ? 'border-[#fcf1d0] bg-[#fcf1d0] text-[#010736] shadow-sm'
+                        : 'border-[#22396f] bg-[#0d1c42] text-[#fcf1d0]/70 hover:bg-[#0d1c42]/80'
                     }`}
                   >
                     <Zap className="h-4 w-4" />
@@ -362,14 +376,14 @@ export default function PdfScannerModal({
                 </div>
               </div>
 
-              {/* Card Count Selector (Up to 100 Cards!) */}
-              <div className="p-3.5 rounded-2xl bg-white border border-[#dfe8dc] space-y-3">
+              {/* Card Count Selector */}
+              <div className="p-3.5 rounded-2xl bg-[#010736] border border-[#22396f] space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-[#19251a]">
+                  <label className="text-xs font-bold text-[#fcf1d0]">
                     Target Card Volume ({targetCount} Cards)
                   </label>
-                  <span className="text-[11px] font-semibold text-[#84a282]">
-                    High-Density Coverage
+                  <span className="text-[11px] font-semibold text-[#fcf1d0]/70">
+                    Active Recall Density
                   </span>
                 </div>
 
@@ -381,8 +395,8 @@ export default function PdfScannerModal({
                       onClick={() => setTargetCount(preset)}
                       className={`py-2 px-1 rounded-xl text-xs font-bold text-center transition-all cursor-pointer ${
                         targetCount === preset
-                          ? 'bg-[#84a282] text-white shadow-xs'
-                          : 'bg-[#fefaf3] border border-[#dfe8dc] text-[#586c5a] hover:border-[#84a282]'
+                          ? 'bg-[#fcf1d0] text-[#010736] shadow-xs'
+                          : 'bg-[#0d1c42] border border-[#22396f] text-[#fcf1d0]/70 hover:border-[#fcf1d0]/40'
                       }`}
                     >
                       {preset} Cards
@@ -392,7 +406,7 @@ export default function PdfScannerModal({
 
                 {/* Custom Card Amount Slider */}
                 <div className="pt-1 flex items-center gap-3">
-                  <span className="text-[11px] font-medium text-[#586c5a] whitespace-nowrap">Custom Count:</span>
+                  <span className="text-[11px] font-medium text-[#fcf1d0]/60 whitespace-nowrap">Custom Count:</span>
                   <input
                     type="range"
                     min={10}
@@ -400,38 +414,38 @@ export default function PdfScannerModal({
                     step={5}
                     value={targetCount}
                     onChange={(e) => setTargetCount(Number(e.target.value))}
-                    className="flex-1 accent-[#84a282] cursor-pointer"
+                    className="flex-1 accent-[#fcf1d0] cursor-pointer"
                   />
-                  <span className="w-12 text-center text-xs font-bold px-2 py-1 rounded-lg bg-[#ebf2e9] text-[#19251a] border border-[#b8cfb3]">
+                  <span className="w-12 text-center text-xs font-bold px-2 py-1 rounded-lg bg-[#0d1c42] text-[#fcf1d0] border border-[#22396f]">
                     {targetCount}
                   </span>
                 </div>
               </div>
 
-              {/* Clinical Focus Selector */}
+              {/* Study Focus Selector */}
               {scanMode === 'ai' && (
-                <div className="p-3.5 rounded-2xl bg-white border border-[#dfe8dc] space-y-2.5">
-                  <label className="text-xs font-bold text-[#19251a] block">
-                    Clinical Focus Domain
+                <div className="p-3.5 rounded-2xl bg-[#010736] border border-[#22396f] space-y-2.5">
+                  <label className="text-xs font-bold text-[#fcf1d0] block">
+                    Study Focus Objective
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {[
-                      { id: 'comprehensive', label: 'All Domains', icon: Stethoscope },
-                      { id: 'pharmacology', label: 'Pharmacology', icon: Pill },
-                      { id: 'pathophysiology', label: 'Pathophysiology', icon: Activity },
-                      { id: 'nclex_priorities', label: 'NCLEX Priorities', icon: Award },
+                      { id: 'comprehensive', label: 'All Concepts', icon: BookOpen },
+                      { id: 'terms', label: 'Key Terms', icon: Sliders },
+                      { id: 'mechanisms', label: 'Logic & Causes', icon: Activity },
+                      { id: 'exam_priorities', label: 'High-Yield', icon: Sparkles },
                     ].map((item) => {
                       const Icon = item.icon;
-                      const active = clinicalFocus === item.id;
+                      const active = studyFocus === item.id;
                       return (
                         <button
                           key={item.id}
                           type="button"
-                          onClick={() => setClinicalFocus(item.id as ClinicalFocus)}
+                          onClick={() => setStudyFocus(item.id as StudyFocus)}
                           className={`flex items-center gap-1.5 p-2 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
                             active
-                              ? 'bg-[#84a282] text-white shadow-xs'
-                              : 'bg-[#fefaf3] border border-[#dfe8dc] text-[#586c5a] hover:bg-[#ebf2e9]'
+                              ? 'bg-[#fcf1d0] text-[#010736] shadow-xs'
+                              : 'bg-[#0d1c42] border border-[#22396f] text-[#fcf1d0]/70 hover:bg-[#0d1c42]/80'
                           }`}
                         >
                           <Icon size={13} />
@@ -443,39 +457,81 @@ export default function PdfScannerModal({
                 </div>
               )}
 
-              {/* Folder Assignment */}
-              <div className="p-3.5 rounded-2xl bg-white border border-[#dfe8dc] flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <FolderIcon size={16} className="text-[#84a282]" />
-                  <span className="text-xs font-bold text-[#19251a]">Save to Clinical Folder:</span>
+              {/* Category & Folder Assignment */}
+              <div className="p-3.5 rounded-2xl bg-[#010736] border border-[#22396f] space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <FolderIcon size={16} className="text-[#fcf1d0]" />
+                    <span className="text-xs font-bold text-[#fcf1d0]">Save to Folder:</span>
+                  </div>
+                  <select
+                    value={selectedFolderId}
+                    onChange={(e) => setSelectedFolderId(e.target.value)}
+                    className="rounded-xl border border-[#22396f] bg-[#0d1c42] px-3 py-1.5 text-xs font-bold text-[#fcf1d0] focus:outline-none focus:border-[#fcf1d0] cursor-pointer"
+                  >
+                    <option value="">No Folder (Root)</option>
+                    {folders.map((f) => (
+                      <option key={f.id} value={f.id}>
+                        {f.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <select
-                  value={selectedFolderId}
-                  onChange={(e) => setSelectedFolderId(e.target.value)}
-                  className="rounded-xl border border-[#dfe8dc] bg-[#fefaf3] px-3 py-1.5 text-xs font-bold text-[#19251a] focus:outline-none focus:border-[#84a282] cursor-pointer"
-                >
-                  <option value="">No Folder (Root)</option>
-                  {folders.map((f) => (
-                    <option key={f.id} value={f.id}>
-                      {f.name}
-                    </option>
-                  ))}
-                </select>
+
+                <div className="pt-2 border-t border-[#22396f]/60 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-[#fcf1d0]">Deck Category</label>
+                    <button
+                      type="button"
+                      onClick={() => setIsCustomCategory(!isCustomCategory)}
+                      className="text-[11px] font-semibold text-[#fcf1d0]/80 hover:text-[#fcf1d0] transition cursor-pointer"
+                    >
+                      {isCustomCategory ? 'Choose Preset' : '+ Create New Category'}
+                    </button>
+                  </div>
+
+                  {isCustomCategory ? (
+                    <input
+                      type="text"
+                      value={customCategory}
+                      onChange={(e) => setCustomCategory(e.target.value)}
+                      placeholder="e.g. Cognitive Science, Macroeconomics..."
+                      className="w-full rounded-xl border border-[#22396f] bg-[#0d1c42] px-3 py-2 text-xs font-medium text-[#fcf1d0] placeholder-[#fcf1d0]/40 outline-none focus:border-[#fcf1d0]"
+                    />
+                  ) : (
+                    <div className="flex flex-wrap gap-1.5">
+                      {DEFAULT_CATEGORIES.map((cat) => (
+                        <button
+                          key={cat}
+                          type="button"
+                          onClick={() => setCategory(cat)}
+                          className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                            category === cat
+                              ? 'bg-[#fcf1d0] text-[#010736]'
+                              : 'bg-[#0d1c42] text-[#fcf1d0]/70 border border-[#22396f] hover:border-[#fcf1d0]/40'
+                          }`}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Animated Live Scan Status */}
               {scanning && (
-                <div className="space-y-2 rounded-2xl bg-[#ebf2e9] p-4 border border-[#b8cfb3]">
-                  <div className="flex items-center justify-between text-xs font-bold text-[#19251a]">
+                <div className="space-y-2 rounded-2xl bg-[#010736] p-4 border border-[#22396f]">
+                  <div className="flex items-center justify-between text-xs font-bold text-[#fcf1d0]">
                     <div className="flex items-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin text-[#84a282]" />
+                      <Loader2 className="h-4 w-4 animate-spin text-[#fcf1d0]" />
                       <span>{scanStatus}</span>
                     </div>
-                    <span className="text-[11px] text-[#586c5a]">Target: {targetCount} cards</span>
+                    <span className="text-[11px] text-[#fcf1d0]/60">Target: {targetCount} cards</span>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-white overflow-hidden border border-[#b8cfb3]/40">
+                  <div className="h-2 w-full rounded-full bg-[#0d1c42] overflow-hidden border border-[#22396f]">
                     <div
-                      className="h-full bg-[#84a282] transition-all duration-500 rounded-full"
+                      className="h-full bg-[#fcf1d0] transition-all duration-500 rounded-full"
                       style={{ width: `${scanStep === 1 ? '35%' : scanStep === 2 ? '70%' : '90%'}` }}
                     />
                   </div>
@@ -483,8 +539,8 @@ export default function PdfScannerModal({
               )}
 
               {error && (
-                <div className="rounded-2xl bg-rose-50 p-3.5 text-xs text-rose-700 border border-rose-200">
-                  ⚠️ {error}
+                <div className="rounded-2xl bg-rose-950/60 p-3.5 text-xs text-rose-200 border border-rose-800">
+                  {error}
                 </div>
               )}
 
@@ -492,17 +548,17 @@ export default function PdfScannerModal({
               <button
                 disabled={!file || scanning}
                 onClick={startScan}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#19251a] hover:bg-[#283e2c] py-3.5 text-sm font-bold text-[#fefaf3] shadow-lg transition disabled:opacity-40 cursor-pointer active:scale-98"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#fcf1d0] hover:bg-[#fcf1d0]/90 py-3.5 text-sm font-bold text-[#010736] shadow-lg transition disabled:opacity-40 cursor-pointer active:scale-98"
               >
                 {scanning ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Extracting {targetCount} High-Yield Cards...</span>
+                    <span>Extracting {targetCount} Cards...</span>
                   </>
                 ) : (
                   <>
-                    <Sparkles className="h-4 w-4 text-amber-300" />
-                    <span>Generate {targetCount} Clinical Flashcards</span>
+                    <Sparkles className="h-4 w-4" />
+                    <span>Generate {targetCount} Study Cards</span>
                   </>
                 )}
               </button>
@@ -514,29 +570,32 @@ export default function PdfScannerModal({
               {/* Deck Details */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-[#19251a]">Deck Title</label>
+                  <label className="block text-xs font-bold text-[#fcf1d0]">Deck Title</label>
                   <input
                     type="text"
                     value={deckTitle}
                     onChange={(e) => setDeckTitle(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#dfe8dc] bg-white px-3 py-2 text-xs font-bold text-[#19251a] outline-none focus:border-[#84a282]"
+                    className="mt-1 w-full rounded-xl border border-[#22396f] bg-[#010736] px-3 py-2 text-xs font-bold text-[#fcf1d0] outline-none focus:border-[#fcf1d0]"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-[#19251a]">Category</label>
+                  <label className="block text-xs font-bold text-[#fcf1d0]">Category</label>
                   <input
                     type="text"
-                    value={deckCategory}
-                    onChange={(e) => setDeckCategory(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#dfe8dc] bg-white px-3 py-2 text-xs font-bold text-[#19251a] outline-none focus:border-[#84a282]"
+                    value={isCustomCategory ? customCategory : category}
+                    onChange={(e) => {
+                      setIsCustomCategory(true);
+                      setCustomCategory(e.target.value);
+                    }}
+                    className="mt-1 w-full rounded-xl border border-[#22396f] bg-[#010736] px-3 py-2 text-xs font-bold text-[#fcf1d0] outline-none focus:border-[#fcf1d0]"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-[#19251a]">Folder</label>
+                  <label className="block text-xs font-bold text-[#fcf1d0]">Folder</label>
                   <select
                     value={selectedFolderId}
                     onChange={(e) => setSelectedFolderId(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#dfe8dc] bg-white px-3 py-2 text-xs font-bold text-[#19251a] outline-none focus:border-[#84a282] cursor-pointer"
+                    className="mt-1 w-full rounded-xl border border-[#22396f] bg-[#010736] px-3 py-2 text-xs font-bold text-[#fcf1d0] outline-none focus:border-[#fcf1d0] cursor-pointer"
                   >
                     <option value="">No Folder (Root)</option>
                     {folders.map((f) => (
@@ -549,13 +608,13 @@ export default function PdfScannerModal({
               </div>
 
               {/* Cards Count Banner & Filter Tabs */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 rounded-2xl bg-white border border-[#dfe8dc]">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 rounded-2xl bg-[#010736] border border-[#22396f]">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-[#19251a]">
+                  <span className="text-xs font-bold text-[#fcf1d0]">
                     Generated Cards ({scannedCards.length})
                   </span>
-                  <span className="rounded-full bg-[#b8cfb3]/40 px-2 py-0.5 text-[10px] font-bold text-[#19251a]">
-                    Target Met: {scannedCards.length} / {targetCount}
+                  <span className="rounded-full bg-[#0d1c42] px-2 py-0.5 text-[10px] font-bold text-[#fcf1d0] border border-[#22396f]">
+                    Target: {targetCount}
                   </span>
                 </div>
 
@@ -565,8 +624,8 @@ export default function PdfScannerModal({
                     onClick={() => setCardTypeFilter('all')}
                     className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition cursor-pointer ${
                       cardTypeFilter === 'all'
-                        ? 'bg-[#84a282] text-white'
-                        : 'bg-[#fefaf3] text-[#586c5a] hover:bg-[#ebf2e9]'
+                        ? 'bg-[#fcf1d0] text-[#010736]'
+                        : 'bg-[#0d1c42] text-[#fcf1d0]/70 hover:text-[#fcf1d0]'
                     }`}
                   >
                     All ({scannedCards.length})
@@ -577,8 +636,8 @@ export default function PdfScannerModal({
                       onClick={() => setCardTypeFilter('multiple_choice')}
                       className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition cursor-pointer ${
                         cardTypeFilter === 'multiple_choice'
-                          ? 'bg-[#84a282] text-white'
-                          : 'bg-[#fefaf3] text-[#586c5a] hover:bg-[#ebf2e9]'
+                          ? 'bg-[#fcf1d0] text-[#010736]'
+                          : 'bg-[#0d1c42] text-[#fcf1d0]/70 hover:text-[#fcf1d0]'
                       }`}
                     >
                       Quiz ({mcCount})
@@ -590,8 +649,8 @@ export default function PdfScannerModal({
                       onClick={() => setCardTypeFilter('flashcard')}
                       className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition cursor-pointer ${
                         cardTypeFilter === 'flashcard'
-                          ? 'bg-[#84a282] text-white'
-                          : 'bg-[#fefaf3] text-[#586c5a] hover:bg-[#ebf2e9]'
+                          ? 'bg-[#fcf1d0] text-[#010736]'
+                          : 'bg-[#0d1c42] text-[#fcf1d0]/70 hover:text-[#fcf1d0]'
                       }`}
                     >
                       Flashcards ({fcCount})
@@ -603,8 +662,8 @@ export default function PdfScannerModal({
                       onClick={() => setCardTypeFilter('fill_blank')}
                       className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition cursor-pointer ${
                         cardTypeFilter === 'fill_blank'
-                          ? 'bg-[#84a282] text-white'
-                          : 'bg-[#fefaf3] text-[#586c5a] hover:bg-[#ebf2e9]'
+                          ? 'bg-[#fcf1d0] text-[#010736]'
+                          : 'bg-[#0d1c42] text-[#fcf1d0]/70 hover:text-[#fcf1d0]'
                       }`}
                     >
                       Fill-in ({fbCount})
@@ -613,7 +672,7 @@ export default function PdfScannerModal({
                   <button
                     type="button"
                     onClick={addManualCard}
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-[#f6e2e9] text-[#703348] hover:bg-[#f3d3de] transition cursor-pointer"
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-[#22396f] text-[#fcf1d0] hover:bg-[#22396f]/80 transition cursor-pointer"
                   >
                     <Plus size={12} />
                     <span>Add Card</span>
@@ -626,16 +685,10 @@ export default function PdfScannerModal({
                 {filteredCards.map((card, idx) => (
                   <div
                     key={card.id}
-                    className="rounded-2xl border border-[#dfe8dc] bg-white p-4 shadow-xs relative space-y-2.5 transition hover:border-[#84a282]"
+                    className="rounded-2xl border border-[#22396f] bg-[#010736] p-4 shadow-xs relative space-y-2.5 transition hover:border-[#fcf1d0]/40"
                   >
                     <div className="flex items-center justify-between">
-                      <span className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${
-                        card.card_type === 'multiple_choice'
-                          ? 'bg-amber-100 text-amber-900 border border-amber-200'
-                          : card.card_type === 'fill_blank'
-                          ? 'bg-[#f6e2e9] text-[#703348] border border-[#e8c0cc]'
-                          : 'bg-[#ebf2e9] text-[#19251a] border border-[#b8cfb3]'
-                      }`}>
+                      <span className="rounded-md px-2 py-0.5 text-[10px] font-bold bg-[#0d1c42] text-[#fcf1d0] border border-[#22396f]">
                         {card.card_type === 'multiple_choice'
                           ? 'Multiple Choice Quiz'
                           : card.card_type === 'fill_blank'
@@ -645,7 +698,7 @@ export default function PdfScannerModal({
 
                       <button
                         onClick={() => removeCard(card.id)}
-                        className="text-[#586c5a] hover:text-rose-600 transition p-1 cursor-pointer"
+                        className="text-[#fcf1d0]/60 hover:text-rose-400 transition p-1 cursor-pointer"
                         title="Remove card"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -654,38 +707,38 @@ export default function PdfScannerModal({
 
                     <div className="space-y-2">
                       <div>
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-[#586c5a]">
-                          Clinical Prompt / Question
+                        <label className="text-[10px] font-bold uppercase tracking-wider text-[#fcf1d0]/60">
+                          Prompt / Question
                         </label>
                         <input
                           type="text"
                           value={card.front}
                           onChange={(e) => updateCard(card.id, 'front', e.target.value)}
-                          className="w-full rounded-lg border border-[#dfe8dc] bg-[#fefaf3] px-2.5 py-1.5 text-xs text-[#19251a] font-medium outline-none focus:border-[#84a282]"
+                          className="w-full rounded-lg border border-[#22396f] bg-[#0d1c42] px-2.5 py-1.5 text-xs text-[#fcf1d0] font-medium outline-none focus:border-[#fcf1d0]"
                         />
                       </div>
 
                       <div>
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-[#586c5a]">
-                          Correct Answer / Key Findings
+                        <label className="text-[10px] font-bold uppercase tracking-wider text-[#fcf1d0]/60">
+                          Correct Answer / Definition
                         </label>
                         <textarea
                           rows={2}
                           value={card.back}
                           onChange={(e) => updateCard(card.id, 'back', e.target.value)}
-                          className="w-full rounded-lg border border-[#dfe8dc] bg-[#fefaf3] px-2.5 py-1.5 text-xs text-[#19251a] font-medium outline-none focus:border-[#84a282]"
+                          className="w-full rounded-lg border border-[#22396f] bg-[#0d1c42] px-2.5 py-1.5 text-xs text-[#fcf1d0] font-medium outline-none focus:border-[#fcf1d0]"
                         />
                       </div>
 
                       {card.distractors && card.distractors.length > 0 && (
                         <div>
-                          <label className="text-[10px] font-bold uppercase tracking-wider text-[#586c5a]">
-                            Quiz Distractors
+                          <label className="text-[10px] font-bold uppercase tracking-wider text-[#fcf1d0]/60">
+                            Distractors
                           </label>
                           <div className="flex flex-wrap gap-1.5 mt-1">
                             {card.distractors.map((d, dIdx) => (
-                              <span key={dIdx} className="text-[10px] px-2 py-0.5 rounded-md bg-stone-100 text-stone-700 border border-stone-200">
-                                ❌ {d}
+                              <span key={dIdx} className="text-[10px] px-2 py-0.5 rounded-md bg-[#0d1c42] text-[#fcf1d0]/80 border border-[#22396f]">
+                                {d}
                               </span>
                             ))}
                           </div>
@@ -694,14 +747,14 @@ export default function PdfScannerModal({
 
                       {card.explanation && (
                         <div>
-                          <label className="text-[10px] font-bold uppercase tracking-wider text-[#84a282]">
-                            Clinical Rationale
+                          <label className="text-[10px] font-bold uppercase tracking-wider text-[#fcf1d0]/60">
+                            Key Rationale
                           </label>
                           <input
                             type="text"
                             value={card.explanation}
                             onChange={(e) => updateCard(card.id, 'explanation', e.target.value)}
-                            className="w-full rounded-lg border border-[#dfe8dc] bg-[#fefaf3] px-2.5 py-1 text-xs text-[#586c5a] italic outline-none focus:border-[#84a282]"
+                            className="w-full rounded-lg border border-[#22396f] bg-[#0d1c42] px-2.5 py-1 text-xs text-[#fcf1d0]/80 italic outline-none focus:border-[#fcf1d0]"
                           />
                         </div>
                       )}
@@ -711,21 +764,21 @@ export default function PdfScannerModal({
               </div>
 
               {/* Bottom Actions */}
-              <div className="pt-3 border-t border-[#dfe8dc] flex items-center gap-3">
+              <div className="pt-3 border-t border-[#22396f] flex items-center gap-3">
                 <button
                   type="button"
                   onClick={() => setScannedCards([])}
-                  className="rounded-2xl border border-[#dfe8dc] bg-white px-4 py-3 text-xs font-bold text-[#586c5a] hover:bg-[#ebf2e9] cursor-pointer transition"
+                  className="rounded-2xl border border-[#22396f] bg-[#010736] px-4 py-3 text-xs font-bold text-[#fcf1d0]/80 hover:bg-[#0d1c42] cursor-pointer transition"
                 >
                   Scan Another PDF
                 </button>
                 <button
                   type="button"
                   onClick={handleSaveDeck}
-                  className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-[#84a282] hover:bg-[#6e8c6c] py-3 text-xs font-bold text-white shadow-md transition active:scale-98 cursor-pointer"
+                  className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-[#fcf1d0] hover:bg-[#fcf1d0]/90 py-3 text-xs font-bold text-[#010736] shadow-md transition active:scale-98 cursor-pointer"
                 >
                   <CheckCircle className="h-4 w-4" />
-                  <span>Save Deck ({scannedCards.length} Clinical Cards)</span>
+                  <span>Save Deck ({scannedCards.length} Cards)</span>
                 </button>
               </div>
             </div>

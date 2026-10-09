@@ -29,10 +29,14 @@
 }
 
 @theme inline {
+  --color-navy-deep: #010736;
+  --color-navy-surface: #0d1c42;
+  --color-navy-cobalt: #22396f;
+  --color-cream-parchment: #fcf1d0;
   --color-forest: #01472e;
   --color-sage: #ccd5ae;
   --color-olive: #e9edc9;
-  --color-cream: #fefae0;
+  --color-cream: #fcf1d0;
   --color-moss: #a3b18a;
   --font-anton: var(--font-anton), Impact, sans-serif;
   --font-inter: var(--font-inter), system-ui, -apple-system, sans-serif;

@@ -11,10 +11,8 @@ import {
   Download, 
   Play, 
   Check, 
-  Sparkles, 
   Layers, 
   BookOpen, 
-  HelpCircle,
   FileSpreadsheet
 } from 'lucide-react';
 import { deleteCardFromDeck } from '@/lib/deckService';
@@ -157,7 +155,7 @@ export default function DeckDetailModal({
     setIsAddingCard(false);
   };
 
-  // Export to CSV (Anki friendly)
+  // Export to CSV
   const handleExportCSV = () => {
     const header = 'Front,Back,Type,Explanation\n';
     const rows = cards.map((c) => {
@@ -187,25 +185,25 @@ export default function DeckDetailModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#010736]/85 backdrop-blur-md animate-in fade-in duration-200">
       <div 
-        className="relative w-full max-w-4xl max-h-[90vh] flex flex-col rounded-3xl bg-[#18202d] border border-white/10 shadow-2xl text-white overflow-hidden"
+        className="relative w-full max-w-4xl max-h-[90vh] flex flex-col rounded-3xl bg-[#0d1c42] border border-[#22396f] shadow-2xl text-[#fcf1d0] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/10 bg-[#1c2534]">
+        <div className="flex items-center justify-between p-6 border-b border-[#22396f] bg-[#010736]">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-300 border border-amber-400/20">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#0d1c42] text-[#fcf1d0] border border-[#22396f]">
               <Layers className="h-5 w-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-xl font-bold tracking-tight text-white">{deck.title}</h3>
-                <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-[10px] font-semibold text-amber-200">
+                <h3 className="text-xl font-bold tracking-tight text-[#fcf1d0]">{deck.title}</h3>
+                <span className="rounded-full bg-[#0d1c42] px-2.5 py-0.5 text-[10px] font-semibold text-[#fcf1d0] border border-[#22396f]">
                   {deck.category || 'General'}
                 </span>
               </div>
-              <p className="text-xs text-white/60">
+              <p className="text-xs text-[#fcf1d0]/60">
                 {cards.length} Total Cards • {deck.due_count || 0} Due for Review
               </p>
             </div>
@@ -217,7 +215,7 @@ export default function DeckDetailModal({
                 onClose();
                 onStartStudy(deck);
               }}
-              className="flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-bold text-zinc-950 shadow-md hover:bg-white/90 transition cursor-pointer"
+              className="flex items-center gap-1.5 rounded-full bg-[#fcf1d0] hover:bg-[#fcf1d0]/90 px-4 py-2 text-xs font-bold text-[#010736] shadow-md transition cursor-pointer"
             >
               <Play className="h-3 w-3 fill-current" />
               <span>Study Deck</span>
@@ -225,7 +223,7 @@ export default function DeckDetailModal({
 
             <button
               onClick={onClose}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white/70 hover:bg-white/20 hover:text-white transition cursor-pointer"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-[#010736] text-[#fcf1d0]/70 hover:text-[#fcf1d0] transition cursor-pointer border border-[#22396f]"
             >
               <X className="h-4 w-4" />
             </button>
@@ -233,17 +231,17 @@ export default function DeckDetailModal({
         </div>
 
         {/* Action Toolbar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 px-6 border-b border-white/10 bg-[#192230]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 px-6 border-b border-[#22396f] bg-[#010736]/60">
           
           {/* Search Input */}
           <div className="relative flex-1 sm:max-w-xs">
-            <Search className="absolute left-3.5 top-2.5 h-3.5 w-3.5 text-white/40" />
+            <Search className="absolute left-3.5 top-2.5 h-3.5 w-3.5 text-[#fcf1d0]/40" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search cards..."
-              className="w-full rounded-full bg-white/5 py-2 pl-9 pr-4 text-xs text-white placeholder:text-white/40 border border-white/10 focus:border-amber-400/50 focus:outline-none"
+              className="w-full rounded-full bg-[#010736] py-2 pl-9 pr-4 text-xs text-[#fcf1d0] placeholder-[#fcf1d0]/40 border border-[#22396f] focus:border-[#fcf1d0] focus:outline-none"
             />
           </div>
 
@@ -251,7 +249,7 @@ export default function DeckDetailModal({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsAddingCard(!isAddingCard)}
-              className="flex items-center gap-1.5 rounded-full bg-amber-500/20 hover:bg-amber-500/30 px-3.5 py-2 text-xs font-semibold text-amber-200 border border-amber-400/30 transition cursor-pointer"
+              className="flex items-center gap-1.5 rounded-full bg-[#010736] hover:bg-[#010736]/80 px-3.5 py-2 text-xs font-semibold text-[#fcf1d0] border border-[#22396f] transition cursor-pointer"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>{isAddingCard ? 'Cancel Add' : 'Add New Card'}</span>
@@ -259,19 +257,19 @@ export default function DeckDetailModal({
 
             <button
               onClick={handleExportCSV}
-              title="Export as CSV (Anki friendly)"
-              className="flex items-center gap-1.5 rounded-full bg-white/10 hover:bg-white/15 px-3 py-2 text-xs font-semibold text-white transition border border-white/10 cursor-pointer"
+              title="Export as CSV"
+              className="flex items-center gap-1.5 rounded-full bg-[#010736] hover:bg-[#010736]/80 px-3 py-2 text-xs font-semibold text-[#fcf1d0] transition border border-[#22396f] cursor-pointer"
             >
-              <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-300" />
+              <FileSpreadsheet className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Export CSV</span>
             </button>
 
             <button
               onClick={handleExportJSON}
               title="Export as JSON"
-              className="flex items-center gap-1.5 rounded-full bg-white/10 hover:bg-white/15 px-3 py-2 text-xs font-semibold text-white transition border border-white/10 cursor-pointer"
+              className="flex items-center gap-1.5 rounded-full bg-[#010736] hover:bg-[#010736]/80 px-3 py-2 text-xs font-semibold text-[#fcf1d0] transition border border-[#22396f] cursor-pointer"
             >
-              <Download className="h-3.5 w-3.5 text-blue-300" />
+              <Download className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">JSON</span>
             </button>
           </div>
@@ -282,9 +280,9 @@ export default function DeckDetailModal({
           
           {/* Add New Card Collapsible Form */}
           {isAddingCard && (
-            <form onSubmit={handleAddCard} className="rounded-2xl bg-[#222c3d] p-5 border border-amber-400/30 space-y-3.5 animate-in slide-in-from-top-2 duration-200">
-              <div className="flex items-center justify-between pb-2 border-b border-white/10">
-                <span className="text-xs font-bold text-amber-300 uppercase tracking-wide">
+            <form onSubmit={handleAddCard} className="rounded-2xl bg-[#010736] p-5 border border-[#22396f] space-y-3.5 animate-in slide-in-from-top-2 duration-200">
+              <div className="flex items-center justify-between pb-2 border-b border-[#22396f]">
+                <span className="text-xs font-bold text-[#fcf1d0] uppercase tracking-wide">
                   New Flashcard
                 </span>
                 
@@ -296,7 +294,9 @@ export default function DeckDetailModal({
                       type="button"
                       onClick={() => setNewType(t)}
                       className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition cursor-pointer ${
-                        newType === t ? 'bg-white text-zinc-950 font-bold' : 'bg-white/10 text-white/70 hover:text-white'
+                        newType === t 
+                          ? 'bg-[#fcf1d0] text-[#010736] font-bold' 
+                          : 'bg-[#0d1c42] text-[#fcf1d0]/70 border border-[#22396f]'
                       }`}
                     >
                       {t === 'multiple_choice' ? 'Multiple Choice' : t === 'fill_blank' ? 'Fill Blank' : 'Flip Card'}
@@ -306,64 +306,64 @@ export default function DeckDetailModal({
               </div>
 
               <div>
-                <label className="text-[11px] font-semibold text-white/70 uppercase">Question / Prompt *</label>
+                <label className="text-[11px] font-semibold text-[#fcf1d0]/70 uppercase">Question / Prompt *</label>
                 <textarea
                   required
                   rows={2}
                   value={newFront}
                   onChange={(e) => setNewFront(e.target.value)}
-                  placeholder="e.g. What is the mechanism of action of Albuterol?"
-                  className="mt-1 w-full rounded-xl bg-white/5 p-2.5 text-xs text-white border border-white/10 focus:border-amber-400/50 focus:outline-none"
+                  placeholder="e.g. What is the time complexity of QuickSort in the average case?"
+                  className="mt-1 w-full rounded-xl bg-[#0d1c42] p-2.5 text-xs text-[#fcf1d0] border border-[#22396f] focus:border-[#fcf1d0] focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="text-[11px] font-semibold text-white/70 uppercase">Correct Answer *</label>
+                <label className="text-[11px] font-semibold text-[#fcf1d0]/70 uppercase">Correct Answer *</label>
                 <input
                   type="text"
                   required
                   value={newBack}
                   onChange={(e) => setNewBack(e.target.value)}
-                  placeholder="e.g. Short-acting Beta-2 adrenergic receptor agonist"
-                  className="mt-1 w-full rounded-xl bg-white/5 p-2.5 text-xs text-white border border-white/10 focus:border-amber-400/50 focus:outline-none"
+                  placeholder="e.g. O(n log n)"
+                  className="mt-1 w-full rounded-xl bg-[#0d1c42] p-2.5 text-xs text-[#fcf1d0] border border-[#22396f] focus:border-[#fcf1d0] focus:outline-none"
                 />
               </div>
 
               {newType === 'multiple_choice' && (
                 <div className="space-y-2 pt-1">
-                  <label className="text-[11px] font-semibold text-white/70 uppercase">Incorrect Options (Distractors)</label>
+                  <label className="text-[11px] font-semibold text-[#fcf1d0]/70 uppercase">Distractors (Incorrect Options)</label>
                   <input
                     type="text"
                     value={newDistractor1}
                     onChange={(e) => setNewDistractor1(e.target.value)}
-                    placeholder="Distractor 1 (e.g. Muscarinic antagonist)"
-                    className="w-full rounded-xl bg-white/5 p-2 text-xs text-white border border-white/10"
+                    placeholder="Distractor 1 (e.g. O(n^2))"
+                    className="w-full rounded-xl bg-[#0d1c42] p-2 text-xs text-[#fcf1d0] border border-[#22396f]"
                   />
                   <input
                     type="text"
                     value={newDistractor2}
                     onChange={(e) => setNewDistractor2(e.target.value)}
-                    placeholder="Distractor 2 (e.g. Inhaled corticosteroid)"
-                    className="w-full rounded-xl bg-white/5 p-2 text-xs text-white border border-white/10"
+                    placeholder="Distractor 2 (e.g. O(log n))"
+                    className="w-full rounded-xl bg-[#0d1c42] p-2 text-xs text-[#fcf1d0] border border-[#22396f]"
                   />
                   <input
                     type="text"
                     value={newDistractor3}
                     onChange={(e) => setNewDistractor3(e.target.value)}
-                    placeholder="Distractor 3 (e.g. Leukotriene modifier)"
-                    className="w-full rounded-xl bg-white/5 p-2 text-xs text-white border border-white/10"
+                    placeholder="Distractor 3 (e.g. O(n))"
+                    className="w-full rounded-xl bg-[#0d1c42] p-2 text-xs text-[#fcf1d0] border border-[#22396f]"
                   />
                 </div>
               )}
 
               <div>
-                <label className="text-[11px] font-semibold text-white/70 uppercase">Explanation / Clinical Note</label>
+                <label className="text-[11px] font-semibold text-[#fcf1d0]/70 uppercase">Explanation / Key Takeaway</label>
                 <input
                   type="text"
                   value={newExplanation}
                   onChange={(e) => setNewExplanation(e.target.value)}
-                  placeholder="Brief rationale or clinical pearl..."
-                  className="mt-1 w-full rounded-xl bg-white/5 p-2.5 text-xs text-white border border-white/10"
+                  placeholder="Core principle or theoretical reason..."
+                  className="mt-1 w-full rounded-xl bg-[#0d1c42] p-2.5 text-xs text-[#fcf1d0] border border-[#22396f]"
                 />
               </div>
 
@@ -371,13 +371,13 @@ export default function DeckDetailModal({
                 <button
                   type="button"
                   onClick={() => setIsAddingCard(false)}
-                  className="rounded-xl px-4 py-2 text-xs font-semibold text-white/60 hover:text-white cursor-pointer"
+                  className="rounded-xl px-4 py-2 text-xs font-semibold text-[#fcf1d0]/60 hover:text-[#fcf1d0] cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex items-center gap-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 px-5 py-2 text-xs font-bold text-zinc-950 transition cursor-pointer"
+                  className="flex items-center gap-1.5 rounded-xl bg-[#fcf1d0] hover:bg-[#fcf1d0]/90 px-5 py-2 text-xs font-bold text-[#010736] transition cursor-pointer"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   <span>Save Card to Deck</span>
@@ -393,9 +393,9 @@ export default function DeckDetailModal({
 
               if (isEditing) {
                 return (
-                  <div key={card.id} className="rounded-2xl bg-[#222c3d] p-5 border border-amber-400/40 space-y-3">
+                  <div key={card.id} className="rounded-2xl bg-[#010736] p-5 border border-[#22396f] space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-amber-300">Editing Card #{idx + 1}</span>
+                      <span className="text-xs font-bold text-[#fcf1d0]">Editing Card #{idx + 1}</span>
                       <div className="flex gap-1">
                         {(['flashcard', 'multiple_choice', 'fill_blank'] as CardType[]).map((t) => (
                           <button
@@ -403,7 +403,9 @@ export default function DeckDetailModal({
                             type="button"
                             onClick={() => setEditType(t)}
                             className={`rounded-lg px-2 py-0.5 text-[10px] font-semibold transition cursor-pointer ${
-                              editType === t ? 'bg-white text-zinc-950 font-bold' : 'bg-white/10 text-white/70'
+                              editType === t 
+                                ? 'bg-[#fcf1d0] text-[#010736] font-bold' 
+                                : 'bg-[#0d1c42] text-[#fcf1d0]/70 border border-[#22396f]'
                             }`}
                           >
                             {t === 'multiple_choice' ? 'Multiple Choice' : t === 'fill_blank' ? 'Fill Blank' : 'Flip'}
@@ -413,45 +415,45 @@ export default function DeckDetailModal({
                     </div>
 
                     <div>
-                      <label className="text-[10px] uppercase font-bold text-white/60">Question</label>
+                      <label className="text-[10px] uppercase font-bold text-[#fcf1d0]/60">Question</label>
                       <textarea
                         rows={2}
                         value={editFront}
                         onChange={(e) => setEditFront(e.target.value)}
-                        className="w-full rounded-xl bg-white/5 p-2 text-xs text-white border border-white/10"
+                        className="w-full rounded-xl bg-[#0d1c42] p-2 text-xs text-[#fcf1d0] border border-[#22396f]"
                       />
                     </div>
 
                     <div>
-                      <label className="text-[10px] uppercase font-bold text-white/60">Answer</label>
+                      <label className="text-[10px] uppercase font-bold text-[#fcf1d0]/60">Answer</label>
                       <input
                         type="text"
                         value={editBack}
                         onChange={(e) => setEditBack(e.target.value)}
-                        className="w-full rounded-xl bg-white/5 p-2 text-xs text-white border border-white/10"
+                        className="w-full rounded-xl bg-[#0d1c42] p-2 text-xs text-[#fcf1d0] border border-[#22396f]"
                       />
                     </div>
 
                     <div>
-                      <label className="text-[10px] uppercase font-bold text-white/60">Explanation</label>
+                      <label className="text-[10px] uppercase font-bold text-[#fcf1d0]/60">Explanation</label>
                       <input
                         type="text"
                         value={editExplanation}
                         onChange={(e) => setEditExplanation(e.target.value)}
-                        className="w-full rounded-xl bg-white/5 p-2 text-xs text-white border border-white/10"
+                        className="w-full rounded-xl bg-[#0d1c42] p-2 text-xs text-[#fcf1d0] border border-[#22396f]"
                       />
                     </div>
 
                     <div className="flex justify-end gap-2 pt-1">
                       <button
                         onClick={() => setEditingCardId(null)}
-                        className="rounded-lg px-3 py-1.5 text-xs text-white/60 hover:text-white cursor-pointer"
+                        className="rounded-lg px-3 py-1.5 text-xs text-[#fcf1d0]/60 hover:text-[#fcf1d0] cursor-pointer"
                       >
                         Cancel
                       </button>
                       <button
                         onClick={() => handleSaveEdit(card.id)}
-                        className="flex items-center gap-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 px-4 py-1.5 text-xs font-bold text-white cursor-pointer"
+                        className="flex items-center gap-1 rounded-lg bg-[#fcf1d0] hover:bg-[#fcf1d0]/90 px-4 py-1.5 text-xs font-bold text-[#010736] cursor-pointer"
                       >
                         <Check className="h-3.5 w-3.5" />
                         <span>Save Changes</span>
@@ -464,14 +466,14 @@ export default function DeckDetailModal({
               return (
                 <div
                   key={card.id}
-                  className="group rounded-2xl bg-[#20293a] p-4.5 border border-white/10 hover:border-white/20 transition space-y-2.5"
+                  className="group rounded-2xl bg-[#010736] p-4.5 border border-[#22396f] hover:border-[#fcf1d0]/40 transition space-y-2.5"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-2">
-                      <span className="flex h-5 w-5 items-center justify-center rounded-md bg-white/10 text-[10px] font-bold text-white/60">
+                      <span className="flex h-5 w-5 items-center justify-center rounded-md bg-[#0d1c42] text-[10px] font-bold text-[#fcf1d0]/60 border border-[#22396f]">
                         {idx + 1}
                       </span>
-                      <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-amber-200">
+                      <span className="rounded-full bg-[#0d1c42] px-2 py-0.5 text-[10px] font-semibold text-[#fcf1d0] border border-[#22396f]">
                         {card.card_type === 'multiple_choice'
                           ? 'Multiple Choice'
                           : card.card_type === 'fill_blank'
@@ -483,14 +485,14 @@ export default function DeckDetailModal({
                     <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition">
                       <button
                         onClick={() => handleStartEdit(card)}
-                        className="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition cursor-pointer"
+                        className="p-1.5 rounded-lg hover:bg-[#0d1c42] text-[#fcf1d0]/60 hover:text-[#fcf1d0] transition cursor-pointer"
                         title="Edit Card"
                       >
                         <Edit3 className="h-3.5 w-3.5" />
                       </button>
                       <button
                         onClick={() => handleDeleteCard(card.id)}
-                        className="p-1.5 rounded-lg hover:bg-red-500/20 text-white/40 hover:text-red-400 transition cursor-pointer"
+                        className="p-1.5 rounded-lg hover:bg-rose-950/40 text-[#fcf1d0]/40 hover:text-rose-400 transition cursor-pointer"
                         title="Delete Card"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -499,16 +501,16 @@ export default function DeckDetailModal({
                   </div>
 
                   <div>
-                    <p className="text-xs font-bold text-white leading-relaxed">
+                    <p className="text-xs font-bold text-[#fcf1d0] leading-relaxed">
                       {card.front}
                     </p>
-                    <p className="mt-1 text-xs font-semibold text-emerald-300 leading-relaxed">
+                    <p className="mt-1 text-xs font-semibold text-[#fcf1d0]/80 leading-relaxed">
                       ✓ {card.back}
                     </p>
                   </div>
 
                   {card.explanation && (
-                    <p className="text-[11px] text-white/50 italic">
+                    <p className="text-[11px] text-[#fcf1d0]/50 italic">
                       Note: {card.explanation}
                     </p>
                   )}
@@ -516,7 +518,7 @@ export default function DeckDetailModal({
               );
             })
           ) : (
-            <div className="py-12 text-center text-white/50">
+            <div className="py-12 text-center text-[#fcf1d0]/50">
               <BookOpen className="mx-auto h-8 w-8 opacity-40 mb-2" />
               <p className="text-xs">No cards matching your search.</p>
             </div>

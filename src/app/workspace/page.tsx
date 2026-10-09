@@ -234,14 +234,9 @@ export default function WorkspacePage() {
   // 6. Save PDF Markups & Drawings
   const handleSaveMarkups = (updatedMarkups: Record<number, string>) => {
     if (!selectedDoc) return;
-    const updatedDoc: StudyDocument = {
-      ...selectedDoc,
-      markups: updatedMarkups,
-      updated_at: new Date().toISOString(),
-    };
-    setSelectedDoc(updatedDoc);
-    saveLocalDocument(updatedDoc);
-    setDocuments(getLocalDocuments());
+    selectedDoc.markups = updatedMarkups;
+    selectedDoc.updated_at = new Date().toISOString();
+    saveLocalDocument(selectedDoc);
   };
 
   // Add Note to Current PDF
@@ -364,33 +359,33 @@ export default function WorkspacePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fefaf3] bg-grid-clinical text-[#19251a] font-sans flex flex-col">
+    <div className="min-h-screen bg-[#010736] text-[#fcf1d0] font-sans flex flex-col">
       
       {/* 1. CLEAN TOP STUDY NAVBAR */}
-      <header className="sticky top-0 z-40 bg-[#fefaf3]/90 backdrop-blur-md border-b border-[#dfe8dc] px-4 sm:px-8 py-3 transition-colors">
+      <header className="sticky top-0 z-40 bg-[#0d1c42]/95 backdrop-blur-md border-b border-[#22396f] px-4 sm:px-8 py-3 transition-colors">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           {/* Brand */}
           <Link
             href="/"
-            className="inline-flex items-center gap-2.5 text-[#19251a] hover:opacity-85 transition-opacity"
+            className="inline-flex items-center gap-2.5 text-[#fcf1d0] hover:opacity-85 transition-opacity"
           >
-            <div className="w-8 h-8 rounded-xl bg-[#84a282] text-white flex items-center justify-center shadow-xs">
+            <div className="w-8 h-8 rounded-xl bg-[#22396f] text-[#fcf1d0] flex items-center justify-center shadow-xs">
               <BookOpen size={16} strokeWidth={2.4} />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-bold tracking-tight text-[#19251a] leading-none">ANOWLA</span>
-              <span className="text-[10px] font-semibold text-[#84a282] uppercase tracking-wider mt-0.5">Study Studio</span>
+              <span className="text-sm font-bold tracking-tight text-[#fcf1d0] leading-none">ANOWLA</span>
+              <span className="text-[10px] font-semibold text-[#fcf1d0]/60 uppercase tracking-wider mt-0.5">Study Studio</span>
             </div>
           </Link>
 
           {/* Central Workspace Switcher */}
-          <nav className="flex items-center p-1 rounded-xl bg-[#ebf2e9] border border-[#dfe8dc]/60">
-            <span className="px-3.5 py-1 rounded-lg text-xs font-bold bg-white text-[#19251a] shadow-xs">
+          <nav className="flex items-center p-1 rounded-xl bg-[#010736] border border-[#22396f]">
+            <span className="px-3.5 py-1 rounded-lg text-xs font-bold bg-[#22396f] text-[#fcf1d0] shadow-xs">
               Workspace
             </span>
             <Link
               href="/study"
-              className="px-3.5 py-1 rounded-lg text-xs font-semibold text-[#586c5a] hover:text-[#19251a] transition"
+              className="px-3.5 py-1 rounded-lg text-xs font-semibold text-[#fcf1d0]/70 hover:text-[#fcf1d0] transition"
             >
               Decks & Study
             </Link>
@@ -402,7 +397,7 @@ export default function WorkspacePage() {
               <button
                 type="button"
                 onClick={() => setIsGenerateQuizOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-xs transition active:scale-95 cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#fcf1d0] hover:bg-white text-[#010736] shadow-xs transition active:scale-95 cursor-pointer"
               >
                 <Zap size={13} />
                 <span>Generate Quiz</span>
@@ -412,9 +407,9 @@ export default function WorkspacePage() {
             <button
               type="button"
               onClick={() => setIsFolderModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-[#dfe8dc] text-[#19251a] hover:bg-[#ebf2e9] transition shadow-xs cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[#0d1c42] border border-[#22396f] text-[#fcf1d0] hover:bg-[#22396f] transition shadow-xs cursor-pointer"
             >
-              <FolderPlus size={14} className="text-[#84a282]" />
+              <FolderPlus size={14} className="text-[#fcf1d0]" />
               <span className="hidden sm:inline">New Folder</span>
             </button>
           </div>
@@ -423,7 +418,7 @@ export default function WorkspacePage() {
 
       {/* STATUS TOAST */}
       {statusToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#19251a] text-[#fefaf3] px-4 py-2.5 rounded-2xl shadow-xl border border-[#84a282]/40 text-xs font-semibold flex items-center gap-2 animate-fade-in">
+        <div className="fixed bottom-6 right-6 z-50 bg-[#0d1c42] text-[#fcf1d0] px-4 py-2.5 rounded-2xl shadow-xl border border-[#22396f] text-xs font-semibold flex items-center gap-2 animate-fade-in">
           <CheckCircle2 size={15} className="text-emerald-400" />
           <span>{statusToast}</span>
         </div>
@@ -435,12 +430,12 @@ export default function WorkspacePage() {
       {currentView === 'folders' && (
         <main className="max-w-7xl w-full mx-auto p-4 sm:p-8 space-y-6 flex-1">
           {/* Header Bar */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b border-[#dfe8dc]">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b border-[#22396f]">
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-[#19251a]">
-                Study Document Folders
+              <h1 className="text-xl font-bold tracking-tight text-[#fcf1d0]">
+                Study Folders
               </h1>
-              <p className="text-xs text-[#586c5a] mt-0.5">
+              <p className="text-xs text-[#fcf1d0]/70 mt-0.5">
                 Organize lecture PDFs, syllabus slides, and study notes by course or subject.
               </p>
             </div>
@@ -448,7 +443,7 @@ export default function WorkspacePage() {
             <button
               type="button"
               onClick={() => setIsFolderModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-xs transition cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#fcf1d0] hover:bg-white text-[#010736] shadow-xs transition cursor-pointer"
             >
               <FolderPlus size={14} />
               <span>Create Folder</span>
@@ -463,29 +458,29 @@ export default function WorkspacePage() {
                 <div
                   key={folder.id}
                   onClick={() => handleOpenFolder(folder)}
-                  className="group relative flex flex-col justify-between p-5 rounded-2xl bg-white border border-[#dfe8dc] hover:border-[#84a282] shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer"
+                  className="group relative flex flex-col justify-between p-5 rounded-2xl bg-[#0d1c42] border border-[#22396f] hover:border-[#fcf1d0]/60 shadow-xs hover:shadow-lg transition-all duration-200 cursor-pointer"
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <div className="w-10 h-10 rounded-xl bg-[#ebf2e9] text-[#84a282] flex items-center justify-center">
-                        <FolderIcon size={20} className="fill-[#84a282]/20 text-[#84a282]" />
+                      <div className="w-10 h-10 rounded-xl bg-[#010736] text-[#fcf1d0] flex items-center justify-center border border-[#22396f]">
+                        <FolderIcon size={20} className="fill-[#fcf1d0]/20 text-[#fcf1d0]" />
                       </div>
-                      <span className="rounded-full bg-[#fefaf3] px-2 py-0.5 text-[11px] font-semibold text-[#586c5a] border border-[#dfe8dc]">
+                      <span className="rounded-full bg-[#010736] px-2 py-0.5 text-[11px] font-semibold text-[#fcf1d0]/80 border border-[#22396f]">
                         {docCount} {docCount === 1 ? 'PDF' : 'PDFs'}
                       </span>
                     </div>
 
                     <div>
-                      <h3 className="text-sm font-bold text-[#19251a] group-hover:text-[#84a282] transition-colors">
+                      <h3 className="text-sm font-bold text-[#fcf1d0] group-hover:text-white transition-colors">
                         {folder.name}
                       </h3>
-                      <p className="text-xs text-[#586c5a] mt-0.5">
-                        Clinical documents & PDF files
+                      <p className="text-xs text-[#fcf1d0]/60 mt-0.5">
+                        Study documents and materials
                       </p>
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-[#dfe8dc] flex items-center justify-between text-xs font-semibold text-[#84a282]">
+                  <div className="mt-4 pt-3 border-t border-[#22396f] flex items-center justify-between text-xs font-semibold text-[#fcf1d0]">
                     <span>Open Folder</span>
                     <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -496,14 +491,14 @@ export default function WorkspacePage() {
             {/* "+ Create New Folder" Action Card */}
             <div
               onClick={() => setIsFolderModalOpen(true)}
-              className="flex flex-col items-center justify-center p-6 rounded-2xl border border-dashed border-[#b8cfb3] hover:border-[#84a282] bg-white/40 hover:bg-[#ebf2e9]/40 transition-all cursor-pointer min-h-[160px] text-center"
+              className="flex flex-col items-center justify-center p-6 rounded-2xl border border-dashed border-[#22396f] hover:border-[#fcf1d0]/60 bg-[#0d1c42]/40 hover:bg-[#0d1c42] transition-all cursor-pointer min-h-[160px] text-center"
             >
-              <div className="w-10 h-10 rounded-xl bg-[#ebf2e9] text-[#84a282] flex items-center justify-center mb-2.5">
+              <div className="w-10 h-10 rounded-xl bg-[#010736] text-[#fcf1d0] flex items-center justify-center mb-2.5 border border-[#22396f]">
                 <Plus size={18} />
               </div>
-              <h4 className="text-xs font-bold text-[#19251a]">Create New Folder</h4>
-              <p className="text-[11px] text-[#586c5a] mt-0.5">
-                Add specialty or rotation
+              <h4 className="text-xs font-bold text-[#fcf1d0]">Create New Folder</h4>
+              <p className="text-[11px] text-[#fcf1d0]/60 mt-0.5">
+                Add course or subject
               </p>
             </div>
           </div>
@@ -516,27 +511,27 @@ export default function WorkspacePage() {
       {currentView === 'folder_detail' && selectedFolder && (
         <main className="max-w-7xl w-full mx-auto p-4 sm:p-8 space-y-6 flex-1">
           {/* Folder Details Top Bar */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b border-[#dfe8dc]">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b border-[#22396f]">
             <div className="flex items-center gap-3">
               <button
                 type="button"
                 onClick={() => setCurrentView('folders')}
-                className="p-2 rounded-xl bg-white border border-[#dfe8dc] text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition cursor-pointer"
+                className="p-2 rounded-xl bg-[#0d1c42] border border-[#22396f] text-[#fcf1d0]/70 hover:text-[#fcf1d0] hover:bg-[#22396f] transition cursor-pointer"
                 title="Back to All Folders"
               >
                 <ChevronLeft size={16} />
               </button>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-xl font-bold tracking-tight text-[#19251a]">
+                  <h1 className="text-xl font-bold tracking-tight text-[#fcf1d0]">
                     {selectedFolder.name}
                   </h1>
-                  <span className="rounded-full bg-[#ebf2e9] px-2.5 py-0.5 text-[11px] font-semibold text-[#84a282]">
+                  <span className="rounded-full bg-[#22396f] px-2.5 py-0.5 text-[11px] font-semibold text-[#fcf1d0]">
                     {currentFolderDocs.length} {currentFolderDocs.length === 1 ? 'PDF' : 'PDFs'}
                   </span>
                 </div>
-                <p className="text-xs text-[#586c5a] mt-0.5">
-                  Study documents and lecture slides saved in this folder.
+                <p className="text-xs text-[#fcf1d0]/70 mt-0.5">
+                  Documents and lecture slides saved in this folder.
                 </p>
               </div>
             </div>
@@ -556,7 +551,7 @@ export default function WorkspacePage() {
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploadingPdf}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-xs transition cursor-pointer disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#fcf1d0] hover:bg-white text-[#010736] shadow-xs transition cursor-pointer disabled:opacity-50"
               >
                 {isUploadingPdf ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
                 <span>{isUploadingPdf ? `Uploading (${uploadProgress}%)...` : 'Upload PDF'}</span>
@@ -565,7 +560,7 @@ export default function WorkspacePage() {
               <button
                 type="button"
                 onClick={() => setCurrentView('folders')}
-                className="px-3 py-2 rounded-xl text-xs font-semibold bg-white border border-[#dfe8dc] text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition cursor-pointer"
+                className="px-3 py-2 rounded-xl text-xs font-semibold bg-[#0d1c42] border border-[#22396f] text-[#fcf1d0]/70 hover:text-[#fcf1d0] hover:bg-[#22396f] transition cursor-pointer"
               >
                 All Folders
               </button>
@@ -580,21 +575,21 @@ export default function WorkspacePage() {
                 <div
                   key={doc.id}
                   onClick={() => handleOpenPdf(doc)}
-                  className="group relative flex flex-col justify-between p-5 rounded-2xl bg-white border border-[#dfe8dc] hover:border-[#84a282] shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer"
+                  className="group relative flex flex-col justify-between p-5 rounded-2xl bg-[#0d1c42] border border-[#22396f] hover:border-[#fcf1d0]/60 shadow-xs hover:shadow-lg transition-all duration-200 cursor-pointer"
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-700 border border-rose-200/60 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-xl bg-[#010736] text-rose-300 border border-[#22396f] flex items-center justify-center">
                         <FileText size={20} />
                       </div>
                       <div className="flex items-center gap-1">
-                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#fefaf3] text-[#586c5a] border border-[#dfe8dc]">
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#010736] text-[#fcf1d0]/80 border border-[#22396f]">
                           PDF
                         </span>
                         <button
                           type="button"
                           onClick={(e) => handleDeleteDocument(e, doc.id)}
-                          className="p-1 rounded-lg text-[#586c5a] hover:text-rose-600 hover:bg-black/5 transition cursor-pointer"
+                          className="p-1 rounded-lg text-[#fcf1d0]/60 hover:text-rose-400 hover:bg-white/5 transition cursor-pointer"
                           title="Delete PDF"
                         >
                           <Trash2 size={13} />
@@ -603,24 +598,24 @@ export default function WorkspacePage() {
                     </div>
 
                     <div>
-                      <h3 className="text-sm font-bold text-[#19251a] group-hover:text-[#84a282] transition-colors line-clamp-1 leading-snug">
+                      <h3 className="text-sm font-bold text-[#fcf1d0] group-hover:text-white transition-colors line-clamp-1 leading-snug">
                         {doc.title}
                       </h3>
-                      <p className="text-[11px] text-[#586c5a] font-mono mt-0.5 truncate">
+                      <p className="text-[11px] text-[#fcf1d0]/60 font-mono mt-0.5 truncate">
                         {doc.file_name || `${doc.title}.pdf`}
                       </p>
                     </div>
 
                     {notesCount > 0 && (
                       <div className="pt-0.5">
-                        <span className="rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 px-2.5 py-0.5 text-[10px] font-semibold">
+                        <span className="rounded-full bg-[#010736] text-[#fcf1d0] border border-[#22396f] px-2.5 py-0.5 text-[10px] font-semibold">
                           📝 {notesCount} {notesCount === 1 ? 'note' : 'notes'}
                         </span>
                       </div>
                     )}
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-[#dfe8dc] flex items-center justify-between text-xs font-semibold text-[#84a282]">
+                  <div className="mt-4 pt-3 border-t border-[#22396f] flex items-center justify-between text-xs font-semibold text-[#fcf1d0]">
                     <span>Open PDF View</span>
                     <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -631,13 +626,13 @@ export default function WorkspacePage() {
             {/* Upload PDF Box in this folder */}
             <div
               onClick={() => fileInputRef.current?.click()}
-              className="flex flex-col items-center justify-center p-6 rounded-2xl border border-dashed border-[#b8cfb3] hover:border-[#84a282] bg-white/40 hover:bg-[#ebf2e9]/40 transition-all cursor-pointer min-h-[160px] text-center"
+              className="flex flex-col items-center justify-center p-6 rounded-2xl border border-dashed border-[#22396f] hover:border-[#fcf1d0]/60 bg-[#0d1c42]/40 hover:bg-[#0d1c42] transition-all cursor-pointer min-h-[160px] text-center"
             >
-              <div className="w-10 h-10 rounded-xl bg-[#ebf2e9] text-[#84a282] flex items-center justify-center mb-2.5">
+              <div className="w-10 h-10 rounded-xl bg-[#010736] text-[#fcf1d0] flex items-center justify-center mb-2.5 border border-[#22396f]">
                 <Upload size={18} />
               </div>
-              <h4 className="text-xs font-bold text-[#19251a]">Upload PDF to {selectedFolder.name}</h4>
-              <p className="text-[11px] text-[#586c5a] mt-0.5">
+              <h4 className="text-xs font-bold text-[#fcf1d0]">Upload PDF to {selectedFolder.name}</h4>
+              <p className="text-[11px] text-[#fcf1d0]/60 mt-0.5">
                 Drop or browse study materials and lecture slides
               </p>
             </div>
@@ -646,13 +641,16 @@ export default function WorkspacePage() {
       )}
 
       {/* ========================================================================= */}
-      {/* 3. SCREEN 3: AUTHENTIC PDF MARKUP & ANNOTATION VIEWER (REFERENCE SPEC)    */}
+      {/* 3. SCREEN 3: AUTHENTIC PDF MARKUP & ANNOTATION VIEWER                      */}
       {/* ========================================================================= */}
       {currentView === 'pdf_reader' && selectedDoc && (
         <PdfMarkupViewer
           document={selectedDoc}
           pdfBlobUrl={activePdfBlobUrl}
-          onBack={() => setCurrentView('folder_detail')}
+          onBack={() => {
+            setDocuments(getLocalDocuments());
+            setCurrentView('folder_detail');
+          }}
           onSaveMarkups={handleSaveMarkups}
           onGenerateQuiz={() => setIsGenerateQuizOpen(true)}
           notes={activeDocNotes}
@@ -665,25 +663,25 @@ export default function WorkspacePage() {
       {/* 4. MODAL: GENERATE PRACTICE QUIZ FROM PDF                                 */}
       {/* ========================================================================= */}
       {isGenerateQuizOpen && selectedDoc && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#141d16]/75 p-4 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#010736]/80 p-4 backdrop-blur-sm animate-fade-in">
           <div 
-            className="relative w-full max-w-lg rounded-3xl bg-[#fefaf3] p-6 shadow-2xl border border-[#dfe8dc] text-[#19251a]"
+            className="relative w-full max-w-lg rounded-3xl bg-[#0d1c42] p-6 shadow-2xl border border-[#22396f] text-[#fcf1d0]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-[#dfe8dc] pb-4">
+            <div className="flex items-center justify-between border-b border-[#22396f] pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-[#84a282] text-white flex items-center justify-center shadow-md shadow-[#84a282]/30">
+                <div className="w-10 h-10 rounded-2xl bg-[#22396f] text-[#fcf1d0] flex items-center justify-center shadow-md">
                   <Zap size={18} />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-[#19251a]">Generate Practice Quiz</h3>
-                  <p className="text-xs text-[#586c5a]">Synthesize questions from {selectedDoc.title}</p>
+                  <h3 className="text-base font-bold text-[#fcf1d0]">Generate Practice Quiz</h3>
+                  <p className="text-xs text-[#fcf1d0]/70">Synthesize questions from {selectedDoc.title}</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setIsGenerateQuizOpen(false)}
-                className="p-1 rounded-full text-[#586c5a] hover:bg-black/5 cursor-pointer"
+                className="p-1 rounded-full text-[#fcf1d0]/70 hover:text-[#fcf1d0] hover:bg-white/5 cursor-pointer"
               >
                 <X size={16} />
               </button>
@@ -692,7 +690,7 @@ export default function WorkspacePage() {
             <div className="mt-5 space-y-4">
               {/* Question Count Target */}
               <div>
-                <label className="text-xs font-bold text-[#19251a] uppercase tracking-wider block mb-1.5">
+                <label className="text-xs font-bold text-[#fcf1d0] uppercase tracking-wider block mb-1.5">
                   Question Quantity: {targetQuestionCount}
                 </label>
                 <div className="grid grid-cols-4 gap-2">
@@ -703,8 +701,8 @@ export default function WorkspacePage() {
                       onClick={() => setTargetQuestionCount(cnt)}
                       className={`py-2 rounded-xl text-xs font-bold border transition cursor-pointer ${
                         targetQuestionCount === cnt
-                          ? 'bg-[#84a282] text-white border-[#84a282]'
-                          : 'bg-white text-[#586c5a] border-[#dfe8dc] hover:bg-[#ebf2e9]'
+                          ? 'bg-[#22396f] text-[#fcf1d0] border-[#fcf1d0]'
+                          : 'bg-[#010736] text-[#fcf1d0]/70 border-[#22396f] hover:bg-white/5'
                       }`}
                     >
                       {cnt} Qs
@@ -715,7 +713,7 @@ export default function WorkspacePage() {
 
               {/* Quiz Format */}
               <div>
-                <label className="text-xs font-bold text-[#19251a] uppercase tracking-wider block mb-1.5">
+                <label className="text-xs font-bold text-[#fcf1d0] uppercase tracking-wider block mb-1.5">
                   Format
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -724,12 +722,12 @@ export default function WorkspacePage() {
                     onClick={() => setQuizFormat('all')}
                     className={`p-3 rounded-2xl text-left border transition cursor-pointer ${
                       quizFormat === 'all'
-                        ? 'bg-[#84a282] text-white border-[#84a282]'
-                        : 'bg-white text-[#19251a] border-[#dfe8dc] hover:bg-[#ebf2e9]'
+                        ? 'bg-[#22396f] text-[#fcf1d0] border-[#fcf1d0]'
+                        : 'bg-[#010736] text-[#fcf1d0] border-[#22396f] hover:bg-white/5'
                     }`}
                   >
                     <span className="block text-xs font-bold">Quiz + Flashcards</span>
-                    <span className={`text-[10px] block mt-0.5 ${quizFormat === 'all' ? 'text-white/80' : 'text-[#586c5a]'}`}>
+                    <span className={`text-[10px] block mt-0.5 ${quizFormat === 'all' ? 'text-[#fcf1d0]/90' : 'text-[#fcf1d0]/60'}`}>
                       Multiple-choice and recall cards
                     </span>
                   </button>
@@ -739,22 +737,22 @@ export default function WorkspacePage() {
                     onClick={() => setQuizFormat('multiple_choice')}
                     className={`p-3 rounded-2xl text-left border transition cursor-pointer ${
                       quizFormat === 'multiple_choice'
-                        ? 'bg-[#84a282] text-white border-[#84a282]'
-                        : 'bg-white text-[#19251a] border-[#dfe8dc] hover:bg-[#ebf2e9]'
+                        ? 'bg-[#22396f] text-[#fcf1d0] border-[#fcf1d0]'
+                        : 'bg-[#010736] text-[#fcf1d0] border-[#22396f] hover:bg-white/5'
                     }`}
                   >
                     <span className="block text-xs font-bold">Multiple-Choice Only</span>
-                    <span className={`text-[10px] block mt-0.5 ${quizFormat === 'multiple_choice' ? 'text-white/80' : 'text-[#586c5a]'}`}>
-                      Clinical scenarios with 4 choices
+                    <span className={`text-[10px] block mt-0.5 ${quizFormat === 'multiple_choice' ? 'text-[#fcf1d0]/90' : 'text-[#fcf1d0]/60'}`}>
+                      Standard 4-choice questions
                     </span>
                   </button>
                 </div>
               </div>
 
               {/* Destination Folder */}
-              <div className="p-3 rounded-xl bg-white border border-[#dfe8dc] flex items-center justify-between text-xs">
-                <span className="text-[#586c5a]">Saving into folder:</span>
-                <span className="font-bold text-[#84a282]">{selectedFolder?.name}</span>
+              <div className="p-3 rounded-xl bg-[#010736] border border-[#22396f] flex items-center justify-between text-xs">
+                <span className="text-[#fcf1d0]/70">Saving into folder:</span>
+                <span className="font-bold text-[#fcf1d0]">{selectedFolder?.name}</span>
               </div>
 
               {/* Submit */}
@@ -763,7 +761,7 @@ export default function WorkspacePage() {
                   type="button"
                   onClick={handleGenerateQuiz}
                   disabled={isGeneratingQuiz}
-                  className="w-full py-3.5 rounded-2xl bg-[#84a282] hover:bg-[#6e8c6c] text-white font-bold text-xs shadow-md shadow-[#84a282]/25 transition active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3.5 rounded-2xl bg-[#fcf1d0] hover:bg-white text-[#010736] font-bold text-xs shadow-md transition active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {isGeneratingQuiz ? (
                     <>
@@ -781,13 +779,13 @@ export default function WorkspacePage() {
 
               {/* When questions are generated */}
               {generatedCards.length > 0 && (
-                <div className="pt-2 border-t border-[#dfe8dc] flex items-center justify-between">
-                  <span className="text-xs font-bold text-[#19251a]">
+                <div className="pt-2 border-t border-[#22396f] flex items-center justify-between">
+                  <span className="text-xs font-bold text-[#fcf1d0]">
                     {generatedCards.length} Questions Saved!
                   </span>
                   <Link
                     href="/study"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-[#19251a] text-white hover:bg-black transition cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-[#fcf1d0] text-[#010736] hover:bg-white transition cursor-pointer"
                   >
                     <Play size={12} className="fill-current" />
                     <span>Start Practice Session</span>
@@ -799,7 +797,7 @@ export default function WorkspacePage() {
         </div>
       )}
 
-      {/* 5. MODAL: CREATE CLINICAL FOLDER */}
+      {/* 5. MODAL: CREATE STUDY FOLDER */}
       {isFolderModalOpen && (
         <CreateFolderModal
           isOpen={isFolderModalOpen}

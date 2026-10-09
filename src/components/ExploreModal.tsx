@@ -1,19 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Deck, Card } from '@/types';
+import { Deck } from '@/types';
 import { 
   X, 
   Compass, 
   Search, 
   Download, 
   Layers, 
-  Sparkles, 
   Check, 
-  BookOpen, 
-  Heart,
-  Users,
-  ChevronRight
+  BookOpen
 } from 'lucide-react';
 
 interface ExploreModalProps {
@@ -31,23 +27,23 @@ interface CommunityDeck extends Deck {
 const COMMUNITY_DECKS: CommunityDeck[] = [
   {
     id: 'comm_1',
-    title: 'USMLE Step 1: High-Yield Autonomic Pharmacology',
-    description: 'Adrenergic and cholinergic receptor physiology, agonists, antagonists, and toxicities.',
-    category: 'Pharmacology',
-    author: 'Dr. Marcus Vance',
-    authorBadge: 'MD Resident',
-    downloadsCount: 1420,
-    cards_count: 5,
-    due_count: 5,
+    title: 'Algorithms & Data Structures: Graphs & Trees',
+    description: 'Graph representations, BFS/DFS traversals, Dijkstra shortest path, and asymptotic Big-O runtime.',
+    category: 'Computer Science',
+    author: 'Elena Rostova',
+    authorBadge: 'CS Faculty Fellow',
+    downloadsCount: 3420,
+    cards_count: 4,
+    due_count: 4,
     created_at: new Date().toISOString(),
     cards: [
       {
         id: 'c1_1',
         deck_id: 'comm_1',
         card_type: 'flashcard',
-        front: 'What receptor mediates bronchial smooth muscle relaxation?',
-        back: 'Beta-2 Adrenergic Receptor (Gs coupled, increases intracellular cAMP).',
-        explanation: 'Stimulation by agonists like Albuterol causes bronchodilation.',
+        front: 'What is the time complexity of Dijkstra algorithm using a Min-Heap / Binary Priority Queue?',
+        back: 'O((V + E) log V), where V is the number of vertices and E is the number of edges.',
+        explanation: 'Each vertex is extracted from the heap once in O(V log V), and every edge relaxation updates the heap in O(E log V).',
         ease_factor: 2.5,
         interval: 0,
         repetitions: 0,
@@ -58,10 +54,10 @@ const COMMUNITY_DECKS: CommunityDeck[] = [
         id: 'c1_2',
         deck_id: 'comm_1',
         card_type: 'multiple_choice',
-        front: 'Which drug is the first-line treatment for acute anaphylactic shock?',
-        back: 'Epinephrine (IM 1:1000)',
-        distractors: ['Diphenhydramine', 'Albuterol nebulizer', 'Methylprednisolone'],
-        explanation: 'Epinephrine acts on alpha-1 (vasoconstriction), beta-1 (inotropic), and beta-2 (bronchodilation).',
+        front: 'Which traversal method visits tree nodes level-by-level using a First-In-First-Out (FIFO) queue?',
+        back: 'Breadth-First Search (BFS)',
+        distractors: ['Depth-First Search (DFS)', 'Post-Order Traversal', 'In-Order Traversal'],
+        explanation: 'BFS explores neighbor vertices level by level using a FIFO queue, unlike DFS which relies on recursion or a LIFO stack.',
         ease_factor: 2.5,
         interval: 0,
         repetitions: 0,
@@ -72,9 +68,9 @@ const COMMUNITY_DECKS: CommunityDeck[] = [
         id: 'c1_3',
         deck_id: 'comm_1',
         card_type: 'fill_blank',
-        front: 'Atropine toxicity presents with the classic mnemonic: "Hot as a hare, blind as a bat, dry as a bone, red as a beet, mad as a ________."',
-        back: 'hatter',
-        explanation: 'Classic presentation of antimuscarinic / anticholinergic toxidrome.',
+        front: 'A Directed Acyclic Graph (DAG) can have its vertices ordered linearly such that for every directed edge u -> v, u comes before v. This ordering is called a ________ sort.',
+        back: 'topological',
+        explanation: 'Topological sorting is only possible on DAGs and is widely used for task scheduling and dependency resolution.',
         ease_factor: 2.5,
         interval: 0,
         repetitions: 0,
@@ -85,23 +81,9 @@ const COMMUNITY_DECKS: CommunityDeck[] = [
         id: 'c1_4',
         deck_id: 'comm_1',
         card_type: 'flashcard',
-        front: 'What is the primary mechanism of action of Phentolamine?',
-        back: 'Non-selective Alpha-1 and Alpha-2 adrenergic receptor blocker.',
-        explanation: 'Used to treat pheochromocytoma-induced hypertensive crises and extravasation of vasopressors.',
-        ease_factor: 2.5,
-        interval: 0,
-        repetitions: 0,
-        due_date: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-      },
-      {
-        id: 'c1_5',
-        deck_id: 'comm_1',
-        card_type: 'multiple_choice',
-        front: 'Which beta-blocker is cardioselective (Beta-1 selective)?',
-        back: 'Metoprolol',
-        distractors: ['Propranolol', 'Timolol', 'Nadolol'],
-        explanation: 'A-M beta blockers (Atenolol, Betaxolol, Bisoprolol, Metoprolol) are Beta-1 selective.',
+        front: 'What property differentiates an AVL Tree from an arbitrary Binary Search Tree?',
+        back: 'Strict self-balancing: the heights of the two child subtrees of any node differ by at most one.',
+        explanation: 'This balance factor guarantee ensures O(log n) worst-case time for search, insertion, and deletion.',
         ease_factor: 2.5,
         interval: 0,
         repetitions: 0,
@@ -112,12 +94,12 @@ const COMMUNITY_DECKS: CommunityDeck[] = [
   },
   {
     id: 'comm_2',
-    title: 'Emergency Medicine: ACLS Cardiac Arrest & Arrhythmias',
-    description: 'Shockable vs non-shockable rhythms, reversible causes (Hs and Ts), and drug dosages.',
-    category: 'Emergency',
-    author: 'Sarah Chen, RN',
-    authorBadge: 'Trauma ICU',
-    downloadsCount: 980,
+    title: 'Cognitive Science: Memory Systems & Retrieval',
+    description: 'Working memory architecture, Ebbinghaus forgetting dynamics, dual-coding theory, and consolidation.',
+    category: 'Cognitive Science',
+    author: 'Julian Thorne',
+    authorBadge: 'Cognitive Researcher',
+    downloadsCount: 2890,
     cards_count: 4,
     due_count: 4,
     created_at: new Date().toISOString(),
@@ -126,10 +108,10 @@ const COMMUNITY_DECKS: CommunityDeck[] = [
         id: 'c2_1',
         deck_id: 'comm_2',
         card_type: 'multiple_choice',
-        front: 'Which rhythms in cardiac arrest are shockable with a defibrillator?',
-        back: 'Ventricular Fibrillation (VF) and Pulseless Ventricular Tachycardia (pVT)',
-        distractors: ['PEA and Asystole', 'Asystole only', 'Sinus Bradycardia and Junctional Rhythm'],
-        explanation: 'Only disorganized ventricular tachyarrhythmias (VF/pVT) respond to electrical defibrillation.',
+        front: 'What cognitive phenomenon describes superior long-term retention achieved by testing memory rather than passive re-reading?',
+        back: 'The Testing Effect (Retrieval Practice)',
+        distractors: ['The Framing Effect', 'The Primacy Bias', 'The Zeigarnik Effect'],
+        explanation: 'Active recall strengthens neural retrieval pathways and reconstructs memory traces, significantly outperforming passive review.',
         ease_factor: 2.5,
         interval: 0,
         repetitions: 0,
@@ -140,9 +122,9 @@ const COMMUNITY_DECKS: CommunityDeck[] = [
         id: 'c2_2',
         deck_id: 'comm_2',
         card_type: 'flashcard',
-        front: 'What is the standard first dose of Amiodarone in refractory shockable cardiac arrest?',
-        back: '300 mg IV/IO push (followed by 150 mg second dose).',
-        explanation: 'Given after the 3rd defibrillation attempt in VF/pVT.',
+        front: 'What are the three core slave components of Baddeley and Hitch multicomponent working memory model?',
+        back: 'The Phonological Loop, the Visuospatial Sketchpad, and the Episodic Buffer (coordinated by the Central Executive).',
+        explanation: 'The central executive manages attentional focus while the slave systems temporarily store modality-specific representations.',
         ease_factor: 2.5,
         interval: 0,
         repetitions: 0,
@@ -153,9 +135,9 @@ const COMMUNITY_DECKS: CommunityDeck[] = [
         id: 'c2_3',
         deck_id: 'comm_2',
         card_type: 'fill_blank',
-        front: 'The reversible causes of PEA cardiac arrest are grouped into the 5 Hs and 5 ________.',
-        back: 'Ts',
-        explanation: 'Tension pneumothorax, Tamponade, Toxins, Thrombosis pulmonary, Thrombosis coronary.',
+        front: 'Hermann Ebbinghaus discovered that memory decay follows an exponential curve, which can be flattened through ________ review intervals.',
+        back: 'spaced',
+        explanation: 'Expanding spaced intervals intercept forgetting just as memory accessibility diminishes, maximizing consolidation.',
         ease_factor: 2.5,
         interval: 0,
         repetitions: 0,
@@ -166,9 +148,9 @@ const COMMUNITY_DECKS: CommunityDeck[] = [
         id: 'c2_4',
         deck_id: 'comm_2',
         card_type: 'flashcard',
-        front: 'What is the recommended compression depth for adult CPR per AHA guidelines?',
-        back: 'At least 2 inches (5 cm) but not more than 2.4 inches (6 cm).',
-        explanation: 'Rate should be 100 to 120 compressions per minute with complete chest recoil.',
+        front: 'What is Long-Term Potentiation (LTP)?',
+        back: 'A persistent strengthening of synapses based on recent patterns of activity, producing a long-lasting increase in signal transmission.',
+        explanation: 'LTP is widely considered one of the primary cellular mechanisms underlying learning and memory formation in the hippocampus.',
         ease_factor: 2.5,
         interval: 0,
         repetitions: 0,
@@ -179,23 +161,23 @@ const COMMUNITY_DECKS: CommunityDeck[] = [
   },
   {
     id: 'comm_3',
-    title: 'Pediatric Nursing: Milestones, Vital Signs & Dehydration',
-    description: 'Fontanelle assessment, dehydration severity, pediatric vitals, and developmental reflexes.',
-    category: 'Pediatrics',
-    author: 'Sarah Jenkins, BSN, RN',
-    authorBadge: 'Pediatric Nurse Specialist',
-    downloadsCount: 2310,
-    cards_count: 4,
-    due_count: 4,
+    title: 'Constitutional Law & Legal Jurisprudence',
+    description: 'Judicial review standards, due process, equal protection tiers of scrutiny, and statutory interpretation.',
+    category: 'Law & Governance',
+    author: 'Clara Sterling',
+    authorBadge: 'JD Scholar',
+    downloadsCount: 1980,
+    cards_count: 3,
+    due_count: 3,
     created_at: new Date().toISOString(),
     cards: [
       {
         id: 'c3_1',
         deck_id: 'comm_3',
         card_type: 'flashcard',
-        front: 'At what age does the anterior fontanelle typically close in a healthy infant?',
-        back: 'Between 12 and 18 months of age (the posterior fontanelle closes by 2 to 3 months).',
-        explanation: 'A sunken anterior fontanelle suggests severe dehydration; a bulging fontanelle at rest indicates increased intracranial pressure.',
+        front: 'What landmark decision established the power of judicial review in United States constitutional jurisprudence?',
+        back: 'Marbury v. Madison (1803)',
+        explanation: 'Chief Justice John Marshall declared that it is emphatically the province and duty of the judicial department to say what the law is.',
         ease_factor: 2.5,
         interval: 0,
         repetitions: 0,
@@ -206,14 +188,10 @@ const COMMUNITY_DECKS: CommunityDeck[] = [
         id: 'c3_2',
         deck_id: 'comm_3',
         card_type: 'multiple_choice',
-        front: 'Which clinical finding is the most sensitive and earliest indicator of severe dehydration in an infant?',
-        back: 'Tachycardia and prolonged capillary refill (> 3 seconds)',
-        distractors: [
-          'Hypotension (late, decompensated sign)',
-          'Flushed dry skin with fever',
-          'Bradycardia with hypertension'
-        ],
-        explanation: 'Infants compensate for hypovolemia by increasing heart rate. Hypotension is a late sign preceding cardiovascular collapse.',
+        front: 'Under equal protection analysis, what standard of review applies to government classifications based on suspect classifications such as race or national origin?',
+        back: 'Strict Scrutiny',
+        distractors: ['Rational Basis Review', 'Intermediate Scrutiny', 'Arbitrary and Capricious Standard'],
+        explanation: 'Strict scrutiny requires the government to prove the law is narrowly tailored to achieve a compelling governmental interest.',
         ease_factor: 2.5,
         interval: 0,
         repetitions: 0,
@@ -224,22 +202,9 @@ const COMMUNITY_DECKS: CommunityDeck[] = [
         id: 'c3_3',
         deck_id: 'comm_3',
         card_type: 'fill_blank',
-        front: 'The Moro (startle) reflex should normally disappear by ________ months of age.',
-        back: '4',
-        explanation: 'Persistence of primitive reflexes like Moro or Palmar grasp beyond 4-6 months signals potential neurological dysfunction or cerebral palsy.',
-        ease_factor: 2.5,
-        interval: 0,
-        repetitions: 0,
-        due_date: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-      },
-      {
-        id: 'c3_4',
-        deck_id: 'comm_3',
-        card_type: 'flashcard',
-        front: 'What is the classic triad of symptoms seen in pediatric Intussusception?',
-        back: 'Severe colicky abdominal pain, sausage-shaped right upper quadrant mass, and "currant jelly" stools.',
-        explanation: 'Telescoping of bowel segment compromises venous blood flow, leading to mucosal sloughing with blood and mucus (currant jelly stool).',
+        front: 'The doctrine that courts should follow established precedent rather than overturn settled judicial decisions is known as stare ________.',
+        back: 'decisis',
+        explanation: 'Stare decisis promotes legal stability, predictability, and judicial integrity.',
         ease_factor: 2.5,
         interval: 0,
         repetitions: 0,
@@ -250,24 +215,23 @@ const COMMUNITY_DECKS: CommunityDeck[] = [
   },
   {
     id: 'comm_4',
-    title: 'Neuroanatomy: Cranial Nerves & Brainstem Reflexes',
-    description: 'All 12 cranial nerves, functional modalities, exit foramina, and clinical lesion deficits.',
-    category: 'Neuroscience',
-    author: 'Emily Watson',
-    authorBadge: 'Neurology MS3',
-    downloadsCount: 1670,
-    cards_count: 4,
-    due_count: 4,
+    title: 'Molecular Biology & Gene Expression',
+    description: 'DNA replication mechanics, transcription initiation, mRNA splicing, epigenetic histone marks, and CRISPR.',
+    category: 'Biological Sciences',
+    author: 'Dr. Michael Chen',
+    authorBadge: 'Postdoctoral Fellow',
+    downloadsCount: 2450,
+    cards_count: 3,
+    due_count: 3,
     created_at: new Date().toISOString(),
     cards: [
       {
         id: 'c4_1',
         deck_id: 'comm_4',
-        card_type: 'multiple_choice',
-        front: 'Which cranial nerve carries sensory afferents for the corneal blink reflex?',
-        back: 'CN V1 (Ophthalmic division of Trigeminal Nerve)',
-        distractors: ['CN VII (Facial Nerve)', 'CN II (Optic Nerve)', 'CN III (Oculomotor Nerve)'],
-        explanation: 'CN V1 is the sensory limb; CN VII (Facial) mediates the motor efferent blink.',
+        card_type: 'flashcard',
+        front: 'What enzyme synthesizes the short RNA primers required for DNA polymerase during lagging strand synthesis?',
+        back: 'DNA Primase (part of the primosome complex).',
+        explanation: 'DNA polymerase cannot initiate de novo synthesis; it requires a free 3-prime OH group provided by the RNA primer.',
         ease_factor: 2.5,
         interval: 0,
         repetitions: 0,
@@ -277,10 +241,11 @@ const COMMUNITY_DECKS: CommunityDeck[] = [
       {
         id: 'c4_2',
         deck_id: 'comm_4',
-        card_type: 'flashcard',
-        front: 'A patient has deviation of the uvula to the right. Which cranial nerve is impaired?',
-        back: 'Left CN X (Left Vagus Nerve).',
-        explanation: 'The uvula always deviates away from the side of the vagus nerve lesion.',
+        card_type: 'multiple_choice',
+        front: 'Which epigenetic modification on histone tails is most universally correlated with open, transcriptionally active chromatin (euchromatin)?',
+        back: 'Histone Acetylation (e.g. via Histone Acetyltransferases / HATs)',
+        distractors: ['DNA Hypermethylation', 'Histone Deacetylation', 'Ubiquitination of H2A'],
+        explanation: 'Acetylation neutralizes the positive charge on lysine residues, weakening electrostatic attraction to negatively charged DNA.',
         ease_factor: 2.5,
         interval: 0,
         repetitions: 0,
@@ -291,9 +256,36 @@ const COMMUNITY_DECKS: CommunityDeck[] = [
         id: 'c4_3',
         deck_id: 'comm_4',
         card_type: 'fill_blank',
-        front: 'The Trochlear nerve (CN IV) innervates the ________ oblique extraocular muscle.',
-        back: 'superior',
-        explanation: 'Mnemonic: LR6 SO4 R3 (Lateral Rectus: VI, Superior Oblique: IV, Rest: III).',
+        front: 'In CRISPR-Cas9 genome editing, the Cas9 endonuclease introduces a double-strand break adjacent to a short sequence known as the ________ (protospacer adjacent motif).',
+        back: 'PAM',
+        explanation: 'For SpCas9, the canonical PAM sequence is 5-prime NGG 3-prime.',
+        ease_factor: 2.5,
+        interval: 0,
+        repetitions: 0,
+        due_date: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+      },
+    ],
+  },
+  {
+    id: 'comm_5',
+    title: 'Principles of Microeconomics & Market Theory',
+    description: 'Price elasticity, consumer surplus, deadweight loss, monopoly rent-seeking, and game theory equilibria.',
+    category: 'Economics',
+    author: 'Sarah Al-Mansoor',
+    authorBadge: 'Econ Lecturer',
+    downloadsCount: 1720,
+    cards_count: 3,
+    due_count: 3,
+    created_at: new Date().toISOString(),
+    cards: [
+      {
+        id: 'c5_1',
+        deck_id: 'comm_5',
+        card_type: 'flashcard',
+        front: 'What defines a Nash Equilibrium in non-cooperative game theory?',
+        back: 'A profile of strategies where no player has an incentive to unilaterally deviate, given the strategies chosen by all other players.',
+        explanation: 'At Nash Equilibrium, each player strategy is an optimal response to the opponents chosen strategies.',
         ease_factor: 2.5,
         interval: 0,
         repetitions: 0,
@@ -301,12 +293,26 @@ const COMMUNITY_DECKS: CommunityDeck[] = [
         created_at: new Date().toISOString(),
       },
       {
-        id: 'c4_4',
-        deck_id: 'comm_4',
-        card_type: 'flashcard',
-        front: 'Through which skull base opening does the Hypoglossal Nerve (CN XII) exit?',
-        back: 'Hypoglossal Canal in the occipital bone.',
-        explanation: 'Controls all intrinsic and extrinsic tongue muscles except palatoglossus.',
+        id: 'c5_2',
+        deck_id: 'comm_5',
+        card_type: 'multiple_choice',
+        front: 'When demand for a good is price-inelastic (|Ed| < 1), what happens to total revenue when the price rises?',
+        back: 'Total revenue increases',
+        distractors: ['Total revenue decreases', 'Total revenue remains unchanged', 'Total revenue drops to zero'],
+        explanation: 'The percentage decrease in quantity demanded is smaller than the percentage increase in price, resulting in net revenue growth.',
+        ease_factor: 2.5,
+        interval: 0,
+        repetitions: 0,
+        due_date: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+      },
+      {
+        id: 'c5_3',
+        deck_id: 'comm_5',
+        card_type: 'fill_blank',
+        front: 'The loss of total economic welfare (consumer plus producer surplus) resulting from market distortions such as taxes or monopoly power is termed ________ loss.',
+        back: 'deadweight',
+        explanation: 'Deadweight loss represents mutually beneficial transactions that fail to occur due to distorted price signals.',
         ease_factor: 2.5,
         interval: 0,
         repetitions: 0,
@@ -328,7 +334,14 @@ export default function ExploreModal({
 
   if (!isOpen) return null;
 
-  const categories = ['All', 'Pharmacology', 'Emergency', 'Pediatrics', 'Neuroscience'];
+  const categories = [
+    'All',
+    'Computer Science',
+    'Cognitive Science',
+    'Law & Governance',
+    'Biological Sciences',
+    'Economics',
+  ];
 
   const filtered = COMMUNITY_DECKS.filter((deck) => {
     const matchesSearch =
@@ -340,7 +353,6 @@ export default function ExploreModal({
   });
 
   const handleClone = (deck: CommunityDeck) => {
-    // Generate fresh IDs for cloned cards so they are independent in user's library
     const clonedDeck: Deck = {
       ...deck,
       id: crypto.randomUUID ? crypto.randomUUID() : `cloned_${Date.now()}`,
@@ -361,62 +373,63 @@ export default function ExploreModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#010736]/85 backdrop-blur-md animate-in fade-in duration-200">
       <div 
-        className="relative w-full max-w-4xl max-h-[90vh] flex flex-col rounded-3xl bg-[#18202d] border border-white/10 shadow-2xl text-white overflow-hidden"
+        className="relative w-full max-w-4xl max-h-[90vh] flex flex-col rounded-3xl bg-[#0d1c42] border border-[#22396f] shadow-2xl text-[#fcf1d0] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/10 bg-[#1c2534]">
+        <div className="flex items-center justify-between p-6 border-b border-[#22396f] bg-[#010736]">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-teal-500/20 text-teal-300 border border-teal-400/20">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#0d1c42] text-[#fcf1d0] border border-[#22396f]">
               <Compass className="h-5 w-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-xl font-bold tracking-tight text-white">
+                <h3 className="text-xl font-bold tracking-tight text-[#fcf1d0]">
                   Curated Decks
                 </h3>
-                <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold text-amber-200">
-                  Ready to Study
+                <span className="rounded-full bg-[#0d1c42] px-2 py-0.5 text-[10px] font-bold text-[#fcf1d0] border border-[#22396f]">
+                  Open Library
                 </span>
               </div>
-              <p className="text-xs text-white/60">
-                Clone pre-made decks directly into your personal library
+              <p className="text-xs text-[#fcf1d0]/60">
+                Clone structured decks directly into your study collection
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white/70 hover:bg-white/20 hover:text-white transition cursor-pointer"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0d1c42] text-[#fcf1d0]/70 hover:text-[#fcf1d0] transition cursor-pointer"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        {/* Search & Categories Filter */}
-        <div className="p-4 px-6 border-b border-white/10 bg-[#192230] flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="relative w-full sm:w-72">
-            <Search className="absolute left-3.5 top-2.5 h-3.5 w-3.5 text-white/40" />
+        {/* Toolbar: Search + Category Filters */}
+        <div className="p-4 px-6 border-b border-[#22396f] bg-[#010736]/60 space-y-3">
+          <div className="relative">
+            <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-[#fcf1d0]/40" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search community decks..."
-              className="w-full rounded-full bg-white/5 py-2 pl-9 pr-4 text-xs text-white placeholder:text-white/40 border border-white/10 focus:border-amber-400/50 focus:outline-none"
+              placeholder="Search curated decks by title, topic, or contributor..."
+              className="w-full rounded-full bg-[#010736] py-2 pl-10 pr-4 text-xs sm:text-sm text-[#fcf1d0] placeholder-[#fcf1d0]/40 border border-[#22396f] focus:border-[#fcf1d0] focus:outline-none"
             />
           </div>
 
-          <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
             {categories.map((cat) => (
               <button
                 key={cat}
+                type="button"
                 onClick={() => setSelectedCategory(cat)}
-                className={`rounded-full px-3 py-1 text-xs font-bold transition cursor-pointer ${
+                className={`rounded-full px-3 py-1 text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
                   selectedCategory === cat
-                    ? 'bg-white text-zinc-950 font-bold'
-                    : 'bg-white/10 text-white/70 hover:text-white'
+                    ? 'bg-[#fcf1d0] text-[#010736] font-bold'
+                    : 'bg-[#010736] text-[#fcf1d0]/70 border border-[#22396f] hover:border-[#fcf1d0]/40'
                 }`}
               >
                 {cat}
@@ -425,7 +438,7 @@ export default function ExploreModal({
           </div>
         </div>
 
-        {/* Decks Grid Body */}
+        {/* Deck Cards Grid */}
         <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
           {filtered.map((deck) => {
             const isCloned = clonedIds.includes(deck.id);
@@ -433,51 +446,56 @@ export default function ExploreModal({
             return (
               <div
                 key={deck.id}
-                className="rounded-3xl bg-[#222c3d] p-5 border border-white/10 flex flex-col justify-between hover:border-white/20 transition space-y-4"
+                className="rounded-2xl bg-[#010736] p-5 border border-[#22396f] hover:border-[#fcf1d0]/40 transition shadow-lg flex flex-col justify-between space-y-4"
               >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-[10px] font-semibold text-amber-200">
+                <div className="space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="rounded-full bg-[#0d1c42] px-2.5 py-0.5 text-[10px] font-bold text-[#fcf1d0] border border-[#22396f]">
                       {deck.category}
                     </span>
-                    <span className="flex items-center gap-1 text-[11px] text-white/50">
-                      <Users className="h-3.5 w-3.5 text-white/40" />
-                      {deck.downloadsCount} clones
+                    <span className="text-[11px] text-[#fcf1d0]/50 font-medium">
+                      {deck.downloadsCount.toLocaleString()} learners
                     </span>
                   </div>
 
-                  <h4 className="mt-2 text-base font-bold text-white leading-snug">
+                  <h4 className="text-base font-bold text-[#fcf1d0] leading-snug">
                     {deck.title}
                   </h4>
-                  <p className="mt-1 text-xs text-white/60 line-clamp-2 leading-relaxed">
+
+                  <p className="text-xs text-[#fcf1d0]/70 line-clamp-2 leading-relaxed">
                     {deck.description}
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-white/10 flex items-center justify-between">
-                  <div>
-                    <p className="text-[11px] font-bold text-white/90">{deck.author}</p>
-                    <p className="text-[10px] text-amber-300/80 font-semibold">{deck.authorBadge}</p>
+                <div className="pt-3 border-t border-[#22396f] flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0d1c42] text-[10px] font-bold text-[#fcf1d0] border border-[#22396f]">
+                      {deck.author[0]}
+                    </div>
+                    <div>
+                      <p className="text-[11px] font-bold text-[#fcf1d0]">{deck.author}</p>
+                      <p className="text-[10px] text-[#fcf1d0]/50">{deck.authorBadge}</p>
+                    </div>
                   </div>
 
                   <button
                     onClick={() => handleClone(deck)}
                     disabled={isCloned}
-                    className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold transition cursor-pointer shadow-md ${
+                    className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition cursor-pointer ${
                       isCloned
-                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                        : 'bg-white text-zinc-950 hover:bg-white/90 active:scale-95'
+                        ? 'bg-[#0d1c42] text-[#fcf1d0]/60 border border-[#22396f]'
+                        : 'bg-[#fcf1d0] hover:bg-[#fcf1d0]/90 text-[#010736] shadow-md'
                     }`}
                   >
                     {isCloned ? (
                       <>
-                        <Check className="h-3.5 w-3.5" />
-                        <span>Cloned to Library</span>
+                        <Check className="h-3 w-3" />
+                        <span>Added</span>
                       </>
                     ) : (
                       <>
-                        <Download className="h-3.5 w-3.5" />
-                        <span>Clone Deck ({deck.cards_count})</span>
+                        <Download className="h-3 w-3" />
+                        <span>Add ({deck.cards_count} Cards)</span>
                       </>
                     )}
                   </button>
