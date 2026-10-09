@@ -281,6 +281,8 @@ export async function syncUserProfileStats(stats: UserStats, userId?: string | n
   }
 }
 
+const LOCAL_STORAGE_INITIALIZED_KEY = 'alwinyah_decks_initialized';
+
 /**
  * Local storage helpers
  */
@@ -288,31 +290,64 @@ export function getLocalDecks(): Deck[] {
   if (typeof window === 'undefined') return INITIAL_DECKS;
   try {
     const raw = localStorage.getItem(LOCAL_STORAGE_DECKS_KEY);
-    if (raw) {
+    const hasInitialized = localStorage.getItem(LOCAL_STORAGE_INITIALIZED_KEY);
+
+    if (raw !== null) {
       return JSON.parse(raw);
     }
+
+    if (hasInitialized) {
+      // User has explicitly cleared or emptied their decks
+      return [];
+    }
+
+    // First time visitor: seed default decks and mark initialized
+    localStorage.setItem(LOCAL_STORAGE_INITIALIZED_KEY, 'true');
+    localStorage.setItem(LOCAL_STORAGE_DECKS_KEY, JSON.stringify(INITIAL_DECKS));
+    return INITIAL_DECKS;
   } catch (e) {
     console.warn('Error reading local decks', e);
   }
-  return INITIAL_DECKS;
+  return [];
 }
 
 export function saveLocalDecks(decks: Deck[]): void {
   if (typeof window === 'undefined') return;
   try {
+    localStorage.setItem(LOCAL_STORAGE_INITIALIZED_KEY, 'true');
     localStorage.setItem(LOCAL_STORAGE_DECKS_KEY, JSON.stringify(decks));
   } catch (e) {
     console.warn('Error saving local decks', e);
   }
 }
 
+export function clearAllLocalDecks(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(LOCAL_STORAGE_INITIALIZED_KEY, 'true');
+    localStorage.setItem(LOCAL_STORAGE_DECKS_KEY, JSON.stringify([]));
+  } catch (e) {
+    console.warn('Error clearing local decks', e);
+  }
+}
+
+export function resetDefaultDecks(): Deck[] {
+  if (typeof window === 'undefined') return INITIAL_DECKS;
+  try {
+    localStorage.setItem(LOCAL_STORAGE_INITIALIZED_KEY, 'true');
+    localStorage.setItem(LOCAL_STORAGE_DECKS_KEY, JSON.stringify(INITIAL_DECKS));
+  } catch (e) {}
+  return INITIAL_DECKS;
+}
+
 export function getLocalFolders(): Folder[] {
   if (typeof window === 'undefined') return INITIAL_FOLDERS;
   try {
     const raw = localStorage.getItem(LOCAL_STORAGE_FOLDERS_KEY);
-    if (raw) {
+    if (raw !== null) {
       return JSON.parse(raw);
     }
+    localStorage.setItem(LOCAL_STORAGE_FOLDERS_KEY, JSON.stringify(INITIAL_FOLDERS));
   } catch (e) {
     console.warn('Error reading local folders', e);
   }

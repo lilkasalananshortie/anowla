@@ -48,6 +48,10 @@ body {
   font-family: var(--font-poppins), system-ui, -apple-system, sans-serif;
   letter-spacing: -0.01em;
   overflow-x: hidden;
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(132, 162, 130, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(132, 162, 130, 0.12) 1px, transparent 1px);
 }
 
 * {
@@ -189,4 +193,20 @@ body {
 .rotate-y-180 {
   transform: rotateY(180deg);
 }
+
+/* ─── Aesthetic Clinical Grid Background Patterns ─── */
+.bg-grid-clinical {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(132, 162, 130, 0.16) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(132, 162, 130, 0.16) 1px, transparent 1px);
+}
+
+.bg-grid-clinical-fine {
+  background-size: 16px 16px;
+  background-image: 
+    linear-gradient(to right, rgba(132, 162, 130, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(132, 162, 130, 0.12) 1px, transparent 1px);
+}
+
 

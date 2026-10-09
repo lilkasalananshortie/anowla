@@ -5,6 +5,7 @@ import Link from 'next/link';
 import DeckCard from '@/components/DeckCard';
 import StudySession from '@/components/StudySession';
 import CreateDeckModal from '@/components/CreateDeckModal';
+import CreateFolderModal from '@/components/CreateFolderModal';
 import PdfScannerModal from '@/components/PdfScannerModal';
 import PdfEditorWorkspace from '@/components/PdfEditorWorkspace';
 import UrlScannerModal from '@/components/UrlScannerModal';
@@ -24,7 +25,9 @@ import {
   deleteUserDeck, 
   getLocalDecks,
   getLocalFolders,
-  saveLocalFolders
+  saveLocalFolders,
+  clearAllLocalDecks,
+  resetDefaultDecks
 } from '@/lib/deckService';
 import { User } from '@supabase/supabase-js';
 import { 
@@ -35,7 +38,6 @@ import {
   Folder as FolderIcon, 
   FolderPlus, 
   Stethoscope, 
-  Sparkles, 
   X, 
   Filter, 
   Flame, 
@@ -47,14 +49,15 @@ import {
   Bell, 
   Upload, 
   Trash2, 
-  Check,
-  ChevronRight,
-  TrendingUp,
-  Award,
-  Video,
-  Highlighter,
-  Brain,
-  Zap
+  Check, 
+  ChevronRight, 
+  TrendingUp, 
+  Award, 
+  Video, 
+  Highlighter, 
+  Brain, 
+  Zap,
+  RotateCcw
 } from 'lucide-react';
 
 export default function StudyPage() {
@@ -68,13 +71,14 @@ export default function StudyPage() {
 
   // Modals state
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
   const [isPdfScannerOpen, setIsPdfScannerOpen] = useState(false);
   const [isPdfEditorOpen, setIsPdfEditorOpen] = useState(false);
   const [isUrlScannerOpen, setIsUrlScannerOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Inline folder creation
-  const [isCreatingFolder, setIsCreatingFolder] = useState(false);
+  // Inline folder creation in sidebar
+  const [isCreatingFolderInline, setIsCreatingFolderInline] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
 
   // Deck inspection and Mastery analytics states
@@ -120,14 +124,14 @@ export default function StudyPage() {
           if (data?.session?.user && mounted) {
             setUser(data.session.user);
             const userDecks = await fetchUserDecks(data.session.user.id);
-            if (userDecks.length > 0 && mounted) {
+            if (mounted) {
               setDecks(userDecks);
             }
           }
         } catch (e) {}
       } else {
         const local = getLocalDecks();
-        if (local.length > 0 && mounted) {
+        if (mounted) {
           setDecks(local);
         }
       }
@@ -139,7 +143,14 @@ export default function StudyPage() {
     };
   }, []);
 
-  const handleCreateFolder = (e: React.FormEvent) => {
+  const handleCreateNewFolder = (folder: Folder) => {
+    const updated = [...folders, folder];
+    setFolders(updated);
+    saveLocalFolders(updated);
+    setActiveFolderId(folder.id);
+  };
+
+  const handleCreateFolderInline = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newFolderName.trim()) return;
 
@@ -151,12 +162,9 @@ export default function StudyPage() {
       created_at: new Date().toISOString(),
     };
 
-    const updated = [...folders, folder];
-    setFolders(updated);
-    saveLocalFolders(updated);
-    setActiveFolderId(folder.id);
+    handleCreateNewFolder(folder);
     setNewFolderName('');
-    setIsCreatingFolder(false);
+    setIsCreatingFolderInline(false);
   };
 
   const handleSaveDeck = async (newDeck: Deck) => {
@@ -179,6 +187,16 @@ export default function StudyPage() {
     }
   };
 
+  const handleClearAllSampleDecks = () => {
+    setDecks([]);
+    clearAllLocalDecks();
+  };
+
+  const handleResetDefaultDecks = () => {
+    const defaults = resetDefaultDecks();
+    setDecks(defaults);
+  };
+
   const handleStartDueReview = () => {
     const now = new Date();
     const allDueCards = decks.flatMap((d) => 
@@ -189,8 +207,8 @@ export default function StudyPage() {
 
     const consolidatedDeck: Deck = {
       id: `rapid-due-${Date.now()}`,
-      title: '⚡ Rapid Review: All Due Clinical Cards',
-      description: `Consolidated session of ${allDueCards.length} cards across all decks ready for active recall.`,
+      title: 'Rapid Review: Due Clinical Cards',
+      description: `Consolidated session of ${allDueCards.length} high-yield cards ready for active recall.`,
       category: 'Clinical Mastery',
       cards_count: allDueCards.length,
       due_count: allDueCards.length,
@@ -248,9 +266,9 @@ export default function StudyPage() {
   }, [decks, activeFolderId, filterMode, searchTerm]);
 
   return (
-    <div className="min-h-screen bg-[#fefaf3] text-[#19251a] font-sans pb-24 md:pb-16">
+    <div className="min-h-screen bg-[#fefaf3] bg-grid-clinical text-[#19251a] font-sans pb-24 md:pb-16 relative">
       {/* 1. TOP CLINICAL HEADER / NAVBAR */}
-      <header className="sticky top-0 z-40 bg-[#fefaf3]/95 backdrop-blur-md border-b border-[#dfe8dc] px-4 sm:px-8 py-3.5 transition-colors">
+      <header className="sticky top-0 z-40 bg-[#fefaf3]/95 backdrop-blur-md border-b border-[#dfe8dc] px-4 sm:px-8 py-3.5 transition-colors shadow-xs">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link
@@ -269,44 +287,55 @@ export default function StudyPage() {
 
           {/* Action Hub */}
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
-            {/* AI SMART SCAN BUTTON (GEMINI AI) */}
+            {/* PROMINENT PDF MARKUP & EDITOR (ALWAYS VISIBLE ON MOBILE, TABLET & DESKTOP) */}
+            <button
+              type="button"
+              onClick={() => setIsPdfEditorOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold bg-[#84a282] text-white hover:bg-[#6e8c6c] transition-all shadow-md shadow-[#84a282]/25 cursor-pointer whitespace-nowrap active:scale-95"
+              title="Open interactive PDF reader, highlighter & markup editor"
+            >
+              <Highlighter size={14} />
+              <span>PDF Markup & Editor</span>
+            </button>
+
+            {/* CREATE FOLDER BUTTON */}
+            <button
+              type="button"
+              onClick={() => setIsFolderModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold bg-white border border-[#dfe8dc] text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer whitespace-nowrap shadow-xs"
+              title="Create new clinical folder"
+            >
+              <FolderPlus size={14} className="text-[#84a282]" />
+              <span>+ New Folder</span>
+            </button>
+
+            {/* AUTO-SCAN PDF EXTRACTOR */}
             <button
               type="button"
               onClick={() => setIsPdfScannerOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold bg-[#84a282] text-white hover:bg-[#6e8c6c] transition-all shadow-md shadow-[#84a282]/25 cursor-pointer whitespace-nowrap"
-              title="Scan PDF automatically with Gemini 3.8 Flash"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold bg-white border border-[#dfe8dc] text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer whitespace-nowrap shadow-xs"
+              title="Auto-extract flashcard decks from clinical PDFs"
             >
-              <Sparkles size={14} className="text-amber-200" />
-              <span>AI PDF Scan</span>
+              <FileText size={13} className="text-[#84a282]" />
+              <span>Auto-Scan PDF</span>
             </button>
 
             {/* VIDEO / URL SCANNER */}
             <button
               type="button"
               onClick={() => setIsUrlScannerOpen(true)}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 transition-colors cursor-pointer whitespace-nowrap"
+              className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 transition-colors cursor-pointer whitespace-nowrap"
               title="YouTube / Web URL to flashcards"
             >
               <Video size={13} className="text-rose-600" />
               <span>Video / URL</span>
             </button>
 
-            {/* NOTE EDITOR STUDIO */}
-            <button
-              type="button"
-              onClick={() => setIsPdfEditorOpen(true)}
-              className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold bg-white border border-[#dfe8dc] text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer whitespace-nowrap"
-              title="Open full interactive PDF note editor"
-            >
-              <FileText size={13} className="text-[#84a282]" />
-              <span>Note Studio</span>
-            </button>
-
             {/* MANUAL DECK CREATOR */}
             <button
               type="button"
               onClick={() => setIsCreateOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold bg-white border border-[#dfe8dc] text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold bg-white border border-[#dfe8dc] text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer shadow-xs"
             >
               <Plus size={14} className="text-[#84a282]" />
               <span className="hidden sm:inline">New Deck</span>
@@ -316,7 +345,7 @@ export default function StudyPage() {
             <button
               type="button"
               onClick={() => setIsExploreOpen(true)}
-              className="p-2 rounded-full bg-white border border-[#dfe8dc] text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer"
+              className="p-2 rounded-full bg-white border border-[#dfe8dc] text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer shadow-xs"
               title="Explore Medical Decks"
             >
               <Compass size={17} />
@@ -326,7 +355,7 @@ export default function StudyPage() {
             <button
               type="button"
               onClick={() => setIsMasteryOpen(true)}
-              className="p-2 rounded-full bg-white border border-[#dfe8dc] text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer"
+              className="p-2 rounded-full bg-white border border-[#dfe8dc] text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer shadow-xs"
               title="Mastery & Memory Analytics"
             >
               <Brain size={17} />
@@ -336,7 +365,7 @@ export default function StudyPage() {
             <button
               type="button"
               onClick={() => setIsNotificationsOpen(true)}
-              className="p-2 rounded-full bg-white border border-[#dfe8dc] text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer"
+              className="p-2 rounded-full bg-white border border-[#dfe8dc] text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer shadow-xs"
               title="Daily Notifications"
             >
               <Bell size={17} />
@@ -346,8 +375,8 @@ export default function StudyPage() {
             <button
               type="button"
               onClick={() => setIsSettingsOpen(true)}
-              className="p-2 rounded-full bg-white border border-[#dfe8dc] text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer"
-              title="Settings"
+              className="p-2 rounded-full bg-white border border-[#dfe8dc] text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer shadow-xs"
+              title="Settings & Decks Management"
             >
               <Settings size={17} />
             </button>
@@ -356,15 +385,15 @@ export default function StudyPage() {
       </header>
 
       {/* 2. MAIN WORKSPACE CONTAINER */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-6 space-y-7">
+      <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-6 space-y-6">
         
-        {/* Lively Clinical Welcome & Rapid Review Action */}
+        {/* Serene Clinical Practice Banner & Rapid Review */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-3xl bg-gradient-to-r from-[#19251a] via-[#1f3022] to-[#283e2c] text-white shadow-xl border border-[#84a282]/30 animate-fade-in">
           <div className="space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-xl">🩺</span>
               <h1 className="text-lg sm:text-xl font-extrabold tracking-tight text-white">
-                Welcome back to Clinical Practice
+                Clinical Mastery Workspace
               </h1>
               {stats.streak > 0 && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2.5 py-0.5 text-xs font-black text-amber-300 border border-amber-400/30 animate-fire">
@@ -389,6 +418,36 @@ export default function StudyPage() {
               <span>Rapid Review ({totalDueCards} Due)</span>
             </button>
           )}
+        </div>
+
+        {/* CLINICAL PDF MARKUP SPOTLIGHT BANNER */}
+        <div className="rounded-3xl border border-[#b8cfb3]/80 bg-white/90 backdrop-blur-sm p-5 sm:p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-5 transition-all hover:border-[#84a282]">
+          <div className="flex items-start gap-4">
+            <div className="h-12 w-12 rounded-2xl bg-[#84a282] text-white flex items-center justify-center shrink-0 shadow-md shadow-[#84a282]/25">
+              <Highlighter size={22} />
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="text-base sm:text-lg font-bold text-[#19251a]">
+                  PDF Reader & Clinical Markup Workspace
+                </h2>
+                <span className="rounded-full bg-[#84a282]/20 px-2.5 py-0.5 text-[10px] font-bold text-[#19251a]">
+                  Interactive
+                </span>
+              </div>
+              <p className="text-xs text-[#586c5a] max-w-2xl leading-relaxed">
+                Upload medical PDFs or paste lecture slides. Highlight essential concepts (<code className="bg-[#ebf2e9] px-1 py-0.5 rounded text-[#19251a]">==highlight==</code>), insert clinical priority notes, strip slide boilerplate, and generate active recall decks directly into your clinical folders.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsPdfEditorOpen(true)}
+            className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-md shadow-[#84a282]/25 transition-all cursor-pointer active:scale-95 whitespace-nowrap"
+          >
+            <Highlighter size={14} />
+            <span>Open PDF Markup Workspace</span>
+          </button>
         </div>
 
         {/* Streak & Weekly Progress Widgets */}
@@ -425,8 +484,8 @@ export default function StudyPage() {
                 </span>
                 <button
                   type="button"
-                  onClick={() => setIsCreatingFolder(true)}
-                  className="p-1 rounded-lg hover:bg-[#fefaf3] text-[#84a282] transition-colors cursor-pointer"
+                  onClick={() => setIsFolderModalOpen(true)}
+                  className="p-1 rounded-lg hover:bg-[#ebf2e9] text-[#84a282] transition-colors cursor-pointer flex items-center gap-1"
                   title="Create New Folder"
                 >
                   <FolderPlus size={16} />
@@ -434,8 +493,8 @@ export default function StudyPage() {
               </div>
 
               {/* Inline Folder Creator */}
-              {isCreatingFolder && (
-                <form onSubmit={handleCreateFolder} className="p-2.5 rounded-xl bg-[#fefaf3] border border-[#b8cfb3] space-y-2">
+              {isCreatingFolderInline && (
+                <form onSubmit={handleCreateFolderInline} className="p-2.5 rounded-xl bg-[#fefaf3] border border-[#b8cfb3] space-y-2">
                   <input
                     type="text"
                     required
@@ -448,7 +507,7 @@ export default function StudyPage() {
                   <div className="flex items-center justify-end gap-1.5">
                     <button
                       type="button"
-                      onClick={() => setIsCreatingFolder(false)}
+                      onClick={() => setIsCreatingFolderInline(false)}
                       className="px-2.5 py-1 rounded text-[11px] text-[#586c5a] hover:bg-black/5 cursor-pointer"
                     >
                       Cancel
@@ -471,7 +530,7 @@ export default function StudyPage() {
                   className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                     activeFolderId === 'all'
                       ? 'bg-[#84a282] text-white shadow-xs'
-                      : 'text-[#19251a] hover:bg-[#fefaf3]'
+                      : 'text-[#19251a] hover:bg-[#ebf2e9]'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
@@ -496,7 +555,7 @@ export default function StudyPage() {
                       className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                         isSelected
                           ? 'bg-[#84a282] text-white shadow-xs'
-                          : 'text-[#19251a] hover:bg-[#fefaf3]'
+                          : 'text-[#19251a] hover:bg-[#ebf2e9]'
                       }`}
                     >
                       <div className="flex items-center gap-2.5 truncate pr-2">
@@ -512,6 +571,16 @@ export default function StudyPage() {
                   );
                 })}
               </div>
+
+              {/* Add folder CTA */}
+              <button
+                type="button"
+                onClick={() => setIsFolderModalOpen(true)}
+                className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border border-dashed border-[#b8cfb3] text-xs font-bold text-[#84a282] hover:bg-[#ebf2e9] cursor-pointer transition"
+              >
+                <FolderPlus size={14} />
+                <span>+ New Folder</span>
+              </button>
             </div>
           </aside>
 
@@ -544,10 +613,19 @@ export default function StudyPage() {
                   {f.name} ({folderCounts[f.id] || 0})
                 </button>
               ))}
+
+              <button
+                type="button"
+                onClick={() => setIsFolderModalOpen(true)}
+                className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#ebf2e9] text-[#84a282] border border-[#b8cfb3] whitespace-nowrap flex items-center gap-1 cursor-pointer hover:bg-[#dfe8dc]"
+              >
+                <Plus size={13} />
+                <span>Folder</span>
+              </button>
             </div>
 
             {/* Filter & Search Bar */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-white border border-[#dfe8dc]">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-white border border-[#dfe8dc] shadow-xs">
               <div className="relative flex-1">
                 <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#586c5a]" />
                 <input
@@ -607,28 +685,50 @@ export default function StudyPage() {
             </div>
 
             {filteredDecks.length === 0 && (
-              <div className="py-16 text-center rounded-3xl bg-white border border-[#dfe8dc] p-8">
+              <div className="py-16 text-center rounded-3xl bg-white border border-[#dfe8dc] p-8 shadow-xs">
                 <BookOpen size={36} className="mx-auto text-[#84a282] mb-3 opacity-60" />
-                <h3 className="text-base font-bold text-[#19251a]">No Decks Found</h3>
+                <h3 className="text-base font-bold text-[#19251a]">No Clinical Decks Found</h3>
                 <p className="text-xs text-[#586c5a] mt-1 max-w-sm mx-auto">
-                  No flashcard decks match your search in this folder. Use AI Scan or create a new deck.
+                  {decks.length === 0 
+                    ? 'Your study library is currently clear. Use the PDF Markup Workspace or create a new custom deck.' 
+                    : 'No flashcard decks match your search in this folder.'}
                 </p>
-                <div className="mt-5 flex items-center justify-center gap-3">
+                <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
                   <button
                     type="button"
-                    onClick={() => setIsPdfScannerOpen(true)}
-                    className="px-5 py-2.5 rounded-full text-xs font-bold bg-[#84a282] text-white hover:bg-[#6e8c6c] cursor-pointer"
+                    onClick={() => setIsPdfEditorOpen(true)}
+                    className="px-5 py-2.5 rounded-full text-xs font-bold bg-[#84a282] text-white hover:bg-[#6e8c6c] transition-colors cursor-pointer shadow-xs"
                   >
-                    AI Smart Scan PDF
+                    📄 Open PDF Markup Workspace
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsFolderModalOpen(true)}
+                    className="px-4 py-2.5 rounded-full text-xs font-bold bg-[#ebf2e9] text-[#19251a] hover:bg-[#dfe8dc] transition-colors cursor-pointer"
+                  >
+                    📁 + New Folder
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsCreateOpen(true)}
-                    className="px-5 py-2.5 rounded-full text-xs font-bold bg-white border border-[#dfe8dc] text-[#19251a] hover:bg-[#ebf2e9] cursor-pointer"
+                    className="px-4 py-2.5 rounded-full text-xs font-bold bg-white border border-[#dfe8dc] text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer"
                   >
-                    Create Manually
+                    ➕ Create Manually
                   </button>
                 </div>
+
+                {decks.length === 0 && (
+                  <div className="mt-4 pt-3 border-t border-[#dfe8dc] max-w-xs mx-auto">
+                    <button
+                      type="button"
+                      onClick={handleResetDefaultDecks}
+                      className="text-[11px] font-semibold text-[#586c5a] hover:text-[#19251a] inline-flex items-center gap-1 cursor-pointer"
+                    >
+                      <RotateCcw size={12} />
+                      <span>Restore Default Sample Decks</span>
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </section>
@@ -657,7 +757,38 @@ export default function StudyPage() {
         </div>
       )}
 
-      {/* 4. AI SMART PDF SCANNER (GEMINI 3.8 FLASH) */}
+      {/* 4. CREATE CLINICAL FOLDER MODAL */}
+      {isFolderModalOpen && (
+        <CreateFolderModal
+          isOpen={isFolderModalOpen}
+          onClose={() => setIsFolderModalOpen(false)}
+          onCreateFolder={handleCreateNewFolder}
+        />
+      )}
+
+      {/* 5. INTERACTIVE PDF NOTE & MARKUP WORKSPACE */}
+      {isPdfEditorOpen && (
+        <PdfEditorWorkspace
+          isOpen={isPdfEditorOpen}
+          folders={folders}
+          onCreateFolder={(name) => {
+            const folder: Folder = {
+              id: `folder-${Date.now()}`,
+              name,
+              icon: 'Folder',
+              color: '#84a282',
+              created_at: new Date().toISOString(),
+            };
+            handleCreateNewFolder(folder);
+            return folder;
+          }}
+          defaultFolderId={activeFolderId !== 'all' ? activeFolderId : undefined}
+          onClose={() => setIsPdfEditorOpen(false)}
+          onSaveDeck={handleSaveDeck}
+        />
+      )}
+
+      {/* 6. AUTO-SCAN PDF SCANNER MODAL */}
       {isPdfScannerOpen && (
         <PdfScannerModal
           isOpen={isPdfScannerOpen}
@@ -668,18 +799,7 @@ export default function StudyPage() {
         />
       )}
 
-      {/* 5. INTERACTIVE PDF NOTE EDITOR WORKSPACE */}
-      {isPdfEditorOpen && (
-        <PdfEditorWorkspace
-          isOpen={isPdfEditorOpen}
-          folders={folders}
-          defaultFolderId={activeFolderId !== 'all' ? activeFolderId : undefined}
-          onClose={() => setIsPdfEditorOpen(false)}
-          onSaveDeck={handleSaveDeck}
-        />
-      )}
-
-      {/* 6. VIDEO / URL TO CARDS SCANNER */}
+      {/* 7. VIDEO / URL TO CARDS SCANNER */}
       {isUrlScannerOpen && (
         <UrlScannerModal
           isOpen={isUrlScannerOpen}
@@ -688,7 +808,7 @@ export default function StudyPage() {
         />
       )}
 
-      {/* 7. MANUAL DECK CREATOR */}
+      {/* 8. MANUAL DECK CREATOR */}
       {isCreateOpen && (
         <CreateDeckModal
           isOpen={isCreateOpen}
@@ -699,7 +819,7 @@ export default function StudyPage() {
         />
       )}
 
-      {/* 8. COMMUNITY & CURATED DECKS EXPLORER */}
+      {/* 9. COMMUNITY & CURATED DECKS EXPLORER */}
       {isExploreOpen && (
         <ExploreModal
           isOpen={isExploreOpen}
@@ -708,7 +828,7 @@ export default function StudyPage() {
         />
       )}
 
-      {/* 9. DECK DETAIL & CARD INSPECTOR */}
+      {/* 10. DECK DETAIL & CARD INSPECTOR */}
       {isDetailModalOpen && inspectingDeck && (
         <DeckDetailModal
           isOpen={isDetailModalOpen}
@@ -722,7 +842,7 @@ export default function StudyPage() {
         />
       )}
 
-      {/* 10. MASTERY ANALYTICS MODAL */}
+      {/* 11. MASTERY ANALYTICS MODAL */}
       {isMasteryOpen && (
         <MasteryAnalyticsModal
           isOpen={isMasteryOpen}
@@ -732,7 +852,7 @@ export default function StudyPage() {
         />
       )}
 
-      {/* 11. SETTINGS MODAL */}
+      {/* 12. SETTINGS MODAL */}
       {isSettingsOpen && (
         <SettingsModal
           isOpen={isSettingsOpen}
@@ -743,14 +863,12 @@ export default function StudyPage() {
             localStorage.setItem('alwinyah_stats', JSON.stringify(newStats));
           }}
           decks={decks}
-          onResetDecks={() => {
-            setDecks(INITIAL_DECKS);
-            localStorage.removeItem('alwinyah_decks');
-          }}
+          onResetDecks={handleResetDefaultDecks}
+          onClearDecks={handleClearAllSampleDecks}
         />
       )}
 
-      {/* 12. NOTIFICATIONS MODAL */}
+      {/* 13. NOTIFICATIONS MODAL */}
       {isNotificationsOpen && (
         <NotificationsModal
           isOpen={isNotificationsOpen}
