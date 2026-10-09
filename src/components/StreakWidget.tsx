@@ -76,7 +76,7 @@ export default function StreakWidget({ stats }: StreakWidgetProps) {
           </p>
         </div>
 
-        <div className="flex h-13 w-13 items-center justify-center rounded-2xl bg-amber-50 border border-amber-200 shadow-sm animate-fire">
+        <div className="flex h-13 w-13 items-center justify-center rounded-2xl bg-amber-50 border border-amber-200 shadow-sm">
           <Flame className="h-7 w-7 text-amber-500 fill-amber-400" />
         </div>
       </div>

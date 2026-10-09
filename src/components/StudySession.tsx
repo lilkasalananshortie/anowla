@@ -305,13 +305,13 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
 
     return (
       <div className="mx-auto max-w-lg rounded-3xl bg-[#1f2d22] p-8 text-center text-white border border-[#84a282]/30 shadow-2xl animate-pop-in">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#84a282]/30 text-amber-300 border border-[#84a282]/40 shadow-lg animate-fire">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#84a282]/30 text-amber-300 border border-[#84a282]/40 shadow-lg">
           <Trophy className="h-8 w-8 text-amber-300" />
         </div>
 
         <h2 className="mt-5 text-2xl font-bold tracking-tight text-white">Clinical Session Mastered!</h2>
         <p className="mt-1 text-xs text-white/70">
-          Supercharged your memory retention and refreshed your SM-2 intervals.
+          Reinforced your clinical recall intervals according to the evidence-based SM-2 spaced repetition protocol.
         </p>
 
         {/* Stats Grid */}
@@ -431,7 +431,7 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
         </div>
 
         {comboStreak >= 2 && (
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 shadow-md animate-fire shrink-0">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 shadow-md shrink-0">
             <span className="text-sm">🔥</span>
             <span className="text-xs font-black tracking-tight">{comboStreak}x Streak!</span>
             <span className="text-[10px] font-semibold text-amber-200/80">+{comboStreak * 25} XP</span>

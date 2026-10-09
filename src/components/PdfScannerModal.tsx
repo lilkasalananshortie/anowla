@@ -465,7 +465,7 @@ export default function PdfScannerModal({
 
               {/* Animated Live Scan Status */}
               {scanning && (
-                <div className="space-y-2 rounded-2xl bg-[#ebf2e9] p-4 border border-[#b8cfb3] animate-pulse-glow">
+                <div className="space-y-2 rounded-2xl bg-[#ebf2e9] p-4 border border-[#b8cfb3]">
                   <div className="flex items-center justify-between text-xs font-bold text-[#19251a]">
                     <div className="flex items-center gap-2">
                       <Loader2 className="h-4 w-4 animate-spin text-[#84a282]" />

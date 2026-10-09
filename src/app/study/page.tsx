@@ -7,7 +7,6 @@ import StudySession from '@/components/StudySession';
 import CreateDeckModal from '@/components/CreateDeckModal';
 import CreateFolderModal from '@/components/CreateFolderModal';
 import PdfScannerModal from '@/components/PdfScannerModal';
-import PdfEditorWorkspace from '@/components/PdfEditorWorkspace';
 import UrlScannerModal from '@/components/UrlScannerModal';
 import DeckDetailModal from '@/components/DeckDetailModal';
 import MasteryAnalyticsModal from '@/components/MasteryAnalyticsModal';
@@ -73,7 +72,6 @@ export default function StudyPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
   const [isPdfScannerOpen, setIsPdfScannerOpen] = useState(false);
-  const [isPdfEditorOpen, setIsPdfEditorOpen] = useState(false);
   const [isUrlScannerOpen, setIsUrlScannerOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -395,7 +393,7 @@ export default function StudyPage() {
                 Clinical Mastery Workspace
               </h1>
               {stats.streak > 0 && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2.5 py-0.5 text-xs font-black text-amber-300 border border-amber-400/30 animate-fire">
+                <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2.5 py-0.5 text-xs font-black text-amber-300 border border-amber-400/30">
                   🔥 {stats.streak}-day streak
                 </span>
               )}
@@ -411,7 +409,7 @@ export default function StudyPage() {
             <button
               type="button"
               onClick={handleStartDueReview}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-md shadow-[#84a282]/30 transition-all active:scale-95 cursor-pointer whitespace-nowrap animate-pulse-glow"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-md shadow-[#84a282]/30 transition-all active:scale-95 cursor-pointer whitespace-nowrap"
             >
               <Zap size={14} className="fill-amber-300 text-amber-300" />
               <span>Rapid Review ({totalDueCards} Due)</span>
@@ -419,23 +417,23 @@ export default function StudyPage() {
           )}
         </div>
 
-        {/* CLINICAL PDF MARKUP SPOTLIGHT BANNER */}
+        {/* CLINICAL PDF WORKSPACE SPOTLIGHT BANNER */}
         <div className="rounded-3xl border border-[#b8cfb3]/80 bg-white/90 backdrop-blur-sm p-5 sm:p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-5 transition-all hover:border-[#84a282]">
           <div className="flex items-start gap-4">
             <div className="h-12 w-12 rounded-2xl bg-[#84a282] text-white flex items-center justify-center shrink-0 shadow-md shadow-[#84a282]/25">
-              <Highlighter size={22} />
+              <FileText size={22} />
             </div>
             <div className="space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-base sm:text-lg font-bold text-[#19251a]">
-                  PDF Reader & Clinical Markup Workspace
+                  Folder-First Clinical PDF Workspace
                 </h2>
                 <span className="rounded-full bg-[#84a282]/20 px-2.5 py-0.5 text-[10px] font-bold text-[#19251a]">
-                  Interactive
+                  Native PDF View
                 </span>
               </div>
               <p className="text-xs text-[#586c5a] max-w-2xl leading-relaxed">
-                Upload medical PDFs or paste lecture slides. Highlight essential concepts (<code className="bg-[#ebf2e9] px-1 py-0.5 rounded text-[#19251a]">==highlight==</code>), insert clinical priority notes, strip slide boilerplate, and generate active recall decks directly into your clinical folders.
+                Organize medical guidelines and lecture slides into folders. View the authentic, high-fidelity PDF format, add persistent per-document clinical notes, and generate active recall quizzes whenever needed.
               </p>
             </div>
           </div>
@@ -443,8 +441,8 @@ export default function StudyPage() {
             href="/workspace"
             className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-md shadow-[#84a282]/25 transition-all cursor-pointer active:scale-95 whitespace-nowrap"
           >
-            <Highlighter size={14} />
-            <span>Open PDF Markup Workspace</span>
+            <BookOpen size={14} />
+            <span>Open PDF Workspace</span>
           </Link>
         </div>
 
@@ -763,29 +761,7 @@ export default function StudyPage() {
         />
       )}
 
-      {/* 5. INTERACTIVE PDF NOTE & MARKUP WORKSPACE */}
-      {isPdfEditorOpen && (
-        <PdfEditorWorkspace
-          isOpen={isPdfEditorOpen}
-          folders={folders}
-          onCreateFolder={(name) => {
-            const folder: Folder = {
-              id: `folder-${Date.now()}`,
-              name,
-              icon: 'Folder',
-              color: '#84a282',
-              created_at: new Date().toISOString(),
-            };
-            handleCreateNewFolder(folder);
-            return folder;
-          }}
-          defaultFolderId={activeFolderId !== 'all' ? activeFolderId : undefined}
-          onClose={() => setIsPdfEditorOpen(false)}
-          onSaveDeck={handleSaveDeck}
-        />
-      )}
-
-      {/* 6. AUTO-SCAN PDF SCANNER MODAL */}
+      {/* 5. AUTO-SCAN PDF SCANNER MODAL */}
       {isPdfScannerOpen && (
         <PdfScannerModal
           isOpen={isPdfScannerOpen}
