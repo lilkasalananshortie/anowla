@@ -202,6 +202,7 @@ Return ONLY a valid JSON array matching this exact schema:
               generationConfig: {
                 temperature: 0.2,
                 responseMimeType: 'application/json',
+                maxOutputTokens: 8192,
               },
             }),
           }

@@ -53,7 +53,8 @@ import {
   Award,
   Video,
   Highlighter,
-  Brain
+  Brain,
+  Zap
 } from 'lucide-react';
 
 export default function StudyPage() {
@@ -176,6 +177,28 @@ export default function StudyPage() {
     } else {
       localStorage.setItem('alwinyah_decks', JSON.stringify(updated));
     }
+  };
+
+  const handleStartDueReview = () => {
+    const now = new Date();
+    const allDueCards = decks.flatMap((d) => 
+      (d.cards || []).filter((c) => !c.due_date || new Date(c.due_date) <= now)
+    );
+
+    if (allDueCards.length === 0) return;
+
+    const consolidatedDeck: Deck = {
+      id: `rapid-due-${Date.now()}`,
+      title: '⚡ Rapid Review: All Due Clinical Cards',
+      description: `Consolidated session of ${allDueCards.length} cards across all decks ready for active recall.`,
+      category: 'Clinical Mastery',
+      cards_count: allDueCards.length,
+      due_count: allDueCards.length,
+      created_at: new Date().toISOString(),
+      cards: allDueCards,
+    };
+
+    setSelectedDeck(consolidatedDeck);
   };
 
   // Metrics
@@ -335,6 +358,39 @@ export default function StudyPage() {
       {/* 2. MAIN WORKSPACE CONTAINER */}
       <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-6 space-y-7">
         
+        {/* Lively Clinical Welcome & Rapid Review Action */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-3xl bg-gradient-to-r from-[#19251a] via-[#1f3022] to-[#283e2c] text-white shadow-xl border border-[#84a282]/30 animate-fade-in">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xl">🩺</span>
+              <h1 className="text-lg sm:text-xl font-extrabold tracking-tight text-white">
+                Welcome back to Clinical Practice
+              </h1>
+              {stats.streak > 0 && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2.5 py-0.5 text-xs font-black text-amber-300 border border-amber-400/30 animate-fire">
+                  🔥 {stats.streak}-day streak
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-[#b8cfb3]">
+              {totalDueCards > 0 
+                ? `You have ${totalDueCards} high-yield clinical cards due today for spaced repetition review.` 
+                : 'All decks are currently up to date! Great job staying on top of your clinical exam schedule.'}
+            </p>
+          </div>
+
+          {totalDueCards > 0 && (
+            <button
+              type="button"
+              onClick={handleStartDueReview}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-md shadow-[#84a282]/30 transition-all active:scale-95 cursor-pointer whitespace-nowrap animate-pulse-glow"
+            >
+              <Zap size={14} className="fill-amber-300 text-amber-300" />
+              <span>Rapid Review ({totalDueCards} Due)</span>
+            </button>
+          )}
+        </div>
+
         {/* Streak & Weekly Progress Widgets */}
         <StreakWidget stats={stats} />
         

@@ -13,6 +13,7 @@ import {
   Sparkles, 
   Brain, 
   Volume2, 
+  VolumeX, 
   HelpCircle, 
   Send, 
   RefreshCw,
@@ -57,9 +58,13 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
   const [isAnswerChecked, setIsAnswerChecked] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
 
+  // Audio toggle
+  const [soundEnabled, setSoundEnabled] = useState(true);
+
   // Session metrics & combo streak
   const [correctCount, setCorrectCount] = useState(0);
   const [comboStreak, setComboStreak] = useState(0);
+  const [bestCombo, setBestCombo] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
 
   // AI Tutor drawer states
@@ -131,11 +136,15 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
 
     if (rating >= 3) {
       setCorrectCount((prev) => prev + 1);
-      setComboStreak((prev) => prev + 1);
-      playSuccessChime();
+      setComboStreak((prev) => {
+        const next = prev + 1;
+        setBestCombo((b) => Math.max(b, next));
+        return next;
+      });
+      if (soundEnabled) playSuccessChime();
     } else {
       setComboStreak(0);
-      playErrorTone();
+      if (soundEnabled) playErrorTone();
     }
     advanceCard();
   };
@@ -149,11 +158,15 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
     setIsCorrect(match);
     if (match) {
       setCorrectCount((prev) => prev + 1);
-      setComboStreak((prev) => prev + 1);
-      playSuccessChime();
+      setComboStreak((prev) => {
+        const next = prev + 1;
+        setBestCombo((b) => Math.max(b, next));
+        return next;
+      });
+      if (soundEnabled) playSuccessChime();
     } else {
       setComboStreak(0);
-      playErrorTone();
+      if (soundEnabled) playErrorTone();
     }
   };
 
@@ -166,11 +179,15 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
     setIsCorrect(match);
     if (match) {
       setCorrectCount((prev) => prev + 1);
-      setComboStreak((prev) => prev + 1);
-      playSuccessChime();
+      setComboStreak((prev) => {
+        const next = prev + 1;
+        setBestCombo((b) => Math.max(b, next));
+        return next;
+      });
+      if (soundEnabled) playSuccessChime();
     } else {
       setComboStreak(0);
-      playErrorTone();
+      if (soundEnabled) playErrorTone();
     }
   };
 
@@ -225,15 +242,25 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
 
   const finishSession = () => {
     setIsFinished(true);
-    const xp = cards.length * 20;
+    const bonusXp = bestCombo * 15;
+    const xp = cards.length * 20 + bonusXp;
     onSessionComplete(xp, cards.length);
 
-    playFanfare();
+    if (soundEnabled) playFanfare();
     try {
+      // Left cannon
       confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
+        particleCount: 70,
+        spread: 60,
+        origin: { x: 0.2, y: 0.65 },
+        colors: ['#84a282', '#b8cfb3', '#f6e2e9', '#fefaf3', '#f59e0b'],
+      });
+      // Right cannon
+      confetti({
+        particleCount: 70,
+        spread: 60,
+        origin: { x: 0.8, y: 0.65 },
+        colors: ['#84a282', '#b8cfb3', '#f6e2e9', '#fefaf3', '#10b981'],
       });
     } catch (e) {}
   };
@@ -273,40 +300,45 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
   // Finished session screen
   if (isFinished) {
     const accuracy = Math.round((correctCount / cards.length) * 100);
-    const xpGained = cards.length * 20;
+    const bonusXp = bestCombo * 15;
+    const xpGained = cards.length * 20 + bonusXp;
 
     return (
-      <div className="mx-auto max-w-lg rounded-3xl bg-[#222c3d] p-8 text-center text-white border border-white/10 shadow-2xl animate-in zoom-in-95 duration-200">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-300 border border-amber-400/20 shadow-md">
-          <Trophy className="h-8 w-8" />
+      <div className="mx-auto max-w-lg rounded-3xl bg-[#1f2d22] p-8 text-center text-white border border-[#84a282]/30 shadow-2xl animate-pop-in">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#84a282]/30 text-amber-300 border border-[#84a282]/40 shadow-lg animate-fire">
+          <Trophy className="h-8 w-8 text-amber-300" />
         </div>
 
-        <h2 className="mt-5 text-2xl font-bold tracking-tight text-white">Session Completed!</h2>
-        <p className="mt-1 text-xs text-white/60">
-          Supercharged your memory and extended your spaced repetition retention.
+        <h2 className="mt-5 text-2xl font-bold tracking-tight text-white">Clinical Session Mastered!</h2>
+        <p className="mt-1 text-xs text-white/70">
+          Supercharged your memory retention and refreshed your SM-2 intervals.
         </p>
 
         {/* Stats Grid */}
-        <div className="mt-6 grid grid-cols-3 gap-3 rounded-2xl bg-black/20 p-4 border border-white/5">
+        <div className="mt-6 grid grid-cols-4 gap-2.5 rounded-2xl bg-black/30 p-4 border border-white/10">
           <div>
-            <div className="text-xl font-bold text-amber-300">+{xpGained}</div>
-            <div className="text-[11px] text-white/50">XP Earned</div>
+            <div className="text-lg font-bold text-amber-300">+{xpGained}</div>
+            <div className="text-[10px] text-white/60">XP Earned</div>
           </div>
           <div>
-            <div className="text-xl font-bold text-emerald-400">{accuracy}%</div>
-            <div className="text-[11px] text-white/50">Accuracy</div>
+            <div className="text-lg font-bold text-emerald-400">{accuracy}%</div>
+            <div className="text-[10px] text-white/60">Accuracy</div>
           </div>
           <div>
-            <div className="text-xl font-bold text-blue-300">{cards.length}</div>
-            <div className="text-[11px] text-white/50">Cards Mastered</div>
+            <div className="text-lg font-bold text-[#b8cfb3]">{bestCombo}x</div>
+            <div className="text-[10px] text-white/60">Best Streak</div>
+          </div>
+          <div>
+            <div className="text-lg font-bold text-teal-300">{cards.length}</div>
+            <div className="text-[10px] text-white/60">Cards Studied</div>
           </div>
         </div>
 
         <button
           onClick={onExit}
-          className="mt-6 w-full rounded-xl bg-white py-3 text-xs font-bold text-zinc-950 shadow-md hover:bg-white/90 transition cursor-pointer"
+          className="mt-6 w-full rounded-2xl bg-[#84a282] hover:bg-[#6e8c6c] py-3.5 text-xs font-bold text-white shadow-lg transition cursor-pointer active:scale-98"
         >
-          Return to Dashboard
+          Return to Clinical Studio
         </button>
       </div>
     );
@@ -328,17 +360,31 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
             <span>Exit</span>
           </button>
 
-          <span className="text-xs font-bold text-amber-200 truncate max-w-[180px]">
+          <span className="text-xs font-bold text-[#b8cfb3] truncate max-w-[180px]">
             {deck.title}
           </span>
+
+          {/* Sound Toggle */}
+          <button
+            type="button"
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            className={`p-1.5 rounded-full border transition cursor-pointer ${
+              soundEnabled
+                ? 'bg-[#84a282]/30 border-[#84a282]/50 text-emerald-300'
+                : 'bg-white/5 border-white/10 text-white/40'
+            }`}
+            title={soundEnabled ? 'Mute sound effects' : 'Enable sound effects'}
+          >
+            {soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
+          </button>
         </div>
 
         {/* Study Mode Selector Pills */}
-        <div className="flex items-center gap-1 rounded-full bg-black/25 p-1 border border-white/10 text-[11px] font-semibold">
+        <div className="flex items-center gap-1 rounded-full bg-black/40 p-1 border border-white/10 text-[11px] font-semibold backdrop-blur-md">
           <button
             onClick={() => setStudyMode('native')}
             className={`rounded-full px-2.5 py-1 transition cursor-pointer ${
-              studyMode === 'native' ? 'bg-white text-zinc-950 font-bold' : 'text-white/60 hover:text-white'
+              studyMode === 'native' ? 'bg-[#84a282] text-white font-bold shadow-xs' : 'text-white/60 hover:text-white'
             }`}
           >
             Auto
@@ -346,7 +392,7 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
           <button
             onClick={() => setStudyMode('flashcard')}
             className={`rounded-full px-2.5 py-1 transition cursor-pointer ${
-              studyMode === 'flashcard' ? 'bg-white text-zinc-950 font-bold' : 'text-white/60 hover:text-white'
+              studyMode === 'flashcard' ? 'bg-[#84a282] text-white font-bold shadow-xs' : 'text-white/60 hover:text-white'
             }`}
           >
             Flip
@@ -354,7 +400,7 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
           <button
             onClick={() => setStudyMode('multiple_choice')}
             className={`rounded-full px-2.5 py-1 transition cursor-pointer ${
-              studyMode === 'multiple_choice' ? 'bg-white text-zinc-950 font-bold' : 'text-white/60 hover:text-white'
+              studyMode === 'multiple_choice' ? 'bg-[#84a282] text-white font-bold shadow-xs' : 'text-white/60 hover:text-white'
             }`}
           >
             Quiz
@@ -362,7 +408,7 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
           <button
             onClick={() => setStudyMode('fill_blank')}
             className={`rounded-full px-2.5 py-1 transition cursor-pointer ${
-              studyMode === 'fill_blank' ? 'bg-white text-zinc-950 font-bold' : 'text-white/60 hover:text-white'
+              studyMode === 'fill_blank' ? 'bg-[#84a282] text-white font-bold shadow-xs' : 'text-white/60 hover:text-white'
             }`}
           >
             Type
@@ -370,39 +416,42 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
         </div>
       </div>
 
-      {/* Progress Bar */}
-      <div className="mb-4 flex items-center gap-3">
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-          <div 
-            className="h-full bg-amber-400 transition-all duration-300"
-            style={{ width: `${progressPercent}%` }}
-          />
+      {/* Progress Bar & Combo Streak */}
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="flex-1 flex items-center gap-3">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
+            <div 
+              className="h-full bg-gradient-to-r from-[#b8cfb3] to-[#84a282] transition-all duration-300 rounded-full"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+          <span className="text-[11px] font-bold text-[#b8cfb3] whitespace-nowrap">
+            {currentIndex + 1} / {cards.length}
+          </span>
         </div>
-        <span className="text-[11px] font-bold text-white/60 whitespace-nowrap">
-          {currentIndex + 1} / {cards.length}
-        </span>
+
+        {comboStreak >= 2 && (
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 shadow-md animate-fire shrink-0">
+            <span className="text-sm">🔥</span>
+            <span className="text-xs font-black tracking-tight">{comboStreak}x Streak!</span>
+            <span className="text-[10px] font-semibold text-amber-200/80">+{comboStreak * 25} XP</span>
+          </div>
+        )}
       </div>
 
       {/* 2. MAIN CARD CONTAINER */}
-      <div className="relative min-h-[320px] rounded-3xl bg-[#222c3d] p-6 sm:p-8 shadow-2xl border border-white/10 flex flex-col justify-between">
+      <div className="relative min-h-[320px] rounded-3xl bg-[#19251a]/95 p-6 sm:p-8 shadow-2xl border border-[#84a282]/30 flex flex-col justify-between backdrop-blur-xl">
         
         {/* Card Header Tag & TTS */}
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center gap-2">
-            <span className="rounded-full bg-white/10 px-3 py-1 font-bold text-amber-200 border border-white/5">
+            <span className="rounded-full bg-white/10 px-3 py-1 font-bold text-[#b8cfb3] border border-white/5">
               {effectiveMode === 'multiple_choice' 
                 ? 'Multiple Choice Quiz' 
                 : effectiveMode === 'fill_blank' 
                 ? 'Typing Active Recall' 
                 : 'Flashcard'}
             </span>
-
-            {comboStreak >= 2 && (
-              <span className="animate-pulse flex items-center gap-1 rounded-full bg-amber-500/25 px-2.5 py-0.5 text-[10px] font-extrabold text-amber-300 border border-amber-400/30">
-                <span>🔥</span>
-                <span>{comboStreak} Streak!</span>
-              </span>
-            )}
           </div>
 
           <div className="flex items-center gap-2">
@@ -443,9 +492,9 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
 
               if (isAnswerChecked) {
                 if (option.trim().toLowerCase() === currentCard.back.trim().toLowerCase()) {
-                  btnStyle = "border-emerald-500 bg-emerald-500/20 text-emerald-200 font-bold border-2";
+                  btnStyle = "border-emerald-500 bg-emerald-500/20 text-emerald-200 font-bold border-2 animate-pop-in";
                 } else if (selectedOption === option) {
-                  btnStyle = "border-rose-500 bg-rose-500/20 text-rose-200 border-2";
+                  btnStyle = "border-rose-500 bg-rose-500/20 text-rose-200 border-2 animate-shake";
                 }
               }
 
@@ -454,7 +503,7 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
                   key={idx}
                   disabled={isAnswerChecked}
                   onClick={() => handleSelectOption(option)}
-                  className={`flex w-full items-center justify-between rounded-xl border p-3.5 text-left text-xs sm:text-sm font-medium transition cursor-pointer ${btnStyle}`}
+                  className={`flex w-full items-center justify-between rounded-xl border p-3.5 text-left text-xs sm:text-sm font-medium transition cursor-pointer active:scale-98 ${btnStyle}`}
                 >
                   <span>{option}</span>
                   {isAnswerChecked && option.trim().toLowerCase() === currentCard.back.trim().toLowerCase() && (
@@ -477,13 +526,13 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
               disabled={isAnswerChecked}
               value={typedAnswer}
               onChange={(e) => setTypedAnswer(e.target.value)}
-              placeholder="Type your answer from memory..."
-              className="w-full rounded-xl bg-white/5 px-4 py-3 text-xs sm:text-sm text-white border border-white/10 focus:border-amber-400/50 focus:outline-none"
+              placeholder="Type clinical term from memory..."
+              className="w-full rounded-xl bg-white/5 px-4 py-3 text-xs sm:text-sm text-white border border-white/10 focus:border-[#84a282] focus:outline-none"
             />
             {!isAnswerChecked && (
               <button
                 type="submit"
-                className="w-full rounded-xl bg-white py-2.5 text-xs font-bold text-zinc-950 transition hover:bg-white/90 cursor-pointer shadow-md"
+                className="w-full rounded-xl bg-[#84a282] hover:bg-[#6e8c6c] py-2.5 text-xs font-bold text-white transition cursor-pointer shadow-md active:scale-98"
               >
                 Check Answer
               </button>
@@ -491,24 +540,60 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
           </form>
         )}
 
-        {/* C. Traditional Flashcard Flip Mode */}
+        {/* C. Tactile Flashcard Flip Mode */}
         {effectiveMode === 'flashcard' && (
-          <div className="my-2">
-            {!isFlipped ? (
-              <button
-                onClick={() => setIsFlipped(true)}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-white/20 p-8 text-center text-xs font-bold text-amber-200 transition hover:border-amber-400/40 hover:bg-white/5 cursor-pointer"
-              >
-                <RotateCw className="h-4 w-4" />
-                <span>Tap or click to reveal answer</span>
-              </button>
-            ) : null}
+          <div 
+            onClick={() => {
+              if (!isFlipped && soundEnabled) playCardFlipSound();
+              setIsFlipped(!isFlipped);
+            }}
+            className="perspective-1000 my-2 cursor-pointer group select-none"
+          >
+            <div className={`relative min-h-[140px] w-full rounded-2xl p-6 transition-all duration-300 border flex flex-col items-center justify-center text-center ${
+              !isFlipped 
+                ? 'border-dashed border-white/25 bg-white/5 hover:border-[#84a282] hover:bg-[#84a282]/10' 
+                : 'border-[#84a282]/50 bg-[#203023] shadow-lg animate-pop-in'
+            }`}>
+              {!isFlipped ? (
+                <div className="flex flex-col items-center gap-2 text-[#b8cfb3]">
+                  <RotateCw className="h-6 w-6 group-hover:rotate-180 transition-transform duration-500 text-[#84a282]" />
+                  <span className="text-xs font-bold text-white">Tap or Press Space to Flip</span>
+                  <span className="text-[10px] text-white/50">Recall the pathophysiology, medication, or priority nursing action</span>
+                </div>
+              ) : (
+                <div className="w-full text-left space-y-2 animate-fade-in">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-300">
+                      Answer & Clinical Takeaway
+                    </span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        speakText(currentCard.back);
+                      }}
+                      className="text-white/50 hover:text-white p-1 cursor-pointer"
+                    >
+                      <Volume2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                  <p className="text-sm font-bold text-white leading-relaxed">
+                    {currentCard.back}
+                  </p>
+                  {currentCard.explanation && (
+                    <p className="text-[11px] text-[#b8cfb3] pt-1.5 border-t border-white/10 italic">
+                      💡 {currentCard.explanation}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         )}
 
-        {/* Revealed Answer & Explanation Box */}
-        {(isFlipped || isAnswerChecked) && (
-          <div className="rounded-2xl bg-black/25 p-4 border border-white/10 text-xs space-y-1.5 animate-in fade-in duration-200">
+        {/* Revealed Answer & Explanation Box for Quiz / Type modes */}
+        {effectiveMode !== 'flashcard' && isAnswerChecked && (
+          <div className="rounded-2xl bg-black/35 p-4 border border-white/10 text-xs space-y-1.5 animate-pop-in">
             <div className="flex items-center justify-between">
               <span className="font-bold uppercase tracking-wider text-emerald-300 text-[10px]">
                 Correct Answer
@@ -525,7 +610,7 @@ export default function StudySession({ deck, onExit, onSessionComplete }: StudyS
               {currentCard.back}
             </p>
             {currentCard.explanation && (
-              <p className="text-white/60 text-[11px] pt-1 border-t border-white/5 leading-relaxed">
+              <p className="text-white/70 text-[11px] pt-1 border-t border-white/5 leading-relaxed">
                 💡 {currentCard.explanation}
               </p>
             )}

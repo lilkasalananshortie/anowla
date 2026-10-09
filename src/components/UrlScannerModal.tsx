@@ -29,7 +29,7 @@ export default function UrlScannerModal({
   onDeckCreated,
 }: UrlScannerModalProps) {
   const [url, setUrl] = useState('');
-  const [cardCount, setCardCount] = useState<number>(10);
+  const [cardCount, setCardCount] = useState<number>(25);
   const [category, setCategory] = useState('Medicine');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -210,10 +210,11 @@ export default function UrlScannerModal({
                     onChange={(e) => setCardCount(Number(e.target.value))}
                     className="mt-1 w-full rounded-xl bg-white/5 py-2.5 px-3 text-xs text-white border border-white/10 focus:border-amber-400/50 focus:outline-none"
                   >
-                    <option value={5} className="bg-[#1c2432]">5 High-Yield Cards</option>
-                    <option value={10} className="bg-[#1c2432]">10 High-Yield Cards</option>
-                    <option value={15} className="bg-[#1c2432]">15 Comprehensive Cards</option>
-                    <option value={20} className="bg-[#1c2432]">20 In-Depth Cards</option>
+                    <option value={15} className="bg-[#1c2432]">15 High-Yield Cards</option>
+                    <option value={25} className="bg-[#1c2432]">25 Clinical Cards</option>
+                    <option value={40} className="bg-[#1c2432]">40 In-Depth Exam Cards</option>
+                    <option value={50} className="bg-[#1c2432]">50 Comprehensive Cards</option>
+                    <option value={60} className="bg-[#1c2432]">60 Full Mastery Cards</option>
                   </select>
                 </div>
 

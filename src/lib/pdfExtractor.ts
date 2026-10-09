@@ -229,7 +229,8 @@ function formatSmartCard(rawText: string, userComment?: string): {
 export async function extractPdfHighlights(
   fileData: ArrayBuffer,
   fileName: string,
-  onProgress?: (progressPercent: number) => void
+  onProgress?: (progressPercent: number) => void,
+  targetLimit: number = 50
 ): Promise<PdfScanResult> {
   const pdfjs = await getPdfJs();
   const loadingTask = pdfjs.getDocument({ data: fileData });
@@ -310,9 +311,9 @@ export async function extractPdfHighlights(
     }
   }
 
-  // Pass 2: ONLY if the document has ZERO user highlights/notes,
-  // run the smart definition scanner so unhighlighted PDFs still generate useful cards.
-  if (totalHighlightsFound === 0) {
+  // Pass 2: If extracted items from highlights are fewer than targetLimit,
+  // run the smart definition scanner to extract concepts across pages.
+  if (items.length < targetLimit) {
     for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
       if (onProgress) {
         onProgress(70 + Math.round((pageNum / totalPages) * 30));
@@ -330,13 +331,21 @@ export async function extractPdfHighlights(
         .filter((s) => s.length >= 25 && s.length <= 250);
 
       for (const sentence of sentences) {
-        // High-precision definition check
+        const lower = sentence.toLowerCase();
+        // High-precision definition & clinical mechanism patterns
         if (
           sentence.includes(':') ||
-          sentence.toLowerCase().includes('is defined as') ||
-          sentence.toLowerCase().includes('refers to') ||
-          sentence.toLowerCase().includes('is responsible for') ||
-          sentence.toLowerCase().includes('the primary function')
+          lower.includes('is defined as') ||
+          lower.includes('refers to') ||
+          lower.includes('is responsible for') ||
+          lower.includes('the primary function') ||
+          lower.includes('indicated for') ||
+          lower.includes('contraindicated') ||
+          lower.includes('characterized by') ||
+          lower.includes('mechanism of action') ||
+          lower.includes('nursing intervention') ||
+          lower.includes('priority assessment') ||
+          lower.includes('adverse effect')
         ) {
           const card = formatSmartCard(sentence);
           if (card && !seenConcepts.has(card.front.toLowerCase())) {
@@ -349,13 +358,12 @@ export async function extractPdfHighlights(
               suggestedCard: card,
             });
 
-            // Cap at 15 high-quality concept cards to avoid overwhelming the deck
-            if (items.length >= 15) break;
+            if (items.length >= targetLimit) break;
           }
         }
       }
 
-      if (items.length >= 15) break;
+      if (items.length >= targetLimit) break;
     }
   }
 
