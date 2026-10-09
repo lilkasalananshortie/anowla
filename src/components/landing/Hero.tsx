@@ -29,7 +29,7 @@ export default function Hero() {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#84a282]/15 border border-[#84a282]/30 text-xs font-semibold text-[#b8cfb3] mb-6">
-              <Sparkles size={13} className="text-[#84a282]" />
+              <Stethoscope size={13} className="text-[#84a282]" />
               <span>Evidence-Based Clinical Recall · Zero Math</span>
             </div>
 

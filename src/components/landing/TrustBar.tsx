@@ -1,6 +1,6 @@
 "use client";
 
-import { ShieldCheck, FileText, HeartPulse, Stethoscope, FolderTree, Sparkles, type LucideIcon } from "lucide-react";
+import { ShieldCheck, FileText, HeartPulse, Stethoscope, FolderTree, BookOpen, type LucideIcon } from "lucide-react";
 
 type Item = { icon: LucideIcon; label: string; sub: string };
 
@@ -10,7 +10,7 @@ const ITEMS: Item[] = [
   { icon: HeartPulse, label: "High-Alert Pharmacology", sub: "Cardiac, insulin & anticoagulant protocols" },
   { icon: Stethoscope, label: "Prioritization & Delegation", sub: "EAT framework & triage rules" },
   { icon: FolderTree, label: "Medical Folders", sub: "Group decks by clinical department" },
-  { icon: Sparkles, label: "Strictly Clinical & Nursing", sub: "Zero math or irrelevant filler" },
+  { icon: BookOpen, label: "Strictly Clinical & Nursing", sub: "Zero math or irrelevant filler" },
 ];
 
 export default function TrustBar() {

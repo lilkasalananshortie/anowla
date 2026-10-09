@@ -265,117 +265,63 @@ export default function StudyPage() {
 
   return (
     <div className="min-h-screen bg-[#fefaf3] bg-grid-clinical text-[#19251a] font-sans pb-24 md:pb-16 relative">
-      {/* 1. TOP CLINICAL HEADER / NAVBAR */}
-      <header className="sticky top-0 z-40 bg-[#fefaf3]/95 backdrop-blur-md border-b border-[#dfe8dc] px-4 sm:px-8 py-3.5 transition-colors shadow-xs">
+      {/* 1. CLEAN TOP CLINICAL NAVBAR */}
+      <header className="sticky top-0 z-40 bg-[#fefaf3]/90 backdrop-blur-md border-b border-[#dfe8dc] px-4 sm:px-8 py-3 transition-colors">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2.5 text-[#19251a] hover:opacity-85 transition-opacity"
-            >
-              <div className="w-9 h-9 rounded-xl bg-[#84a282] text-white flex items-center justify-center shadow-md shadow-[#84a282]/25 ring-1 ring-[#b8cfb3]/40">
-                <Stethoscope size={18} strokeWidth={2.4} />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-base font-bold tracking-tight text-[#19251a] leading-none">ANOWLA</span>
-                <span className="text-[10px] font-semibold text-[#84a282] uppercase tracking-wider mt-0.5">Clinical Studio</span>
-              </div>
-            </Link>
-          </div>
+          {/* Brand */}
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2.5 text-[#19251a] hover:opacity-85 transition-opacity"
+          >
+            <div className="w-8 h-8 rounded-xl bg-[#84a282] text-white flex items-center justify-center shadow-xs">
+              <Stethoscope size={16} strokeWidth={2.4} />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sm font-bold tracking-tight text-[#19251a] leading-none">ANOWLA</span>
+              <span className="text-[10px] font-semibold text-[#84a282] uppercase tracking-wider mt-0.5">Clinical Studio</span>
+            </div>
+          </Link>
 
-          {/* Action Hub */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
-            {/* PROMINENT PDF MARKUP & EDITOR (ALWAYS VISIBLE ON MOBILE, TABLET & DESKTOP) */}
+          {/* Central Workspace Switcher */}
+          <nav className="flex items-center p-1 rounded-xl bg-[#ebf2e9] border border-[#dfe8dc]/60">
             <Link
               href="/workspace"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold bg-[#84a282] text-white hover:bg-[#6e8c6c] transition-all shadow-md shadow-[#84a282]/25 cursor-pointer whitespace-nowrap active:scale-95"
-              title="Open interactive PDF reader, highlighter & markup workspace"
+              className="px-3.5 py-1 rounded-lg text-xs font-semibold text-[#586c5a] hover:text-[#19251a] transition"
             >
-              <Highlighter size={14} />
-              <span>PDF Workspace & Editor</span>
+              Workspace
             </Link>
+            <span className="px-3.5 py-1 rounded-lg text-xs font-bold bg-white text-[#19251a] shadow-xs">
+              Decks & Study
+            </span>
+          </nav>
 
-            {/* CREATE FOLDER BUTTON */}
-            <button
-              type="button"
-              onClick={() => setIsFolderModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold bg-white border border-[#dfe8dc] text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer whitespace-nowrap shadow-xs"
-              title="Create new clinical folder"
-            >
-              <FolderPlus size={14} className="text-[#84a282]" />
-              <span>+ New Folder</span>
-            </button>
-
-            {/* AUTO-SCAN PDF EXTRACTOR */}
-            <button
-              type="button"
-              onClick={() => setIsPdfScannerOpen(true)}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold bg-white border border-[#dfe8dc] text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer whitespace-nowrap shadow-xs"
-              title="Auto-extract flashcard decks from clinical PDFs"
-            >
-              <FileText size={13} className="text-[#84a282]" />
-              <span>Auto-Scan PDF</span>
-            </button>
-
-            {/* VIDEO / URL SCANNER */}
-            <button
-              type="button"
-              onClick={() => setIsUrlScannerOpen(true)}
-              className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 transition-colors cursor-pointer whitespace-nowrap"
-              title="YouTube / Web URL to flashcards"
-            >
-              <Video size={13} className="text-rose-600" />
-              <span>Video / URL</span>
-            </button>
-
-            {/* MANUAL DECK CREATOR */}
+          {/* Right Action Hub */}
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setIsCreateOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold bg-white border border-[#dfe8dc] text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer shadow-xs"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-xs transition active:scale-95 cursor-pointer"
             >
-              <Plus size={14} className="text-[#84a282]" />
+              <Plus size={14} />
               <span className="hidden sm:inline">New Deck</span>
             </button>
 
-            {/* EXPLORE COMMUNITY / CURATED */}
-            <button
-              type="button"
-              onClick={() => setIsExploreOpen(true)}
-              className="p-2 rounded-full bg-white border border-[#dfe8dc] text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer shadow-xs"
-              title="Explore Medical Decks"
-            >
-              <Compass size={17} />
-            </button>
-
-            {/* MASTERY ANALYTICS */}
             <button
               type="button"
               onClick={() => setIsMasteryOpen(true)}
-              className="p-2 rounded-full bg-white border border-[#dfe8dc] text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer shadow-xs"
+              className="p-2 rounded-xl text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition cursor-pointer"
               title="Mastery & Memory Analytics"
             >
-              <Brain size={17} />
+              <Brain size={16} />
             </button>
 
-            {/* NOTIFICATIONS */}
-            <button
-              type="button"
-              onClick={() => setIsNotificationsOpen(true)}
-              className="p-2 rounded-full bg-white border border-[#dfe8dc] text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer shadow-xs"
-              title="Daily Notifications"
-            >
-              <Bell size={17} />
-            </button>
-
-            {/* SETTINGS */}
             <button
               type="button"
               onClick={() => setIsSettingsOpen(true)}
-              className="p-2 rounded-full bg-white border border-[#dfe8dc] text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer shadow-xs"
-              title="Settings & Decks Management"
+              className="p-2 rounded-xl text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition cursor-pointer"
+              title="Settings"
             >
-              <Settings size={17} />
+              <Settings size={16} />
             </button>
           </div>
         </div>
@@ -384,94 +330,46 @@ export default function StudyPage() {
       {/* 2. MAIN WORKSPACE CONTAINER */}
       <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-6 space-y-6">
         
-        {/* Serene Clinical Practice Banner & Rapid Review */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-3xl bg-gradient-to-r from-[#19251a] via-[#1f3022] to-[#283e2c] text-white shadow-xl border border-[#84a282]/30 animate-fade-in">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xl">🩺</span>
-              <h1 className="text-lg sm:text-xl font-extrabold tracking-tight text-white">
-                Clinical Mastery Workspace
-              </h1>
-              {stats.streak > 0 && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2.5 py-0.5 text-xs font-black text-amber-300 border border-amber-400/30">
-                  🔥 {stats.streak}-day streak
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-[#b8cfb3]">
+        {/* Serene Clinical Overview Bar (Replaces noisy double banners & widget dump) */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b border-[#dfe8dc]">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight text-[#19251a]">
+              Clinical Study Library
+            </h1>
+            <p className="text-xs text-[#586c5a] mt-0.5">
               {totalDueCards > 0 
-                ? `You have ${totalDueCards} high-yield clinical cards due today for spaced repetition review.` 
-                : 'All decks are currently up to date! Great job staying on top of your clinical exam schedule.'}
+                ? `${totalDueCards} high-yield clinical cards scheduled for spaced repetition review.` 
+                : 'All decks are currently up to date. Excellent consistency on your review schedule.'}
             </p>
           </div>
 
-          {totalDueCards > 0 && (
-            <button
-              type="button"
-              onClick={handleStartDueReview}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-md shadow-[#84a282]/30 transition-all active:scale-95 cursor-pointer whitespace-nowrap"
-            >
-              <Zap size={14} className="fill-amber-300 text-amber-300" />
-              <span>Rapid Review ({totalDueCards} Due)</span>
-            </button>
-          )}
-        </div>
-
-        {/* CLINICAL PDF WORKSPACE SPOTLIGHT BANNER */}
-        <div className="rounded-3xl border border-[#b8cfb3]/80 bg-white/90 backdrop-blur-sm p-5 sm:p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-5 transition-all hover:border-[#84a282]">
-          <div className="flex items-start gap-4">
-            <div className="h-12 w-12 rounded-2xl bg-[#84a282] text-white flex items-center justify-center shrink-0 shadow-md shadow-[#84a282]/25">
-              <FileText size={22} />
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-base sm:text-lg font-bold text-[#19251a]">
-                  Folder-First Clinical PDF Workspace
-                </h2>
-                <span className="rounded-full bg-[#84a282]/20 px-2.5 py-0.5 text-[10px] font-bold text-[#19251a]">
-                  Native PDF View
-                </span>
+          <div className="flex items-center gap-2.5 flex-wrap">
+            {stats.streak > 0 && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#dfe8dc] text-xs font-semibold text-[#19251a]">
+                <span>🔥 {stats.streak} day streak</span>
               </div>
-              <p className="text-xs text-[#586c5a] max-w-2xl leading-relaxed">
-                Organize medical guidelines and lecture slides into folders. View the authentic, high-fidelity PDF format, add persistent per-document clinical notes, and generate active recall quizzes whenever needed.
-              </p>
+            )}
+
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#dfe8dc] text-xs font-semibold text-[#586c5a]">
+              <span>🎯 {stats.cards_studied_today}/{stats.daily_goal} today</span>
             </div>
+
+            {totalDueCards > 0 && (
+              <button
+                type="button"
+                onClick={handleStartDueReview}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-xs transition active:scale-95 cursor-pointer whitespace-nowrap"
+              >
+                <Zap size={13} />
+                <span>Review Due ({totalDueCards})</span>
+              </button>
+            )}
           </div>
-          <Link
-            href="/workspace"
-            className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-md shadow-[#84a282]/25 transition-all cursor-pointer active:scale-95 whitespace-nowrap"
-          >
-            <BookOpen size={14} />
-            <span>Open PDF Workspace</span>
-          </Link>
         </div>
 
-        {/* Streak & Weekly Progress Widgets */}
-        <StreakWidget stats={stats} />
-        
-        {/* Badges / Milestones Widget */}
-        <BadgesWidget stats={stats} />
-
-        <div className="flex flex-col lg:flex-row gap-8 items-start pt-2">
+        <div className="flex flex-col lg:flex-row gap-8 items-start pt-1">
           {/* DESKTOP SIDEBAR */}
-          <aside className="hidden lg:flex flex-col w-64 shrink-0 sticky top-24 space-y-6">
-            {/* Quick Study Metrics */}
-            <div className="p-4 rounded-2xl bg-white border border-[#dfe8dc] shadow-xs">
-              <div className="flex items-center justify-between text-xs font-bold text-[#19251a] mb-2">
-                <span>Daily Quota</span>
-                <span className="text-[#84a282]">{stats.cards_studied_today} / {stats.daily_goal} cards</span>
-              </div>
-              <div className="w-full h-2 rounded-full bg-[#fefaf3] overflow-hidden border border-[#dfe8dc]">
-                <div
-                  className="h-full bg-[#84a282] rounded-full transition-all duration-300"
-                  style={{ width: `${Math.min(100, (stats.cards_studied_today / stats.daily_goal) * 100)}%` }}
-                />
-              </div>
-              <p className="mt-2 text-[11px] text-[#586c5a]">
-                {totalDueCards > 0 ? `${totalDueCards} cards due for clinical review today` : 'All caught up for today!'}
-              </p>
-            </div>
-
+          <aside className="hidden lg:flex flex-col w-64 shrink-0 sticky top-20 space-y-5">
             {/* Folder Manager */}
             <div className="p-4 rounded-2xl bg-white border border-[#dfe8dc] shadow-xs space-y-3">
               <div className="flex items-center justify-between pb-2 border-b border-[#dfe8dc]">
@@ -484,7 +382,7 @@ export default function StudyPage() {
                   className="p-1 rounded-lg hover:bg-[#ebf2e9] text-[#84a282] transition-colors cursor-pointer flex items-center gap-1"
                   title="Create New Folder"
                 >
-                  <FolderPlus size={16} />
+                  <FolderPlus size={15} />
                 </button>
               </div>
 
@@ -576,6 +474,37 @@ export default function StudyPage() {
               >
                 <FolderPlus size={14} />
                 <span>+ New Folder</span>
+              </button>
+            </div>
+
+            {/* Quick Study Tools */}
+            <div className="p-4 rounded-2xl bg-white border border-[#dfe8dc] shadow-xs space-y-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#19251a] block pb-1 border-b border-[#dfe8dc]">
+                Study Tools
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsPdfScannerOpen(true)}
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-[#19251a] hover:bg-[#ebf2e9] transition text-left cursor-pointer"
+              >
+                <FileText size={14} className="text-[#84a282]" />
+                <span>Auto-Scan PDF</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsUrlScannerOpen(true)}
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-[#19251a] hover:bg-[#ebf2e9] transition text-left cursor-pointer"
+              >
+                <Video size={14} className="text-[#84a282]" />
+                <span>Video / URL To Cards</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsExploreOpen(true)}
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-[#19251a] hover:bg-[#ebf2e9] transition text-left cursor-pointer"
+              >
+                <Compass size={14} className="text-[#84a282]" />
+                <span>Explore Community Decks</span>
               </button>
             </div>
           </aside>

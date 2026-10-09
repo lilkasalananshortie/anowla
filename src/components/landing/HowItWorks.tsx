@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Upload, Sparkles, Brain, Check, FileText, ArrowRight, ShieldCheck, HeartPulse } from "lucide-react";
+import { Upload, Brain, Check, FileText, ArrowRight, ShieldCheck, HeartPulse } from "lucide-react";
 import Section from "@/components/ui/Section";
 import Reveal from "./Reveal";
 

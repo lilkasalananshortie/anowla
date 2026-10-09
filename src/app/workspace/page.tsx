@@ -348,101 +348,57 @@ export default function WorkspacePage() {
   return (
     <div className="min-h-screen bg-[#fefaf3] bg-grid-clinical text-[#19251a] font-sans flex flex-col">
       
-      {/* 1. TOP CLINICAL HEADER & BREADCRUMBS */}
-      <header className="sticky top-0 z-40 bg-[#fefaf3]/95 backdrop-blur-md border-b border-[#dfe8dc] px-4 sm:px-8 py-3.5 transition-colors shadow-xs">
+      {/* 1. CLEAN TOP CLINICAL NAVBAR */}
+      <header className="sticky top-0 z-40 bg-[#fefaf3]/90 backdrop-blur-md border-b border-[#dfe8dc] px-4 sm:px-8 py-3 transition-colors">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-          
-          {/* Left: Brand & Breadcrumbs */}
-          <div className="flex items-center gap-2.5 flex-wrap">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-[#19251a] hover:opacity-85"
-            >
-              <div className="w-8 h-8 rounded-xl bg-[#84a282] text-white flex items-center justify-center shadow-md shadow-[#84a282]/25">
-                <Stethoscope size={16} strokeWidth={2.4} />
-              </div>
-              <span className="text-sm font-bold tracking-tight text-[#19251a] hidden sm:inline">ANOWLA</span>
-            </Link>
+          {/* Brand */}
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2.5 text-[#19251a] hover:opacity-85 transition-opacity"
+          >
+            <div className="w-8 h-8 rounded-xl bg-[#84a282] text-white flex items-center justify-center shadow-xs">
+              <Stethoscope size={16} strokeWidth={2.4} />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sm font-bold tracking-tight text-[#19251a] leading-none">ANOWLA</span>
+              <span className="text-[10px] font-semibold text-[#84a282] uppercase tracking-wider mt-0.5">Clinical Studio</span>
+            </div>
+          </Link>
 
-            <span className="text-[#586c5a] text-xs">/</span>
-
-            {/* Breadcrumb 1: Workspace Folders Root */}
-            <button
-              type="button"
-              onClick={() => {
-                setCurrentView('folders');
-                setSelectedDoc(null);
-              }}
-              className={`text-xs font-bold transition cursor-pointer ${
-                currentView === 'folders' ? 'text-[#19251a]' : 'text-[#586c5a] hover:text-[#19251a]'
-              }`}
-            >
-              Workspace Folders
-            </button>
-
-            {/* Breadcrumb 2: Folder Detail */}
-            {selectedFolder && currentView !== 'folders' && (
-              <>
-                <span className="text-[#586c5a] text-xs">/</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCurrentView('folder_detail');
-                    setSelectedDoc(null);
-                  }}
-                  className={`text-xs font-bold transition cursor-pointer flex items-center gap-1 ${
-                    currentView === 'folder_detail' ? 'text-[#19251a]' : 'text-[#586c5a] hover:text-[#19251a]'
-                  }`}
-                >
-                  <FolderIcon size={13} className="text-[#84a282]" />
-                  <span>{selectedFolder.name}</span>
-                </button>
-              </>
-            )}
-
-            {/* Breadcrumb 3: Active PDF */}
-            {selectedDoc && currentView === 'pdf_reader' && (
-              <>
-                <span className="text-[#586c5a] text-xs">/</span>
-                <span className="text-xs font-bold text-[#84a282] flex items-center gap-1 max-w-[220px] truncate">
-                  <FileText size={13} />
-                  <span className="truncate">{selectedDoc.file_name || selectedDoc.title}</span>
-                </span>
-              </>
-            )}
-          </div>
-
-          {/* Right Action Hub */}
-          <div className="flex items-center gap-2 sm:gap-3 justify-end flex-wrap">
+          {/* Central Workspace Switcher */}
+          <nav className="flex items-center p-1 rounded-xl bg-[#ebf2e9] border border-[#dfe8dc]/60">
+            <span className="px-3.5 py-1 rounded-lg text-xs font-bold bg-white text-[#19251a] shadow-xs">
+              Workspace
+            </span>
             <Link
               href="/study"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white border border-[#dfe8dc] text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition shadow-xs"
+              className="px-3.5 py-1 rounded-lg text-xs font-semibold text-[#586c5a] hover:text-[#19251a] transition"
             >
-              <Layers size={13} className="text-[#84a282]" />
-              <span>Study Decks</span>
+              Decks & Study
             </Link>
+          </nav>
 
-            {/* + New Folder Trigger */}
-            <button
-              type="button"
-              onClick={() => setIsFolderModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-white border border-[#dfe8dc] text-[#19251a] hover:bg-[#ebf2e9] transition shadow-xs cursor-pointer"
-            >
-              <FolderPlus size={14} className="text-[#84a282]" />
-              <span>+ New Folder</span>
-            </button>
-
-            {/* Generate Quiz Button (Visible when inside PDF Reader) */}
+          {/* Right Action Hub */}
+          <div className="flex items-center gap-2">
             {currentView === 'pdf_reader' && (
               <button
                 type="button"
                 onClick={() => setIsGenerateQuizOpen(true)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-md shadow-[#84a282]/25 transition cursor-pointer active:scale-95"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-xs transition active:scale-95 cursor-pointer"
               >
-                <Zap size={14} />
+                <Zap size={13} />
                 <span>Generate Quiz</span>
               </button>
             )}
+
+            <button
+              type="button"
+              onClick={() => setIsFolderModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-[#dfe8dc] text-[#19251a] hover:bg-[#ebf2e9] transition shadow-xs cursor-pointer"
+            >
+              <FolderPlus size={14} className="text-[#84a282]" />
+              <span className="hidden sm:inline">New Folder</span>
+            </button>
           </div>
         </div>
       </header>
@@ -460,49 +416,49 @@ export default function WorkspacePage() {
       {/* ========================================================================= */}
       {currentView === 'folders' && (
         <main className="max-w-7xl w-full mx-auto p-4 sm:p-8 space-y-6 flex-1">
-          {/* Header Banner */}
-          <div className="p-6 rounded-3xl bg-white border border-[#dfe8dc] shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <h1 className="text-lg sm:text-xl font-extrabold text-[#19251a] tracking-tight">
-                Clinical Workspace Folders
+          {/* Header Bar */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b border-[#dfe8dc]">
+            <div>
+              <h1 className="text-xl font-bold tracking-tight text-[#19251a]">
+                Clinical Document Folders
               </h1>
-              <p className="text-xs text-[#586c5a] max-w-2xl leading-relaxed">
-                Select a specialty folder to open and view your medical PDFs. Inside each folder, you can view the default PDF layout, add clinical notes, and generate practice quizzes.
+              <p className="text-xs text-[#586c5a] mt-0.5">
+                Organize medical guidelines, protocols, and lecture PDFs by clinical specialty.
               </p>
             </div>
 
             <button
               type="button"
               onClick={() => setIsFolderModalOpen(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-md shadow-[#84a282]/25 transition cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-xs transition cursor-pointer"
             >
-              <FolderPlus size={15} />
-              <span>Create New Folder</span>
+              <FolderPlus size={14} />
+              <span>Create Folder</span>
             </button>
           </div>
 
           {/* Folders Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {folders.map((folder) => {
               const docCount = documents.filter((d) => d.folder_id === folder.id).length;
               return (
                 <div
                   key={folder.id}
                   onClick={() => handleOpenFolder(folder)}
-                  className="group relative flex flex-col justify-between p-6 rounded-3xl bg-white border border-[#dfe8dc] hover:border-[#84a282] shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                  className="group relative flex flex-col justify-between p-5 rounded-2xl bg-white border border-[#dfe8dc] hover:border-[#84a282] shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer"
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <div className="w-12 h-12 rounded-2xl bg-[#ebf2e9] text-[#84a282] flex items-center justify-center group-hover:scale-105 transition-transform">
-                        <FolderIcon size={24} className="fill-[#84a282]/20 text-[#84a282]" />
+                      <div className="w-10 h-10 rounded-xl bg-[#ebf2e9] text-[#84a282] flex items-center justify-center">
+                        <FolderIcon size={20} className="fill-[#84a282]/20 text-[#84a282]" />
                       </div>
-                      <span className="rounded-full bg-[#fefaf3] px-2.5 py-1 text-[11px] font-bold text-[#586c5a] border border-[#dfe8dc]">
+                      <span className="rounded-full bg-[#fefaf3] px-2 py-0.5 text-[11px] font-semibold text-[#586c5a] border border-[#dfe8dc]">
                         {docCount} {docCount === 1 ? 'PDF' : 'PDFs'}
                       </span>
                     </div>
 
                     <div>
-                      <h3 className="text-base font-bold text-[#19251a] group-hover:text-[#84a282] transition-colors">
+                      <h3 className="text-sm font-bold text-[#19251a] group-hover:text-[#84a282] transition-colors">
                         {folder.name}
                       </h3>
                       <p className="text-xs text-[#586c5a] mt-0.5">
@@ -511,9 +467,9 @@ export default function WorkspacePage() {
                     </div>
                   </div>
 
-                  <div className="mt-5 pt-3 border-t border-[#dfe8dc] flex items-center justify-between text-xs font-bold text-[#84a282]">
+                  <div className="mt-4 pt-3 border-t border-[#dfe8dc] flex items-center justify-between text-xs font-semibold text-[#84a282]">
                     <span>Open Folder</span>
-                    <ChevronRight size={15} className="group-hover:translate-x-1 transition-transform" />
+                    <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
               );
@@ -522,14 +478,14 @@ export default function WorkspacePage() {
             {/* "+ Create New Folder" Action Card */}
             <div
               onClick={() => setIsFolderModalOpen(true)}
-              className="flex flex-col items-center justify-center p-8 rounded-3xl border-2 border-dashed border-[#b8cfb3] hover:border-[#84a282] bg-white/60 hover:bg-[#ebf2e9]/50 transition-all cursor-pointer min-h-[190px] text-center"
+              className="flex flex-col items-center justify-center p-6 rounded-2xl border border-dashed border-[#b8cfb3] hover:border-[#84a282] bg-white/40 hover:bg-[#ebf2e9]/40 transition-all cursor-pointer min-h-[160px] text-center"
             >
-              <div className="w-12 h-12 rounded-2xl bg-[#ebf2e9] text-[#84a282] flex items-center justify-center mb-3">
-                <Plus size={22} />
+              <div className="w-10 h-10 rounded-xl bg-[#ebf2e9] text-[#84a282] flex items-center justify-center mb-2.5">
+                <Plus size={18} />
               </div>
-              <h4 className="text-sm font-bold text-[#19251a]">Create New Folder</h4>
-              <p className="text-[11px] text-[#586c5a] mt-0.5 max-w-[180px]">
-                Organize by clinical specialty or rotation
+              <h4 className="text-xs font-bold text-[#19251a]">Create New Folder</h4>
+              <p className="text-[11px] text-[#586c5a] mt-0.5">
+                Add specialty or rotation
               </p>
             </div>
           </div>
@@ -541,28 +497,33 @@ export default function WorkspacePage() {
       {/* ========================================================================= */}
       {currentView === 'folder_detail' && selectedFolder && (
         <main className="max-w-7xl w-full mx-auto p-4 sm:p-8 space-y-6 flex-1">
-          {/* Folder Details Banner */}
-          <div className="p-6 rounded-3xl bg-white border border-[#dfe8dc] shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-[#84a282] text-white flex items-center justify-center shadow-md shadow-[#84a282]/25">
-                <FolderIcon size={24} />
-              </div>
+          {/* Folder Details Top Bar */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b border-[#dfe8dc]">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setCurrentView('folders')}
+                className="p-2 rounded-xl bg-white border border-[#dfe8dc] text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition cursor-pointer"
+                title="Back to All Folders"
+              >
+                <ChevronLeft size={16} />
+              </button>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-lg sm:text-xl font-extrabold text-[#19251a]">
+                  <h1 className="text-xl font-bold tracking-tight text-[#19251a]">
                     {selectedFolder.name}
                   </h1>
-                  <span className="rounded-full bg-[#ebf2e9] px-2.5 py-0.5 text-[10px] font-bold text-[#84a282]">
-                    Folder
+                  <span className="rounded-full bg-[#ebf2e9] px-2.5 py-0.5 text-[11px] font-semibold text-[#84a282]">
+                    {currentFolderDocs.length} {currentFolderDocs.length === 1 ? 'PDF' : 'PDFs'}
                   </span>
                 </div>
                 <p className="text-xs text-[#586c5a] mt-0.5">
-                  {currentFolderDocs.length} {currentFolderDocs.length === 1 ? 'PDF document' : 'PDF documents'} saved
+                  Clinical guidelines and lecture slides saved in this folder.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2">
               <input
                 ref={fileInputRef}
                 type="file"
@@ -577,7 +538,7 @@ export default function WorkspacePage() {
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploadingPdf}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-md shadow-[#84a282]/25 transition cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-xs transition cursor-pointer disabled:opacity-50"
               >
                 {isUploadingPdf ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
                 <span>{isUploadingPdf ? `Uploading (${uploadProgress}%)...` : 'Upload PDF'}</span>
@@ -586,7 +547,7 @@ export default function WorkspacePage() {
               <button
                 type="button"
                 onClick={() => setCurrentView('folders')}
-                className="px-4 py-2.5 rounded-full text-xs font-semibold bg-[#ebf2e9] text-[#19251a] hover:bg-[#dfe8dc] transition cursor-pointer"
+                className="px-3 py-2 rounded-xl text-xs font-semibold bg-white border border-[#dfe8dc] text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition cursor-pointer"
               >
                 All Folders
               </button>
@@ -594,28 +555,28 @@ export default function WorkspacePage() {
           </div>
 
           {/* Grid of PDF Documents in this folder */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {currentFolderDocs.map((doc) => {
               const notesCount = doc.notes?.length || 0;
               return (
                 <div
                   key={doc.id}
                   onClick={() => handleOpenPdf(doc)}
-                  className="group relative flex flex-col justify-between p-6 rounded-3xl bg-white border border-[#dfe8dc] hover:border-[#84a282] shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                  className="group relative flex flex-col justify-between p-5 rounded-2xl bg-white border border-[#dfe8dc] hover:border-[#84a282] shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer"
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <div className="w-11 h-11 rounded-2xl bg-rose-50 text-rose-700 border border-rose-200 flex items-center justify-center">
-                        <FileText size={22} />
+                      <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-700 border border-rose-200/60 flex items-center justify-center">
+                        <FileText size={20} />
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#fefaf3] text-[#586c5a] border border-[#dfe8dc]">
-                          PDF Document
+                      <div className="flex items-center gap-1">
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#fefaf3] text-[#586c5a] border border-[#dfe8dc]">
+                          PDF
                         </span>
                         <button
                           type="button"
                           onClick={(e) => handleDeleteDocument(e, doc.id)}
-                          className="p-1 rounded-full text-[#586c5a] hover:text-rose-600 hover:bg-black/5 transition cursor-pointer"
+                          className="p-1 rounded-lg text-[#586c5a] hover:text-rose-600 hover:bg-black/5 transition cursor-pointer"
                           title="Delete PDF"
                         >
                           <Trash2 size={13} />
@@ -624,7 +585,7 @@ export default function WorkspacePage() {
                     </div>
 
                     <div>
-                      <h3 className="text-sm font-bold text-[#19251a] group-hover:text-[#84a282] transition-colors line-clamp-2">
+                      <h3 className="text-sm font-bold text-[#19251a] group-hover:text-[#84a282] transition-colors line-clamp-1 leading-snug">
                         {doc.title}
                       </h3>
                       <p className="text-[11px] text-[#586c5a] font-mono mt-0.5 truncate">
@@ -633,17 +594,17 @@ export default function WorkspacePage() {
                     </div>
 
                     {notesCount > 0 && (
-                      <div className="pt-1">
-                        <span className="rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 text-[10px] font-bold">
-                          📝 {notesCount} Clinical Notes
+                      <div className="pt-0.5">
+                        <span className="rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 px-2.5 py-0.5 text-[10px] font-semibold">
+                          📝 {notesCount} {notesCount === 1 ? 'note' : 'notes'}
                         </span>
                       </div>
                     )}
                   </div>
 
-                  <div className="mt-5 pt-3 border-t border-[#dfe8dc] flex items-center justify-between text-xs font-bold text-[#84a282]">
-                    <span>Open Default PDF View</span>
-                    <ChevronRight size={15} className="group-hover:translate-x-1 transition-transform" />
+                  <div className="mt-4 pt-3 border-t border-[#dfe8dc] flex items-center justify-between text-xs font-semibold text-[#84a282]">
+                    <span>Open PDF View</span>
+                    <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
               );
@@ -652,14 +613,14 @@ export default function WorkspacePage() {
             {/* Upload PDF Box in this folder */}
             <div
               onClick={() => fileInputRef.current?.click()}
-              className="flex flex-col items-center justify-center p-8 rounded-3xl border-2 border-dashed border-[#b8cfb3] hover:border-[#84a282] bg-white/60 hover:bg-[#ebf2e9]/50 transition-all cursor-pointer min-h-[190px] text-center"
+              className="flex flex-col items-center justify-center p-6 rounded-2xl border border-dashed border-[#b8cfb3] hover:border-[#84a282] bg-white/40 hover:bg-[#ebf2e9]/40 transition-all cursor-pointer min-h-[160px] text-center"
             >
-              <div className="w-12 h-12 rounded-2xl bg-[#ebf2e9] text-[#84a282] flex items-center justify-center mb-3">
-                <Upload size={20} />
+              <div className="w-10 h-10 rounded-xl bg-[#ebf2e9] text-[#84a282] flex items-center justify-center mb-2.5">
+                <Upload size={18} />
               </div>
-              <h4 className="text-sm font-bold text-[#19251a]">Upload PDF to {selectedFolder.name}</h4>
-              <p className="text-[11px] text-[#586c5a] mt-0.5 max-w-[200px]">
-                Drop or browse clinical guidelines or lecture slides
+              <h4 className="text-xs font-bold text-[#19251a]">Upload PDF to {selectedFolder.name}</h4>
+              <p className="text-[11px] text-[#586c5a] mt-0.5">
+                Drop or browse clinical guidelines
               </p>
             </div>
           </div>

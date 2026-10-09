@@ -15,7 +15,7 @@ export default function FinalCTA() {
         <div className="grid lg:grid-cols-2 gap-14 items-center">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#84a282]/20 border border-[#84a282]/30 text-xs font-semibold text-[#b8cfb3] mb-5">
-              <Sparkles size={13} className="text-[#84a282]" />
+              <ShieldCheck size={13} className="text-[#84a282]" />
               <span>Evidence-Based Healthcare Learning</span>
             </div>
 
