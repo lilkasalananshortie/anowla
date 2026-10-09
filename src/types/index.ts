@@ -39,13 +39,22 @@ export interface Deck {
   cards?: Card[];
 }
 
+export interface ClinicalNote {
+  id: string;
+  text: string;
+  color?: string;
+  created_at: string;
+}
+
 export interface StudyDocument {
   id: string;
   title: string;
   content: string;
   folder_id?: string;
   file_name?: string;
+  notes?: ClinicalNote[];
   created_at: string;
+  updated_at?: string;
 }
 
 export interface UserStats {

@@ -1,5 +1,5 @@
 import { supabase, isSupabaseConfigured } from './supabase';
-import { Deck, Card, UserStats, Folder } from '@/types';
+import { Deck, Card, UserStats, Folder, StudyDocument } from '@/types';
 import { INITIAL_DECKS, INITIAL_FOLDERS } from './mockData';
 
 const LOCAL_STORAGE_DECKS_KEY = 'alwinyah_decks';
@@ -360,6 +360,50 @@ export function saveLocalFolders(folders: Folder[]): void {
     localStorage.setItem(LOCAL_STORAGE_FOLDERS_KEY, JSON.stringify(folders));
   } catch (e) {
     console.warn('Error saving local folders', e);
+  }
+}
+
+const LOCAL_STORAGE_DOCUMENTS_KEY = 'alwinyah_documents';
+
+export function getLocalDocuments(): StudyDocument[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(LOCAL_STORAGE_DOCUMENTS_KEY);
+    if (raw !== null) {
+      return JSON.parse(raw);
+    }
+  } catch (e) {
+    console.warn('Error reading local documents', e);
+  }
+  return [];
+}
+
+export function saveLocalDocument(doc: StudyDocument): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const existing = getLocalDocuments();
+    const idx = existing.findIndex((d) => d.id === doc.id);
+    let updated: StudyDocument[];
+    if (idx >= 0) {
+      updated = [...existing];
+      updated[idx] = doc;
+    } else {
+      updated = [doc, ...existing];
+    }
+    localStorage.setItem(LOCAL_STORAGE_DOCUMENTS_KEY, JSON.stringify(updated));
+  } catch (e) {
+    console.warn('Error saving local document', e);
+  }
+}
+
+export function deleteLocalDocument(id: string): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const existing = getLocalDocuments();
+    const updated = existing.filter((d) => d.id !== id);
+    localStorage.setItem(LOCAL_STORAGE_DOCUMENTS_KEY, JSON.stringify(updated));
+  } catch (e) {
+    console.warn('Error deleting local document', e);
   }
 }
 

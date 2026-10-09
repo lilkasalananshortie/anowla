@@ -288,15 +288,14 @@ export default function StudyPage() {
           {/* Action Hub */}
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
             {/* PROMINENT PDF MARKUP & EDITOR (ALWAYS VISIBLE ON MOBILE, TABLET & DESKTOP) */}
-            <button
-              type="button"
-              onClick={() => setIsPdfEditorOpen(true)}
+            <Link
+              href="/workspace"
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold bg-[#84a282] text-white hover:bg-[#6e8c6c] transition-all shadow-md shadow-[#84a282]/25 cursor-pointer whitespace-nowrap active:scale-95"
-              title="Open interactive PDF reader, highlighter & markup editor"
+              title="Open interactive PDF reader, highlighter & markup workspace"
             >
               <Highlighter size={14} />
-              <span>PDF Markup & Editor</span>
-            </button>
+              <span>PDF Workspace & Editor</span>
+            </Link>
 
             {/* CREATE FOLDER BUTTON */}
             <button
@@ -440,14 +439,13 @@ export default function StudyPage() {
               </p>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={() => setIsPdfEditorOpen(true)}
+          <Link
+            href="/workspace"
             className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-md shadow-[#84a282]/25 transition-all cursor-pointer active:scale-95 whitespace-nowrap"
           >
             <Highlighter size={14} />
             <span>Open PDF Markup Workspace</span>
-          </button>
+          </Link>
         </div>
 
         {/* Streak & Weekly Progress Widgets */}
@@ -694,13 +692,12 @@ export default function StudyPage() {
                     : 'No flashcard decks match your search in this folder.'}
                 </p>
                 <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setIsPdfEditorOpen(true)}
-                    className="px-5 py-2.5 rounded-full text-xs font-bold bg-[#84a282] text-white hover:bg-[#6e8c6c] transition-colors cursor-pointer shadow-xs"
+                  <Link
+                    href="/workspace"
+                    className="px-5 py-2.5 rounded-full text-xs font-bold bg-[#84a282] text-white hover:bg-[#6e8c6c] transition-colors cursor-pointer shadow-xs inline-flex items-center gap-1.5"
                   >
-                    📄 Open PDF Markup Workspace
-                  </button>
+                    <span>📄 Open PDF Markup Workspace</span>
+                  </Link>
                   <button
                     type="button"
                     onClick={() => setIsFolderModalOpen(true)}

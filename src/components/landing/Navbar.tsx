@@ -124,6 +124,12 @@ export default function Navbar() {
         {/* Right CTA */}
         <div className="flex items-center gap-2 sm:gap-3 lg:justify-self-end">
           <Link
+            href="/workspace"
+            className={`hidden md:inline-flex items-center whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#fefaf3]/85 hover:text-[#fefaf3] bg-white/10 hover:bg-white/15 border border-[#84a282]/30 transition-colors ${focus}`}
+          >
+            PDF Workspace
+          </Link>
+          <Link
             href="/login"
             className={`hidden sm:inline-flex items-center whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#fefaf3]/80 hover:text-[#fefaf3] hover:bg-white/10 transition-colors ${focus}`}
           >
@@ -183,6 +189,13 @@ export default function Navbar() {
               ))}
             </div>
             <div className="pt-4 border-t border-white/10 flex flex-col gap-2">
+              <Link
+                href="/workspace"
+                onClick={() => setMenuOpen(false)}
+                className="w-full text-center py-2.5 rounded-lg text-sm font-semibold text-[#fefaf3] bg-white/10 hover:bg-white/15 border border-[#84a282]/30"
+              >
+                PDF & Notes Workspace
+              </Link>
               <Link
                 href="/login"
                 onClick={() => setMenuOpen(false)}

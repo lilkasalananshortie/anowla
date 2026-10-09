@@ -378,6 +378,15 @@ export default function PdfEditorWorkspace({
               )}
             </div>
 
+            {/* Link to Full Workspace */}
+            <a
+              href="/workspace"
+              className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold bg-[#ebf2e9] text-[#19251a] hover:bg-[#dfe8dc] transition"
+              title="Open full page workspace"
+            >
+              <span>Full Page Workspace ↗</span>
+            </a>
+
             {/* Close Button */}
             <button
               onClick={onClose}
