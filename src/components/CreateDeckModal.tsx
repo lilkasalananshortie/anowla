@@ -150,8 +150,8 @@ export default function CreateDeckModal({
               <Layers className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-[#19251a]">Create Clinical Deck</h2>
-              <p className="text-xs text-[#586c5a]">Author custom flashcards, multiple-choice questions, and clinical pearls</p>
+              <h2 className="text-lg font-bold text-[#19251a]">Create Study Deck</h2>
+              <p className="text-xs text-[#586c5a]">Author custom flashcards, multiple-choice questions, and conceptual notes</p>
             </div>
           </div>
           <button 
@@ -180,14 +180,14 @@ export default function CreateDeckModal({
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. Pharmacology: Beta Blockers & Digoxin Safety"
+                placeholder="e.g. Data Structures: Graph Traversals & Complexity"
                 className="w-full rounded-xl border border-[#dfe8dc] bg-white px-3.5 py-2.5 text-xs text-[#19251a] outline-none focus:border-[#84a282] focus:ring-1 focus:ring-[#84a282]"
                 required
               />
             </div>
             <div>
               <label className="block text-xs font-bold text-[#19251a] uppercase tracking-wider mb-1">
-                Clinical Folder
+                Folder
               </label>
               <select
                 value={selectedFolderId}
@@ -204,7 +204,7 @@ export default function CreateDeckModal({
 
           <div>
             <label className="block text-xs font-bold text-[#19251a] uppercase tracking-wider mb-1">
-              Description / Clinical Focus
+              Description / Learning Goals
             </label>
             <input
               type="text"

@@ -170,7 +170,7 @@ export default function PdfEditorWorkspace({
 
   const handleGenerateCards = async () => {
     if (!documentText || documentText.trim().length < 50) {
-      setError('Please enter or extract at least 50 characters of medical notes.');
+      setError('Please enter or extract at least 50 characters of study notes.');
       return;
     }
 
@@ -185,7 +185,7 @@ export default function PdfEditorWorkspace({
           text: documentText,
           cardCount: cardCountTarget,
           title: documentTitle,
-          clinicalFocus: medicalFocus,
+          focus: medicalFocus,
         }),
       });
 
@@ -195,7 +195,7 @@ export default function PdfEditorWorkspace({
       }
 
       if (!data.cards || data.cards.length === 0) {
-        throw new Error('No cards were generated. Try adding more specific clinical concepts.');
+        throw new Error('No cards were generated. Try adding more specific concepts.');
       }
 
       const formatted: EditableCard[] = data.cards.map((c: any, idx: number) => ({
@@ -219,11 +219,11 @@ export default function PdfEditorWorkspace({
   const handleAddNewBlankCard = () => {
     const newCard: EditableCard = {
       id: `manual-card-${Date.now()}`,
-      front: 'New clinical assessment or priority:',
-      back: 'Clinical answer and nursing rationale.',
+      front: 'New question or concept prompt:',
+      back: 'Core answer and explanatory mechanism.',
       card_type: 'flashcard',
       distractors: [],
-      explanation: 'Key takeaway for NCLEX review.',
+      explanation: 'Key takeaway for active recall.',
     };
     setGeneratedCards([newCard, ...generatedCards]);
   };

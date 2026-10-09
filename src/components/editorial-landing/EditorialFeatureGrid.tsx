@@ -2,145 +2,122 @@
 
 import React from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Code, Brain, Globe, Dna } from "lucide-react";
 
-interface CurriculumItem {
+interface CurriculumModule {
   id: string;
-  code: string;
+  category: string;
   title: string;
-  desc: string;
-  image: string;
-  actionText: string;
+  description: string;
+  cardCount: string;
+  icon: React.ReactNode;
   actionHref: string;
-  count: string;
 }
 
-const ITEMS: CurriculumItem[] = [
+const MODULES: CurriculumModule[] = [
   {
-    id: "card-1",
-    code: "01 // HIGH-ALERT MEDS",
-    title: "CARDIAC & ICU PHARMACOLOGY",
-    desc: "Inotropes, vasopressors, titration pearls, and fatal dysrhythmia signs.",
-    image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=800&q=80",
-    actionText: "START STUDY",
+    id: "mod-cs",
+    category: "COMPUTER SCIENCE",
+    title: "Graph Algorithms & Asymptotic Complexity",
+    description: "Traversals (BFS/DFS), shortest path heuristics, balanced AVL search trees, and dynamic programming.",
+    cardCount: "4 CARDS",
+    icon: <Code size={20} className="text-blue-600" />,
     actionHref: "/study",
-    count: "48 CARDS",
   },
   {
-    id: "card-2",
-    code: "02 // CLINICAL TRIAGE",
-    title: "MED-SURG & PRIORITIZATION",
-    desc: "Next-Gen NCLEX judgment cases, fluid resuscitation, and triage delegation.",
-    image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=800&q=80",
-    actionText: "START STUDY",
+    id: "mod-neuro",
+    category: "COGNITIVE SCIENCE",
+    title: "Memory Systems & Long-Term Potentiation",
+    description: "Hippocampal encoding, synaptic plasticity, forgetting curves, and evidence-based desirable difficulties.",
+    cardCount: "3 CARDS",
+    icon: <Brain size={20} className="text-indigo-600" />,
     actionHref: "/study",
-    count: "64 CARDS",
   },
   {
-    id: "card-3",
-    code: "03 // CLIENT STUDIO",
-    title: "BROWSER NATIVE PDF WORKSPACE",
-    desc: "Organize guidelines into specialty folders, highlight slides, and generate quizzes.",
-    image: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=800&q=80",
-    actionText: "OPEN WORKSPACE",
-    actionHref: "/workspace",
-    count: "PDF STUDIO",
+    id: "mod-history",
+    category: "MODERN HISTORY",
+    title: "International Law & Westphalian Sovereignty",
+    description: "Postwar institutions, Bretton Woods monetary policy, collective defense accords, and diplomatic frameworks.",
+    cardCount: "3 CARDS",
+    icon: <Globe size={20} className="text-amber-600" />,
+    actionHref: "/study",
+  },
+  {
+    id: "mod-bio",
+    category: "MOLECULAR BIOLOGY",
+    title: "Epigenetics & CRISPR-Cas9 Endonucleases",
+    description: "Chromatin remodeling, CpG island methylation, PAM recognition motifs, and precision genome editing.",
+    cardCount: "2 CARDS",
+    icon: <Dna size={20} className="text-emerald-600" />,
+    actionHref: "/study",
   },
 ];
 
 export default function EditorialFeatureGrid() {
   return (
-    <section 
-      id="curriculum"
-      className="relative z-10 bg-[#e9edc9] text-[#01472e] rounded-t-[5rem] -mt-20 pt-28 pb-32 px-5 sm:px-8 overflow-hidden shadow-2xl"
-    >
-      <div className="max-w-7xl mx-auto">
+    <section id="features" className="py-24 px-5 sm:px-8 bg-[#f4f4f5] text-[#121316]">
+      <div className="max-w-6xl mx-auto space-y-12">
         
-        {/* Section Header: Massive 15vw Anton Display Text + Circular CTA Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 100 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-12 border-b border-[#01472e]/20"
-        >
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#e4e4e7]">
           <div>
-            <span className="text-[11px] font-bold tracking-[0.3em] uppercase opacity-75 block mb-2">
-              CURATED CLINICAL ROTATIONS
+            <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#6b7280] block mb-2">
+              CURATED DOMAINS
             </span>
-            <h2 className="font-anton text-[15vw] leading-[0.8] tracking-[-0.035em] text-[#01472e] uppercase select-none">
-              MODULES
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#121316]">
+              Structured Study Libraries
             </h2>
           </div>
 
-          {/* Large Circular CTA Button */}
           <Link
             href="/study"
-            className="w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-[#01472e] text-[#fefae0] flex flex-col items-center justify-center p-3 text-center transition-all duration-300 hover:scale-105 active:scale-95 shadow-forest group shrink-0 mb-2 cursor-pointer"
+            className="inline-flex items-center gap-2 text-xs font-bold tracking-wider uppercase text-blue-600 hover:text-blue-700 transition"
           >
-            <span className="text-[10px] sm:text-xs font-bold tracking-[0.24em] uppercase">
-              EXPLORE ALL
-            </span>
-            <ArrowUpRight size={18} className="mt-1 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+            <span>View All Decks</span>
+            <ArrowUpRight size={15} />
           </Link>
-        </motion.div>
+        </div>
 
-        {/* 3-Column Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-16">
-          {ITEMS.map((item, index) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 100 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{
-                duration: 1.2,
-                delay: index * 0.15,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              className="flex flex-col space-y-4"
+        {/* 4-Column Responsive Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {MODULES.map((m) => (
+            <div
+              key={m.id}
+              className="bg-white rounded-2xl border border-[#e4e4e7] p-6 flex flex-col justify-between hover:shadow-md transition-shadow group"
             >
-              {/* Aspect Ratio [4/5] Image with 2.5rem radius */}
-              <div className="group relative aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-forest border border-[#01472e]/10 bg-[#ccd5ae]">
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110"
-                />
-
-                {/* Top Badge Overlay */}
-                <div className="absolute top-6 left-6 right-6 flex items-center justify-between text-[10px] font-bold tracking-[0.2em] uppercase text-white bg-black/30 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 pointer-events-none">
-                  <span>{item.code}</span>
-                  <span className="text-[#fefae0]">{item.count}</span>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="w-10 h-10 rounded-xl bg-[#f4f4f5] flex items-center justify-center">
+                    {m.icon}
+                  </div>
+                  <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-[#f4f4f5] text-[#6b7280]">
+                    {m.cardCount}
+                  </span>
                 </div>
 
-                {/* Blur-Reveal Button: Overlay + Button Translates Up 32px on Hover */}
-                <div
-                  className="absolute inset-0 bg-[#01472e]/30 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] flex items-end justify-center p-6 sm:p-8"
+                <div>
+                  <span className="text-[10px] font-bold tracking-wider uppercase text-[#6b7280] block mb-1">
+                    {m.category}
+                  </span>
+                  <h3 className="text-base font-bold text-[#121316] leading-snug group-hover:text-blue-600 transition-colors">
+                    {m.title}
+                  </h3>
+                  <p className="text-xs text-[#4b5563] mt-2 leading-relaxed">
+                    {m.description}
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-6 mt-6 border-t border-[#f4f4f5]">
+                <Link
+                  href={m.actionHref}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#121316] hover:text-blue-600 transition"
                 >
-                  <Link
-                    href={item.actionHref}
-                    className="w-full py-4 rounded-full bg-white text-[#01472e] text-xs font-bold tracking-[0.25em] uppercase text-center transform translate-y-8 group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-xl hover:bg-[#fefae0] cursor-pointer"
-                  >
-                    {item.actionText}
-                  </Link>
-                </div>
+                  <span>Start Review</span>
+                  <ArrowUpRight size={13} />
+                </Link>
               </div>
-
-              {/* Card Meta Typography */}
-              <div className="pt-2">
-                <span className="text-[10px] font-bold tracking-[0.28em] uppercase opacity-70">
-                  {item.code}
-                </span>
-                <h3 className="font-anton text-2xl tracking-[-0.02em] text-[#01472e] uppercase mt-1">
-                  {item.title}
-                </h3>
-                <p className="text-xs font-medium tracking-[0.05em] text-[#01472e]/80 mt-1 leading-relaxed">
-                  {item.desc}
-                </p>
-              </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 

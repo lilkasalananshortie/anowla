@@ -1,146 +1,114 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Image from "next/image";
+import React from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, BookOpen, Layers, Edit3, Sparkles } from "lucide-react";
 
 export default function EditorialHero() {
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const headlineLetters = ["A", "N", "O", "W", "L", "A"];
-
   return (
-    <section className="relative min-h-screen bg-[#ccd5ae] text-[#01472e] overflow-hidden flex flex-col justify-between pt-28 pb-12 sm:pb-16 px-5 sm:px-8">
-      {/* Top Meta Tagline */}
-      <motion.div
-        initial={{ opacity: 0, y: 100 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-        className="max-w-7xl w-full mx-auto flex items-center justify-between text-[11px] font-bold tracking-[0.28em] uppercase text-[#01472e]"
-      >
-        <span>CLINICAL RETENTION STUDIO</span>
-        <span className="hidden sm:inline">NO. 04 / ED. 2026</span>
-      </motion.div>
+    <section className="relative min-h-[92vh] bg-[#fbfbfa] text-[#121316] overflow-hidden flex flex-col justify-between pt-28 pb-14 px-5 sm:px-8 border-b border-[#e5e7eb]">
+      {/* Top Tagline */}
+      <div className="max-w-6xl w-full mx-auto flex items-center justify-between text-[11px] font-semibold tracking-[0.2em] uppercase text-[#6b7280]">
+        <span>INTELLIGENT ACTIVE RECALL & PDF WORKSPACE</span>
+        <span className="hidden sm:inline">SM-2 SPACED RETENTION // ED. 2026</span>
+      </div>
 
-      {/* Centerpiece: Massive 'Anton' Display Text (23vw) + Floating Organic Cards */}
-      <div className="relative my-auto w-full max-w-[96vw] mx-auto py-12 flex flex-col items-center justify-center">
+      {/* Main Hero Showcase */}
+      <div className="max-w-6xl w-full mx-auto my-auto py-12 flex flex-col lg:flex-row items-center justify-between gap-12">
         
-        {/* Floating Organic Card 1: Top Left */}
-        <div
-          className="absolute -top-4 left-2 sm:left-12 lg:left-24 z-20 w-36 sm:w-52 md:w-60 aspect-[4/5] rounded-[3rem] overflow-hidden shadow-forest border-2 border-white/20 animate-float pointer-events-none hidden sm:block"
-          style={{
-            transform: `translateY(${scrollY * 0.05}px)`,
-          }}
-        >
-          <img
-            src="https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=700&q=80"
-            alt="Organic medicinal botanicals"
-            className="w-full h-full object-cover scale-105"
-          />
-          <div className="absolute inset-0 bg-[#01472e]/10 mix-blend-multiply" />
-        </div>
+        {/* Left Column: Bold, Dignified Typography & CTAs */}
+        <div className="max-w-xl space-y-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#121316]/5 border border-[#121316]/10 text-xs font-semibold text-[#121316]">
+            <Sparkles size={13} className="text-blue-600" />
+            <span>PDF MARKUP STUDIO & ACTIVE RECALL</span>
+          </div>
 
-        {/* Floating Organic Card 2: Top Right */}
-        <div
-          className="absolute -bottom-6 right-2 sm:right-10 lg:right-20 z-20 w-40 sm:w-56 md:w-64 aspect-[4/5] rounded-[3rem] overflow-hidden shadow-forest border-2 border-white/20 animate-float-delayed pointer-events-none hidden sm:block"
-          style={{
-            transform: `translateY(${-scrollY * 0.04}px)`,
-          }}
-        >
-          <img
-            src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=700&q=80"
-            alt="Clinical pharmacology vials"
-            className="w-full h-full object-cover scale-105"
-          />
-          <div className="absolute inset-0 bg-[#01472e]/10 mix-blend-multiply" />
-        </div>
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-[-0.035em] text-[#121316] leading-[1.05]">
+            Master any subject through intentional retrieval.
+          </h1>
 
-        {/* Floating Organic Card 3: Ambient Center Right */}
-        <div
-          className="absolute top-1/2 -translate-y-1/2 left-1/2 translate-x-28 sm:translate-x-44 z-0 w-32 sm:w-44 aspect-square rounded-[3rem] overflow-hidden shadow-forest border border-white/20 animate-float-reverse opacity-75 pointer-events-none hidden lg:block"
-          style={{
-            transform: `translateY(${scrollY * 0.03}px)`,
-          }}
-        >
-          <img
-            src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=600&q=80"
-            alt="Sage foliage texture"
-            className="w-full h-full object-cover"
-          />
-        </div>
+          <p className="text-base text-[#4b5563] leading-relaxed max-w-lg">
+            Import lecture slides and textbooks directly into organized folders. Markup and highlight pages natively, extract high-yield conceptual flashcards, and retain them with proven SM-2 spaced repetition.
+          </p>
 
-        {/* Massive 23vw Anton Display Text */}
-        <h1 className="relative z-10 font-anton text-[23vw] leading-[0.75] tracking-[-0.05em] text-[#01472e] uppercase text-center select-none flex justify-center items-center overflow-visible">
-          {headlineLetters.map((char, index) => (
-            <motion.span
-              key={index}
-              initial={{ opacity: 0, y: 100 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 1.2,
-                delay: index * 0.05,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              className="inline-block"
+          <div className="flex flex-wrap items-center gap-4 pt-2">
+            <Link
+              href="/workspace"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#121316] hover:bg-[#27272a] text-white text-xs font-bold tracking-wider uppercase shadow-md transition-all active:scale-95 group cursor-pointer"
             >
-              {char}
-            </motion.span>
-          ))}
-        </h1>
+              <span>Open PDF Workspace</span>
+              <ArrowUpRight size={15} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </Link>
 
-        {/* Center Pill Subtitle */}
-        <motion.div
-          initial={{ opacity: 0, y: 100 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-6 z-20"
-        >
-          <Link
-            href="/study"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#01472e] text-[#fefae0] text-xs font-bold tracking-[0.24em] uppercase hover:bg-[#013723] shadow-forest transition-all duration-300 active:scale-95 group"
-          >
-            <span>ENTER CLINICAL STUDIO</span>
-            <ArrowUpRight size={15} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-          </Link>
-        </motion.div>
+            <Link
+              href="/study"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white border border-[#e5e7eb] hover:bg-[#f4f4f5] text-[#121316] text-xs font-bold tracking-wider uppercase transition-all active:scale-95 cursor-pointer"
+            >
+              <span>Explore Study Decks</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Right Column: Clean Product Mockup Preview (PDF Reader + Deck) */}
+        <div className="w-full max-w-lg bg-white rounded-2xl border border-[#e5e7eb] shadow-xl overflow-hidden p-5 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[#f3f4f6] text-xs font-semibold text-[#6b7280]">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80 inline-block" />
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block" />
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block" />
+              <span className="ml-2 font-mono text-[11px] text-[#374151]">CS102_Graph_Traversals.pdf</span>
+            </div>
+            <span className="text-[10px] uppercase font-bold tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
+              Markup Active
+            </span>
+          </div>
+
+          <div className="space-y-3 pt-1">
+            <div className="p-3.5 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] space-y-2">
+              <div className="flex items-center justify-between text-[11px] font-bold uppercase text-[#475569]">
+                <span>Definition // Shortest Path</span>
+                <span className="text-blue-600 font-mono">Dijkstra</span>
+              </div>
+              <p className="text-xs font-medium text-[#1e293b] leading-relaxed">
+                “Dijkstra’s algorithm computes single-source shortest paths in O((V + E) log V) time by greedily extracting the nearest unvisited node from a min-heap.”
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 text-[11px]">
+              <div className="p-2.5 rounded-lg bg-[#f0fdf4] border border-[#bbf7d0] text-[#166534]">
+                <span className="block font-bold">SM-2 INTERVAL</span>
+                <span>Next review: +6 days</span>
+              </div>
+              <div className="p-2.5 rounded-lg bg-[#eff6ff] border border-[#bfdbfe] text-[#1e40af]">
+                <span className="block font-bold">RETENTION RATE</span>
+                <span>94.8% mastery</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
       </div>
 
-      {/* Bottom: Dual-column descriptive text and location/origin labels */}
-      <motion.div
-        initial={{ opacity: 0, y: 100 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.2, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-        className="max-w-7xl w-full mx-auto grid sm:grid-cols-2 gap-8 items-end pt-6 border-t border-[#01472e]/20"
-      >
+      {/* Bottom Metadata */}
+      <div className="max-w-6xl w-full mx-auto grid sm:grid-cols-2 gap-6 items-end pt-6 border-t border-[#e5e7eb]">
         <div>
-          <span className="block text-[10px] font-bold tracking-[0.3em] uppercase opacity-70 mb-1">
-            PURPOSE & SCOPE
+          <span className="block text-[10px] font-bold tracking-[0.2em] uppercase text-[#6b7280] mb-1">
+            DOMAIN AGNOSTIC
           </span>
-          <p className="text-xs sm:text-sm font-bold tracking-[0.22em] uppercase text-[#01472e] leading-relaxed max-w-md">
-            ACTIVE RECALL FOR NCLEX-RN, CLINICAL PHARMACOLOGY & BEDSIDE MEDICINE. ZERO MATHEMATICS. ZERO FILLER.
+          <p className="text-xs font-medium text-[#374151] leading-relaxed max-w-md">
+            Built for computer science, cognitive psychology, international law, molecular biology, and any rigorous curriculum.
           </p>
         </div>
 
         <div className="sm:text-right">
-          <span className="block text-[10px] font-bold tracking-[0.3em] uppercase opacity-70 mb-1">
-            ORIGIN & METHOD
+          <span className="block text-[10px] font-bold tracking-[0.2em] uppercase text-[#6b7280] mb-1">
+            CORE PRINCIPLES
           </span>
-          <p className="text-xs sm:text-sm font-bold tracking-[0.22em] uppercase text-[#01472e] leading-relaxed">
-            EDITION 2026 // SPHERICAL SM-2 PROTOCOL // MANILA & GLOBAL HEALTHCARE
+          <p className="text-xs font-medium text-[#374151] leading-relaxed">
+            Zero decorative fluff. Fast, authentic native PDF markups. Proven cognitive intervals.
           </p>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }

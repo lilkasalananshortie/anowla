@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
-  Stethoscope, 
   Upload, 
   FileText, 
   FolderPlus, 
@@ -29,6 +28,7 @@ import {
   FileDown
 } from 'lucide-react';
 import CreateFolderModal from '@/components/CreateFolderModal';
+import PdfMarkupViewer from '@/components/PdfMarkupViewer';
 import { extractFullTextFromPdf } from '@/lib/pdfExtractor';
 import { storePdfBlob, getPdfBlob, deletePdfBlob } from '@/lib/pdfStorage';
 import { createValidPdfBlob } from '@/lib/samplePdfGenerator';
@@ -41,7 +41,7 @@ import {
   saveUserDeck,
   getLocalDecks 
 } from '@/lib/deckService';
-import { Folder, StudyDocument, ClinicalNote, Deck, Card, CardType } from '@/types';
+import { Folder, StudyDocument, StudyNote, Deck, Card, CardType } from '@/types';
 
 interface GeneratedCardItem {
   id: string;
@@ -72,7 +72,7 @@ export default function WorkspacePage() {
   const [isGenerateQuizOpen, setIsGenerateQuizOpen] = useState(false);
 
   // Active Document Notes
-  const [activeDocNotes, setActiveDocNotes] = useState<ClinicalNote[]>([]);
+  const [activeDocNotes, setActiveDocNotes] = useState<StudyNote[]>([]);
   const [newNoteText, setNewNoteText] = useState('');
   const [isNotesSidebarOpen, setIsNotesSidebarOpen] = useState(true);
 
@@ -231,14 +231,26 @@ export default function WorkspacePage() {
     }
   };
 
-  // 6. Add Clinical Note to Current PDF (Stored specifically for THIS document)
-  const handleAddNote = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedDoc || !newNoteText.trim()) return;
+  // 6. Save PDF Markups & Drawings
+  const handleSaveMarkups = (updatedMarkups: Record<number, string>) => {
+    if (!selectedDoc) return;
+    const updatedDoc: StudyDocument = {
+      ...selectedDoc,
+      markups: updatedMarkups,
+      updated_at: new Date().toISOString(),
+    };
+    setSelectedDoc(updatedDoc);
+    saveLocalDocument(updatedDoc);
+    setDocuments(getLocalDocuments());
+  };
 
-    const newNote: ClinicalNote = {
+  // Add Note to Current PDF
+  const handleAddNoteDirect = (noteText: string) => {
+    if (!selectedDoc || !noteText.trim()) return;
+
+    const newNote: StudyNote = {
       id: `note-${Date.now()}`,
-      text: newNoteText.trim(),
+      text: noteText.trim(),
       created_at: new Date().toISOString(),
     };
 
@@ -253,11 +265,17 @@ export default function WorkspacePage() {
     setActiveDocNotes(updatedNotes);
     saveLocalDocument(updatedDoc);
     setDocuments(getLocalDocuments());
-    setNewNoteText('');
-    showToast('Clinical note saved.');
+    showToast('Note saved.');
   };
 
-  // Delete a Clinical Note from Current PDF
+  const handleAddNote = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newNoteText.trim()) return;
+    handleAddNoteDirect(newNoteText);
+    setNewNoteText('');
+  };
+
+  // Delete a Note from Current PDF
   const handleDeleteNote = (noteId: string) => {
     if (!selectedDoc) return;
     const updatedNotes = (selectedDoc.notes || []).filter((n) => n.id !== noteId);
@@ -279,7 +297,7 @@ export default function WorkspacePage() {
     try {
       const fullText = selectedDoc.content || selectedDoc.title;
       const notesContext = (selectedDoc.notes || []).map((n) => n.text).join('\n');
-      const promptText = `${fullText}\n\nCLINICAL NOTES:\n${notesContext}`;
+      const promptText = `${fullText}\n\nSTUDY NOTES:\n${notesContext}`;
 
       const res = await fetch('/api/ai-scan', {
         method: 'POST',
@@ -288,7 +306,7 @@ export default function WorkspacePage() {
           text: promptText,
           cardCount: targetQuestionCount,
           title: selectedDoc.title,
-          clinicalFocus: 'comprehensive',
+          focus: 'comprehensive',
         }),
       });
 
@@ -348,7 +366,7 @@ export default function WorkspacePage() {
   return (
     <div className="min-h-screen bg-[#fefaf3] bg-grid-clinical text-[#19251a] font-sans flex flex-col">
       
-      {/* 1. CLEAN TOP CLINICAL NAVBAR */}
+      {/* 1. CLEAN TOP STUDY NAVBAR */}
       <header className="sticky top-0 z-40 bg-[#fefaf3]/90 backdrop-blur-md border-b border-[#dfe8dc] px-4 sm:px-8 py-3 transition-colors">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           {/* Brand */}
@@ -357,11 +375,11 @@ export default function WorkspacePage() {
             className="inline-flex items-center gap-2.5 text-[#19251a] hover:opacity-85 transition-opacity"
           >
             <div className="w-8 h-8 rounded-xl bg-[#84a282] text-white flex items-center justify-center shadow-xs">
-              <Stethoscope size={16} strokeWidth={2.4} />
+              <BookOpen size={16} strokeWidth={2.4} />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-bold tracking-tight text-[#19251a] leading-none">ANOWLA</span>
-              <span className="text-[10px] font-semibold text-[#84a282] uppercase tracking-wider mt-0.5">Clinical Studio</span>
+              <span className="text-[10px] font-semibold text-[#84a282] uppercase tracking-wider mt-0.5">Study Studio</span>
             </div>
           </Link>
 
@@ -420,10 +438,10 @@ export default function WorkspacePage() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b border-[#dfe8dc]">
             <div>
               <h1 className="text-xl font-bold tracking-tight text-[#19251a]">
-                Clinical Document Folders
+                Study Document Folders
               </h1>
               <p className="text-xs text-[#586c5a] mt-0.5">
-                Organize medical guidelines, protocols, and lecture PDFs by clinical specialty.
+                Organize lecture PDFs, syllabus slides, and study notes by course or subject.
               </p>
             </div>
 
@@ -518,7 +536,7 @@ export default function WorkspacePage() {
                   </span>
                 </div>
                 <p className="text-xs text-[#586c5a] mt-0.5">
-                  Clinical guidelines and lecture slides saved in this folder.
+                  Study documents and lecture slides saved in this folder.
                 </p>
               </div>
             </div>
@@ -620,7 +638,7 @@ export default function WorkspacePage() {
               </div>
               <h4 className="text-xs font-bold text-[#19251a]">Upload PDF to {selectedFolder.name}</h4>
               <p className="text-[11px] text-[#586c5a] mt-0.5">
-                Drop or browse clinical guidelines
+                Drop or browse study materials and lecture slides
               </p>
             </div>
           </div>
@@ -628,161 +646,19 @@ export default function WorkspacePage() {
       )}
 
       {/* ========================================================================= */}
-      {/* 3. SCREEN 3: NORMAL DEFAULT PDF FORMAT VIEW + CLINICAL NOTES              */}
+      {/* 3. SCREEN 3: AUTHENTIC PDF MARKUP & ANNOTATION VIEWER (REFERENCE SPEC)    */}
       {/* ========================================================================= */}
       {currentView === 'pdf_reader' && selectedDoc && (
-        <div className="flex-1 flex flex-col bg-[#dfe8dc]/30 relative overflow-hidden">
-          
-          {/* PDF Viewer Sub-Bar */}
-          <div className="bg-white border-b border-[#dfe8dc] px-4 sm:px-8 py-2.5 flex items-center justify-between gap-3 shadow-xs">
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setCurrentView('folder_detail')}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-[#ebf2e9] hover:bg-[#dfe8dc] text-[#19251a] transition cursor-pointer"
-              >
-                <ChevronLeft size={14} />
-                <span>Back to {selectedFolder?.name}</span>
-              </button>
-
-              <div className="flex items-center gap-2">
-                <FileText size={16} className="text-[#84a282]" />
-                <span className="text-xs sm:text-sm font-bold text-[#19251a] truncate max-w-sm">
-                  {selectedDoc.title}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setIsNotesSidebarOpen((o) => !o)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
-                  isNotesSidebarOpen
-                    ? 'bg-[#84a282] text-white shadow-xs'
-                    : 'bg-white border border-[#dfe8dc] text-[#19251a] hover:bg-[#ebf2e9]'
-                }`}
-              >
-                <StickyNote size={14} />
-                <span>Notes ({activeDocNotes.length})</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setIsGenerateQuizOpen(true)}
-                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white shadow-md shadow-[#84a282]/25 transition cursor-pointer"
-              >
-                <Zap size={14} />
-                <span>Generate Quiz</span>
-              </button>
-            </div>
-          </div>
-
-          {/* MAIN PDF WORKSPACE BODY: NATIVE PDF VIEWER (DEFAULT LOOK) + NOTES */}
-          <div className="flex-1 flex overflow-hidden p-3 sm:p-5 gap-4">
-            
-            {/* The Default Look of the PDF File (Native Browser PDF Viewer) */}
-            <div className="flex-1 h-full min-h-[680px] bg-white rounded-2xl border border-[#dfe8dc] shadow-sm overflow-hidden flex flex-col">
-              {activePdfBlobUrl ? (
-                <iframe
-                  src={`${activePdfBlobUrl}#toolbar=1`}
-                  className="w-full h-full border-0 rounded-2xl"
-                  title={selectedDoc.title}
-                />
-              ) : (
-                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-[#586c5a]">
-                  <Loader2 size={28} className="animate-spin text-[#84a282] mb-3" />
-                  <p className="text-xs font-bold">Rendering Default PDF View...</p>
-                </div>
-              )}
-            </div>
-
-            {/* RIGHT PANEL: CLINICAL NOTES FOR THIS SPECIFIC PDF */}
-            {isNotesSidebarOpen && (
-              <aside className="w-80 lg:w-96 bg-white rounded-2xl border border-[#dfe8dc] shadow-sm p-4 flex flex-col justify-between overflow-hidden">
-                <div className="flex flex-col h-full space-y-4">
-                  
-                  {/* Notes Header */}
-                  <div className="flex items-center justify-between pb-2 border-b border-[#dfe8dc]">
-                    <div className="flex items-center gap-2">
-                      <StickyNote size={15} className="text-[#84a282]" />
-                      <h3 className="text-xs font-bold text-[#19251a] uppercase tracking-wider">
-                        Document Notes ({activeDocNotes.length})
-                      </h3>
-                    </div>
-                  </div>
-
-                  {/* Add Note Form */}
-                  <form onSubmit={handleAddNote} className="space-y-2">
-                    <textarea
-                      value={newNoteText}
-                      onChange={(e) => setNewNoteText(e.target.value)}
-                      placeholder="Add a clinical pearl, dosage alert, or key NCLEX rationale for this PDF..."
-                      rows={3}
-                      className="w-full rounded-xl border border-[#dfe8dc] bg-[#fefaf3] p-2.5 text-xs text-[#19251a] outline-none focus:border-[#84a282] placeholder:text-[#586c5a]/60"
-                    />
-                    <div className="flex justify-end">
-                      <button
-                        type="submit"
-                        disabled={!newNoteText.trim()}
-                        className="px-4 py-1.5 rounded-xl text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white transition disabled:opacity-40 cursor-pointer"
-                      >
-                        Save Note
-                      </button>
-                    </div>
-                  </form>
-
-                  {/* Notes List for this PDF (Never deleted when uploading other PDFs!) */}
-                  <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
-                    {activeDocNotes.length === 0 ? (
-                      <div className="py-8 text-center text-[#586c5a]">
-                        <p className="text-xs font-semibold">No notes yet for this document.</p>
-                        <p className="text-[11px] mt-0.5">Your notes are saved permanently with this PDF.</p>
-                      </div>
-                    ) : (
-                      activeDocNotes.map((note) => (
-                        <div
-                          key={note.id}
-                          className="p-3 rounded-2xl border border-[#dfe8dc] bg-[#fefaf3] space-y-1 relative group"
-                        >
-                          <div className="flex items-center justify-between text-[10px] text-[#586c5a]">
-                            <span>{new Date(note.created_at).toLocaleDateString()}</span>
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteNote(note.id)}
-                              className="opacity-0 group-hover:opacity-100 transition text-[#586c5a] hover:text-rose-600 p-0.5 cursor-pointer"
-                              title="Delete note"
-                            >
-                              <Trash2 size={12} />
-                            </button>
-                          </div>
-                          <p className="text-xs text-[#19251a] leading-relaxed font-medium">
-                            {note.text}
-                          </p>
-                        </div>
-                      ))
-                    )}
-                  </div>
-
-                  {/* Generate Quiz Action Card */}
-                  <div className="p-3.5 rounded-2xl bg-[#fefaf3] border border-[#b8cfb3] space-y-2">
-                    <span className="text-xs font-bold text-[#19251a] block">Ready to test your memory?</span>
-                    <button
-                      type="button"
-                      onClick={() => setIsGenerateQuizOpen(true)}
-                      className="w-full py-2.5 rounded-xl text-xs font-bold bg-[#84a282] hover:bg-[#6e8c6c] text-white transition cursor-pointer"
-                    >
-                      Generate Quiz from PDF
-                    </button>
-                  </div>
-
-                </div>
-              </aside>
-            )}
-
-          </div>
-
-        </div>
+        <PdfMarkupViewer
+          document={selectedDoc}
+          pdfBlobUrl={activePdfBlobUrl}
+          onBack={() => setCurrentView('folder_detail')}
+          onSaveMarkups={handleSaveMarkups}
+          onGenerateQuiz={() => setIsGenerateQuizOpen(true)}
+          notes={activeDocNotes}
+          onAddNote={handleAddNoteDirect}
+          onDeleteNote={handleDeleteNote}
+        />
       )}
 
       {/* ========================================================================= */}

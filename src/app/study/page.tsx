@@ -205,9 +205,9 @@ export default function StudyPage() {
 
     const consolidatedDeck: Deck = {
       id: `rapid-due-${Date.now()}`,
-      title: 'Rapid Review: Due Clinical Cards',
+      title: 'Rapid Review: Due Cards',
       description: `Consolidated session of ${allDueCards.length} high-yield cards ready for active recall.`,
-      category: 'Clinical Mastery',
+      category: 'Active Recall',
       cards_count: allDueCards.length,
       due_count: allDueCards.length,
       created_at: new Date().toISOString(),
@@ -274,11 +274,11 @@ export default function StudyPage() {
             className="inline-flex items-center gap-2.5 text-[#19251a] hover:opacity-85 transition-opacity"
           >
             <div className="w-8 h-8 rounded-xl bg-[#84a282] text-white flex items-center justify-center shadow-xs">
-              <Stethoscope size={16} strokeWidth={2.4} />
+              <BookOpen size={16} strokeWidth={2.4} />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-bold tracking-tight text-[#19251a] leading-none">ANOWLA</span>
-              <span className="text-[10px] font-semibold text-[#84a282] uppercase tracking-wider mt-0.5">Clinical Studio</span>
+              <span className="text-[10px] font-semibold text-[#84a282] uppercase tracking-wider mt-0.5">Study Studio</span>
             </div>
           </Link>
 
@@ -334,11 +334,11 @@ export default function StudyPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b border-[#dfe8dc]">
           <div>
             <h1 className="text-xl font-bold tracking-tight text-[#19251a]">
-              Clinical Study Library
+              Study Library
             </h1>
             <p className="text-xs text-[#586c5a] mt-0.5">
               {totalDueCards > 0 
-                ? `${totalDueCards} high-yield clinical cards scheduled for spaced repetition review.` 
+                ? `${totalDueCards} high-yield cards scheduled for spaced repetition review.` 
                 : 'All decks are currently up to date. Excellent consistency on your review schedule.'}
             </p>
           </div>

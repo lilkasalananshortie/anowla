@@ -39,13 +39,15 @@ export interface Deck {
   cards?: Card[];
 }
 
-export interface ClinicalNote {
+export interface StudyNote {
   id: string;
   pageNumber?: number;
   text: string;
   color?: string;
   created_at: string;
 }
+
+export type ClinicalNote = StudyNote;
 
 export interface DocumentHighlight {
   id: string;
@@ -69,7 +71,8 @@ export interface StudyDocument {
   total_pages?: number;
   pages?: DocumentPage[];
   highlights?: DocumentHighlight[];
-  notes?: ClinicalNote[];
+  notes?: StudyNote[];
+  markups?: Record<number, string>; // Page index -> Data URL of drawn markup canvas
   created_at: string;
   updated_at?: string;
 }

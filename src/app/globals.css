@@ -1,36 +1,31 @@
 @import "tailwindcss";
 
-/* ─── Earthy High-End Editorial Tokens (#01472e, #ccd5ae, #e9edc9, #fefae0, #a3b18a) ─── */
+/* ─── Quiet Scholar / Academic Studio Tokens ─── */
 :root {
-  --background: #fefae0;
-  --foreground: #01472e;
+  --background: #fbfbfa;
+  --foreground: #121316;
 
-  /* Earthy Editorial Palette */
-  --earth-forest: #01472e;
-  --earth-sage: #ccd5ae;
-  --earth-olive: #e9edc9;
-  --earth-cream: #fefae0;
-  --earth-moss: #a3b18a;
-
-  /* Color Hunt Clinical Tokens */
-  --palette-blush: #f6e2e9;
-  --palette-cream: #fefaf3;
-  --palette-sage-light: #b8cfb3;
-  --palette-sage-primary: #84a282;
-
-  --dark-forest: #01472e;
-  --text-ink: #01472e;
-  --text-muted: #586c5a;
+  /* Primary Palette */
+  --ink-primary: #121316;
+  --ink-secondary: #4b5563;
   --surface-white: #ffffff;
-  --border-sage: #dfe8dc;
+  --surface-muted: #f4f4f5;
+  --border-subtle: #e5e7eb;
+  --accent-blue: #2563eb;
 
-  --font-anton: var(--font-anton), Impact, sans-serif;
+  /* Legacy Theme Compatibility */
+  --palette-cream: #fbfbfa;
+  --palette-sage-primary: #4b5563;
+  --text-ink: #121316;
+  --text-muted: #6b7280;
+  --border-sage: #e5e7eb;
+
   --font-inter: var(--font-inter), system-ui, -apple-system, sans-serif;
   --font-sans: var(--font-inter), var(--font-poppins), system-ui, sans-serif;
 
-  --scrollbar-track: #fefae0;
-  --scrollbar-thumb: #a3b18a;
-  --scrollbar-thumb-hover: #01472e;
+  --scrollbar-track: #fbfbfa;
+  --scrollbar-thumb: #d4d4d8;
+  --scrollbar-thumb-hover: #71717a;
 }
 
 @theme inline {

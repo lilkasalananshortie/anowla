@@ -55,7 +55,7 @@ export function createValidPdfBlob(title: string, pages: string[]): Blob {
     // Clean text lines (escape parentheses and backslashes)
     const rawLines = pageContent.split('\n');
     let streamText = `BT /F1 16 Tf 50 740 Td (${escapePdfText(title)}) Tj ET\n`;
-    streamText += `BT /F1 10 Tf 50 722 Td (Page ${idx + 1} of ${pageList.length} - Clinical Study Protocol) Tj ET\n`;
+    streamText += `BT /F1 10 Tf 50 722 Td (Page ${idx + 1} of ${pageList.length} - Academic Study Document) Tj ET\n`;
 
     let currentY = 690;
     rawLines.forEach((line) => {

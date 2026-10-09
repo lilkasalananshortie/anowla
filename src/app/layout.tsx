@@ -24,8 +24,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "ANOWLA - Clinical Recall & Spaced Repetition",
-  description: "An earthy, high-end editorial clinical learning platform combining bold industrial typography with soft organic colors.",
+  title: "ANOWLA - Active Recall & PDF Study Studio",
+  description: "Native PDF annotation, intelligent flashcard extraction, and SM-2 spaced repetition for deep conceptual mastery.",
 };
 
 export default function RootLayout({

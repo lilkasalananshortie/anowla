@@ -185,7 +185,8 @@ export async function POST(request: Request) {
     const { 
       text, 
       cardCount = 30, 
-      title = 'Clinical Study Notes',
+      title = 'Study Notes',
+      focus,
       clinicalFocus = 'comprehensive' 
     } = await request.json();
 
@@ -204,32 +205,33 @@ export async function POST(request: Request) {
       );
     }
 
-    // Determine focus direction
+    // Determine focus direction (supports both legacy clinicalFocus and modern studyFocus)
+    const studyFocus = focus || clinicalFocus || 'comprehensive';
     let focusInstructions = '';
-    if (clinicalFocus === 'pharmacology') {
-      focusInstructions = 'CRITICAL FOCUS: Strongly emphasize pharmacology — mechanisms of action, adverse effects, black box warnings, therapeutic lab ranges, antidotes, and high-alert nursing precautions.';
-    } else if (clinicalFocus === 'pathophysiology') {
-      focusInstructions = 'CRITICAL FOCUS: Strongly emphasize disease mechanisms — cellular pathophysiology, etiology, hallmark signs & symptoms, diagnostic criteria, and clinical stages.';
-    } else if (clinicalFocus === 'nclex_priorities') {
-      focusInstructions = 'CRITICAL FOCUS: Strongly emphasize NCLEX-RN clinical decision making — ABCs (Airway, Breathing, Circulation), triage prioritization, acute vs chronic complications, and immediate nursing interventions.';
+    if (studyFocus === 'terms' || studyFocus === 'definitions') {
+      focusInstructions = 'CRITICAL FOCUS: Strongly emphasize essential definitions, core vocabulary, key terms, and precise conceptual terminology.';
+    } else if (studyFocus === 'mechanisms' || studyFocus === 'problem_solving') {
+      focusInstructions = 'CRITICAL FOCUS: Strongly emphasize cause-and-effect relationships, procedural mechanisms, step-by-step logic, and problem-solving rules.';
+    } else if (studyFocus === 'exam_priorities' || studyFocus === 'high_yield') {
+      focusInstructions = 'CRITICAL FOCUS: Strongly emphasize high-yield exam recall — common pitfalls, contrast between similar concepts, and critical takeaways.';
     } else {
-      focusInstructions = 'CRITICAL FOCUS: Provide a balanced clinical master deck covering pathophysiology, clinical manifestations, pharmacology, and nursing priorities.';
+      focusInstructions = 'CRITICAL FOCUS: Provide a balanced academic master deck covering theoretical concepts, core terminology, causal mechanisms, and key facts.';
     }
 
-    const baseSystemPrompt = `You are an elite clinical nursing and medical education tutor specializing in NCLEX-RN and board exam preparation.
-Analyze the provided medical study material ("${title}").
+    const baseSystemPrompt = `You are an elite academic tutor and active recall specialist across all learning disciplines (STEM, humanities, social sciences, languages, business, and law).
+Analyze the provided study material ("${title}").
 ${focusInstructions}
 
 CRITICAL RULES:
-1. STRICTLY IGNORE course codes, instructor names, dates, slide numbers, boilerplate disclaimers, and chapter headings.
-2. Focus ONLY on actionable clinical knowledge, disease processes, drug protocols, vital sign thresholds, and nursing interventions.
+1. STRICTLY IGNORE course codes, instructor names, dates, slide counters, boilerplate disclaimers, copyright notices, and chapter headings.
+2. Focus ONLY on actionable conceptual knowledge, key principles, procedural mechanics, definitions, and essential facts.
 3. Keep rationales and answers concise (1-2 sentences) to guarantee complete, uninterrupted JSON output.
 4. DO NOT use unescaped double quotes inside JSON string values. Use single quotes if quoting phrases.
 5. Mix formats:
-   - 'multiple_choice': Real clinical question + correct answer + 3 plausible medical distractors.
-   - 'flashcard': High-yield prompt with comprehensive structured answer.
-   - 'fill_blank': Medical sentence where a key clinical drug, number, or condition is replaced with '________'.
-6. Include a clear 'explanation' for EVERY card explaining the physiological mechanism or clinical rationale.
+   - 'multiple_choice': Real academic question + correct answer + 3 plausible distractors.
+   - 'flashcard': High-yield conceptual prompt with comprehensive structured answer.
+   - 'fill_blank': Factual sentence where a key technical term, concept, or formula is replaced with '________'.
+6. Include a clear 'explanation' for EVERY card explaining the underlying principle or concept.
 
 Schema:
 [

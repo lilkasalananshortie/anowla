@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     if (promptType === 'mnemonic') {
       instruction = 'Create a memorable, clever, high-yield mnemonic or memory hook for this concept. Break down what each letter or part represents, and explain why it works.';
     } else if (promptType === 'example') {
-      instruction = 'Provide a realistic clinical scenario or practical real-world application illustrating this question and answer. Keep it vivid, clear, and high-yield.';
+      instruction = 'Provide a concrete practical scenario or real-world example illustrating this question and answer. Keep it vivid, clear, and high-yield.';
     } else if (promptType === 'custom' && customQuery) {
       instruction = `Answer the student's specific question: "${customQuery}". Be encouraging, direct, and pedagogically sound.`;
     } else {

@@ -21,13 +21,13 @@ interface CreateFolderModalProps {
   onCreateFolder: (folder: Folder) => void;
 }
 
-const CLINICAL_PRESETS = [
-  { name: 'Critical Care & ICU', icon: 'HeartPulse', color: '#84a282' },
-  { name: 'High-Alert Pharmacology', icon: 'Pill', color: '#6e8c6c' },
-  { name: 'NCLEX-RN Next Gen', icon: 'ClipboardCheck', color: '#b8cfb3' },
-  { name: 'Medical-Surgical', icon: 'Stethoscope', color: '#84a282' },
-  { name: 'Maternal & Pediatrics', icon: 'Baby', color: '#f6e2e9' },
-  { name: 'Psychiatric & Mental Health', icon: 'BrainCircuit', color: '#405944' },
+const STUDY_PRESETS = [
+  { name: 'Computer Science', icon: 'Code', color: '#84a282' },
+  { name: 'Cognitive Science', icon: 'Brain', color: '#6e8c6c' },
+  { name: 'Modern History', icon: 'Globe', color: '#b8cfb3' },
+  { name: 'Molecular Biology', icon: 'Dna', color: '#84a282' },
+  { name: 'Mathematics & Logic', icon: 'BookOpen', color: '#f6e2e9' },
+  { name: 'Philosophy & Ethics', icon: 'FolderIcon', color: '#405944' },
 ];
 
 const COLOR_OPTIONS = [
@@ -71,7 +71,7 @@ export default function CreateFolderModal({
     onClose();
   };
 
-  const handleSelectPreset = (preset: typeof CLINICAL_PRESETS[0]) => {
+  const handleSelectPreset = (preset: typeof STUDY_PRESETS[0]) => {
     setFolderName(preset.name);
     setSelectedIcon(preset.icon);
     setSelectedColor(preset.color);
@@ -92,10 +92,10 @@ export default function CreateFolderModal({
             </div>
             <div>
               <h2 className="text-base sm:text-lg font-bold text-[#19251a] tracking-tight">
-                Create Clinical Folder
+                Create Study Folder
               </h2>
               <p className="text-xs text-[#586c5a]">
-                Organize your decks by clinical specialty or rotation
+                Organize your decks and PDFs by topic, course, or exam
               </p>
             </div>
           </div>
@@ -129,18 +129,18 @@ export default function CreateFolderModal({
                 setFolderName(e.target.value);
                 if (error) setError(null);
               }}
-              placeholder="e.g. Critical Care ICU or Pharmacology"
+              placeholder="e.g. Cognitive Science or Computer Systems"
               className="w-full rounded-xl border border-[#dfe8dc] bg-white px-3.5 py-2.5 text-sm text-[#19251a] placeholder:text-[#586c5a]/50 outline-none focus:border-[#84a282] focus:ring-1 focus:ring-[#84a282] transition-colors"
             />
           </div>
 
-          {/* Clinical Presets */}
+          {/* Study Presets */}
           <div>
             <label className="block text-[11px] font-bold text-[#586c5a] uppercase tracking-wider mb-1.5">
-              Quick Clinical Presets
+              Quick Study Presets
             </label>
             <div className="grid grid-cols-2 gap-2">
-              {CLINICAL_PRESETS.map((preset) => (
+              {STUDY_PRESETS.map((preset) => (
                 <button
                   key={preset.name}
                   type="button"
