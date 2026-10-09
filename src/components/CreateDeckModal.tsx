@@ -7,8 +7,10 @@ import { X, Plus, Trash2, Layers, CheckCircle, Folder as FolderIcon } from 'luci
 interface CreateDeckModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onDeckCreated: (deck: Deck) => void;
+  onDeckCreated?: (deck: Deck) => void;
+  onSave?: (deck: Deck) => void;
   folders?: Folder[];
+  defaultFolderId?: string;
 }
 
 interface NewCardItem {
@@ -19,10 +21,19 @@ interface NewCardItem {
   distractors: string[];
 }
 
-export default function CreateDeckModal({ isOpen, onClose, onDeckCreated, folders = [] }: CreateDeckModalProps) {
+export default function CreateDeckModal({
+  isOpen,
+  onClose,
+  onDeckCreated,
+  onSave,
+  folders = [],
+  defaultFolderId,
+}: CreateDeckModalProps) {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
-  const [selectedFolderId, setSelectedFolderId] = useState<string>(folders[0]?.id || '');
+  const [selectedFolderId, setSelectedFolderId] = useState<string>(
+    defaultFolderId || folders[0]?.id || ''
+  );
   const [description, setDescription] = useState('');
   const [cards, setCards] = useState<NewCardItem[]>([
     { id: '1', card_type: 'flashcard', front: '', back: '', distractors: ['', '', ''] },
@@ -122,7 +133,11 @@ export default function CreateDeckModal({ isOpen, onClose, onDeckCreated, folder
       cards: validCards.map(c => ({ ...c, deck_id: newDeckId })),
     };
 
-    onDeckCreated(newDeck);
+    if (onSave) {
+      onSave(newDeck);
+    } else if (onDeckCreated) {
+      onDeckCreated(newDeck);
+    }
     onClose();
 
     // Reset fields

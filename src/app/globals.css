@@ -1,18 +1,133 @@
 @import "tailwindcss";
 
+/* ─── Clinical Design Tokens (Palette: #f6e2e9, #fefaf3, #b8cfb3, #84a282) ─── */
 :root {
-  --background: #ffffff;
-  --foreground: #1e293b;
+  --background: #fefaf3;
+  --foreground: #19251a;
+
+  /* Color Hunt Palette Tokens */
+  --palette-blush: #f6e2e9;
+  --palette-cream: #fefaf3;
+  --palette-sage-light: #b8cfb3;
+  --palette-sage-primary: #84a282;
+
+  /* Dark register for contrast hero, footer, and editorial bands */
+  --dark-forest: #18251a;
+  --dark-forest-surface: #203023;
+  --dark-forest-border: #2c4030;
+
+  /* Text & Surfaces */
+  --text-ink: #19251a;
+  --text-muted: #586c5a;
+  --text-faint: #7d917f;
+  --surface-white: #ffffff;
+  --surface-cream: #fbf6ec;
+  --border-sage: #dfe8dc;
+  --border-sage-subtle: #ebf2e9;
+
   --font-sans: var(--font-poppins), system-ui, -apple-system, sans-serif;
+  --scrollbar-track: #fefaf3;
+  --scrollbar-thumb: #84a282;
+  --scrollbar-thumb-hover: #6e8c6c;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-blush: #f6e2e9;
+  --color-cream: #fefaf3;
+  --color-sage-light: #b8cfb3;
+  --color-sage-primary: #84a282;
+  --color-dark-forest: #18251a;
   --font-sans: var(--font-poppins), system-ui, -apple-system, sans-serif;
 }
 
 body {
+  background-color: var(--background);
+  color: var(--foreground);
   font-family: var(--font-poppins), system-ui, -apple-system, sans-serif;
   letter-spacing: -0.01em;
+  overflow-x: hidden;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 9999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+
+/* ─── Hero and Editorial Gradients ─── */
+.hero-forest-bg {
+  background: linear-gradient(135deg, #18251a 0%, #1f3022 45%, #283e2c 75%, #18251a 100%);
+  background-size: 200% 200%;
+}
+
+@keyframes hero-gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.hero-forest-animated {
+  background: linear-gradient(135deg, #18251a 0%, #1f3223 40%, #263c29 70%, #18251a 100%);
+  background-size: 200% 200%;
+  animation: hero-gradient 14s ease infinite;
+}
+
+/* ─── Keyframe Animations ─── */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.35s ease-out forwards;
+}
+
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: float-gentle 5s ease-in-out infinite;
+}
+
+@keyframes trust-ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-track {
+  animation: trust-ticker 40s linear infinite;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+/* Hide scrollbar */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

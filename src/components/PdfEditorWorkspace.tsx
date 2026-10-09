@@ -30,7 +30,8 @@ interface PdfEditorWorkspaceProps {
   isOpen: boolean;
   onClose: () => void;
   folders: Folder[];
-  onCreateFolder: (name: string) => Folder;
+  onCreateFolder?: (name: string) => Folder;
+  defaultFolderId?: string;
   onSaveDeck: (deck: Deck) => void;
   onStartStudy?: (deck: Deck) => void;
 }
@@ -49,13 +50,16 @@ export default function PdfEditorWorkspace({
   onClose,
   folders,
   onCreateFolder,
+  defaultFolderId,
   onSaveDeck,
   onStartStudy,
 }: PdfEditorWorkspaceProps) {
   const [file, setFile] = useState<File | null>(null);
   const [documentText, setDocumentText] = useState('');
   const [documentTitle, setDocumentTitle] = useState('Clinical Study Notes');
-  const [selectedFolderId, setSelectedFolderId] = useState<string>(folders[0]?.id || '');
+  const [selectedFolderId, setSelectedFolderId] = useState<string>(
+    defaultFolderId || folders[0]?.id || ''
+  );
   const [isCreatingNewFolder, setIsCreatingNewFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
 
@@ -214,8 +218,13 @@ export default function PdfEditorWorkspace({
 
   const handleCreateFolderInline = () => {
     if (!newFolderName.trim()) return;
-    const created = onCreateFolder(newFolderName.trim());
-    setSelectedFolderId(created.id);
+    if (onCreateFolder) {
+      const created = onCreateFolder(newFolderName.trim());
+      setSelectedFolderId(created.id);
+    } else {
+      const folderId = `folder-${Date.now()}`;
+      setSelectedFolderId(folderId);
+    }
     setNewFolderName('');
     setIsCreatingNewFolder(false);
   };
