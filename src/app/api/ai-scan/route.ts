@@ -7,6 +7,135 @@ const CANDIDATE_MODELS = [
   'gemini-3.6-flash',
 ];
 
+/**
+ * Resilient JSON parser for LLM-generated flashcards.
+ * Recovers all completed cards even if the LLM output is truncated or contains syntax quirks.
+ */
+function safeParseCardJson(raw: string): any[] {
+  if (!raw || typeof raw !== 'string') return [];
+
+  // 1. Strip markdown fences if present
+  let clean = raw.trim();
+  if (clean.startsWith('```json')) {
+    clean = clean.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+  } else if (clean.startsWith('```')) {
+    clean = clean.replace(/^```\s*/, '').replace(/\s*```$/, '');
+  }
+  clean = clean.trim();
+
+  // 2. Direct JSON.parse
+  try {
+    const parsed = JSON.parse(clean);
+    if (Array.isArray(parsed)) return parsed;
+    if (parsed && Array.isArray(parsed.cards)) return parsed.cards;
+  } catch (e) {
+    // Truncation or syntax error, proceed to recovery
+  }
+
+  // 3. Array truncation recovery (e.g. cut off midway through the last card)
+  const lastBraceIndex = clean.lastIndexOf('}');
+  if (lastBraceIndex !== -1) {
+    let truncatedCandidate = clean.slice(0, lastBraceIndex + 1).trim();
+    if (truncatedCandidate.endsWith(',')) {
+      truncatedCandidate = truncatedCandidate.slice(0, -1).trim();
+    }
+    const firstBracket = truncatedCandidate.indexOf('[');
+    if (firstBracket !== -1) {
+      truncatedCandidate = truncatedCandidate.slice(firstBracket) + ']';
+    } else {
+      truncatedCandidate = '[' + truncatedCandidate + ']';
+    }
+
+    try {
+      const recovered = JSON.parse(truncatedCandidate);
+      if (Array.isArray(recovered) && recovered.length > 0) {
+        return recovered;
+      }
+    } catch (e) {
+      // Still failed, proceed to granular object scanner
+    }
+  }
+
+  // 4. Granular Object-by-Object Extractor using depth scanning
+  const extractedCards: any[] = [];
+  let depth = 0;
+  let inString = false;
+  let escape = false;
+  let objStart = -1;
+
+  for (let i = 0; i < clean.length; i++) {
+    const char = clean[i];
+
+    if (inString) {
+      if (escape) {
+        escape = false;
+      } else if (char === '\\') {
+        escape = true;
+      } else if (char === '"') {
+        inString = false;
+      }
+      continue;
+    }
+
+    if (char === '"') {
+      inString = true;
+      continue;
+    }
+
+    if (char === '{') {
+      if (depth === 0) {
+        objStart = i;
+      }
+      depth++;
+    } else if (char === '}') {
+      depth--;
+      if (depth === 0 && objStart !== -1) {
+        const objStr = clean.slice(objStart, i + 1);
+        try {
+          const cardObj = JSON.parse(objStr);
+          if (cardObj && typeof cardObj === 'object' && cardObj.front && cardObj.back) {
+            extractedCards.push(cardObj);
+          }
+        } catch (err) {
+          // Attempt sanitizing unescaped newlines inside string values
+          try {
+            const sanitized = objStr.replace(/(?<!\\)\n/g, '\\n');
+            const cardObj = JSON.parse(sanitized);
+            if (cardObj && typeof cardObj === 'object' && cardObj.front && cardObj.back) {
+              extractedCards.push(cardObj);
+            }
+          } catch (err2) {}
+        }
+        objStart = -1;
+      }
+    }
+  }
+
+  if (extractedCards.length > 0) {
+    return extractedCards;
+  }
+
+  // 5. Regex Pair Fallback
+  const regex = /"front"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"\s*,\s*"back"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"/gi;
+  let match;
+  while ((match = regex.exec(clean)) !== null) {
+    try {
+      const front = match[1].replace(/\\"/g, '"').replace(/\\n/g, '\n');
+      const back = match[2].replace(/\\"/g, '"').replace(/\\n/g, '\n');
+      if (front && back) {
+        extractedCards.push({
+          card_type: 'flashcard',
+          front,
+          back,
+          explanation: '',
+        });
+      }
+    } catch (e) {}
+  }
+
+  return extractedCards;
+}
+
 async function callGeminiJson(apiKey: string, prompt: string): Promise<string> {
   let lastError: string | null = null;
 
@@ -26,7 +155,7 @@ async function callGeminiJson(apiKey: string, prompt: string): Promise<string> {
             generationConfig: {
               responseMimeType: 'application/json',
               maxOutputTokens: 8192,
-              temperature: 0.3,
+              temperature: 0.25,
             }
           }),
         }
@@ -94,12 +223,13 @@ ${focusInstructions}
 CRITICAL RULES:
 1. STRICTLY IGNORE course codes, instructor names, dates, slide numbers, boilerplate disclaimers, and chapter headings.
 2. Focus ONLY on actionable clinical knowledge, disease processes, drug protocols, vital sign thresholds, and nursing interventions.
-3. UNSLOP CONTRACT: Direct, natural, academic clinical language. No throat-clearing clichés (never say "delve into", "cornerstone", "tapestry", "in conclusion").
-4. Mix formats:
-   - 'multiple_choice': Real clinical question + correct answer + 3 plausible medical distractors (e.g. similar drug suffixes, inverse lab findings).
+3. Keep rationales and answers concise (1-2 sentences) to guarantee complete, uninterrupted JSON output.
+4. DO NOT use unescaped double quotes inside JSON string values. Use single quotes if quoting phrases.
+5. Mix formats:
+   - 'multiple_choice': Real clinical question + correct answer + 3 plausible medical distractors.
    - 'flashcard': High-yield prompt with comprehensive structured answer.
    - 'fill_blank': Medical sentence where a key clinical drug, number, or condition is replaced with '________'.
-5. Include a clear 'explanation' for EVERY card explaining the physiological mechanism or clinical rationale.
+6. Include a clear 'explanation' for EVERY card explaining the physiological mechanism or clinical rationale.
 
 Schema:
 [
@@ -113,35 +243,32 @@ Schema:
 ]`;
 
     const targetNum = Math.max(10, Math.min(100, Number(cardCount) || 30));
-
-    // Multi-pass or Chunking strategy to ensure large card amounts from long documents
     const cleanText = text.trim();
     let aggregatedCards: any[] = [];
 
-    if (targetNum <= 25 && cleanText.length <= 35000) {
-      // Single Pass
+    // Keep individual chunk sizes at <= 15 cards to avoid token truncation
+    const maxCardsPerChunk = 15;
+    const numChunks = Math.max(1, Math.ceil(targetNum / maxCardsPerChunk));
+    const cardsPerChunk = Math.ceil(targetNum / numChunks);
+
+    if (numChunks === 1 && cleanText.length <= 30000) {
+      // Single chunk for small card counts
       const prompt = `${baseSystemPrompt}
 Extract exactly ${targetNum} high-yield clinical cards.
 
 DOCUMENT CONTENT:
-${cleanText.slice(0, 35000)}`;
+${cleanText.slice(0, 30000)}`;
 
       const raw = await callGeminiJson(apiKey, prompt);
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) {
-        aggregatedCards = parsed;
-      }
+      aggregatedCards = safeParseCardJson(raw);
     } else {
-      // Multi-Section Chunking: Split text into 2 or 3 segments to thoroughly cover whole document
-      const numChunks = targetNum > 50 || cleanText.length > 50000 ? 3 : 2;
+      // Multi-section chunking: Balanced partitions across document text
       const chunkSize = Math.ceil(cleanText.length / numChunks);
-      const cardsPerChunk = Math.ceil(targetNum / numChunks);
-
       const chunkPrompts: string[] = [];
 
       for (let i = 0; i < numChunks; i++) {
-        const start = Math.max(0, i * chunkSize - 1000); // 1000 chars overlap
-        const end = Math.min(cleanText.length, (i + 1) * chunkSize + 1000);
+        const start = Math.max(0, i * chunkSize - 800);
+        const end = Math.min(cleanText.length, (i + 1) * chunkSize + 800);
         const segmentText = cleanText.slice(start, end);
 
         chunkPrompts.push(`${baseSystemPrompt}
@@ -159,29 +286,27 @@ ${segmentText}`);
 
       for (const res of chunkResults) {
         if (res.status === 'fulfilled') {
-          try {
-            const parsed = JSON.parse(res.value);
-            if (Array.isArray(parsed)) {
-              aggregatedCards.push(...parsed);
-            }
-          } catch (e) {
-            console.warn('Failed to parse chunk JSON:', e);
+          const parsed = safeParseCardJson(res.value);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            aggregatedCards.push(...parsed);
           }
+        } else {
+          console.warn('Chunk call failed:', res.reason);
         }
       }
 
-      // Fallback if chunks returned too few: if aggregated is less than half target, do a safety pass
-      if (aggregatedCards.length < Math.floor(targetNum * 0.6)) {
+      // Safety fallback pass if chunks returned too few
+      if (aggregatedCards.length < Math.floor(targetNum * 0.5)) {
         const fallbackPrompt = `${baseSystemPrompt}
-Extract ${targetNum} comprehensive clinical cards covering the entire study module.
+Extract ${cardsPerChunk} high-yield clinical cards covering key points of this module.
 
 DOCUMENT CONTENT:
-${cleanText.slice(0, 40000)}`;
+${cleanText.slice(0, 25000)}`;
         try {
           const raw = await callGeminiJson(apiKey, fallbackPrompt);
-          const parsed = JSON.parse(raw);
+          const parsed = safeParseCardJson(raw);
           if (Array.isArray(parsed)) {
-            aggregatedCards = [...aggregatedCards, ...parsed];
+            aggregatedCards.push(...parsed);
           }
         } catch (e) {
           console.warn('Fallback pass error:', e);
@@ -196,11 +321,11 @@ ${cleanText.slice(0, 40000)}`;
       );
     }
 
-    // Deduplicate cards by front prompt similarity
+    // Deduplicate cards by question prompt similarity
     const seen = new Set<string>();
     const deduplicated = aggregatedCards.filter((c) => {
       if (!c.front || !c.back) return false;
-      const key = c.front.trim().toLowerCase().slice(0, 50);
+      const key = String(c.front).trim().toLowerCase().slice(0, 50);
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
@@ -209,10 +334,10 @@ ${cleanText.slice(0, 40000)}`;
     const formattedCards = deduplicated.slice(0, targetNum).map((c: any, idx: number) => ({
       id: `ai-card-${Date.now()}-${idx}-${Math.random().toString(36).substring(2, 6)}`,
       card_type: c.card_type === 'multiple_choice' || c.card_type === 'fill_blank' ? c.card_type : 'flashcard',
-      front: c.front.trim(),
-      back: c.back.trim(),
-      distractors: Array.isArray(c.distractors) ? c.distractors : [],
-      explanation: c.explanation ? c.explanation.trim() : '',
+      front: String(c.front).trim(),
+      back: String(c.back).trim(),
+      distractors: Array.isArray(c.distractors) ? c.distractors.map((d: any) => String(d).trim()) : [],
+      explanation: c.explanation ? String(c.explanation).trim() : '',
       ease_factor: 2.5,
       interval: 0,
       repetitions: 0,

@@ -232,15 +232,38 @@ Return ONLY a valid JSON array matching this exact schema:
       );
     }
 
-    // Clean JSON markdown wraps
-    let cleanJson = rawOutput.trim();
-    if (cleanJson.startsWith('```json')) {
-      cleanJson = cleanJson.replace(/^```json\s*/, '').replace(/\s*```$/, '');
-    } else if (cleanJson.startsWith('```')) {
-      cleanJson = cleanJson.replace(/^```\s*/, '').replace(/\s*```$/, '');
+    function safeParseCardJson(raw: string): any[] {
+      if (!raw || typeof raw !== 'string') return [];
+      let clean = raw.trim();
+      if (clean.startsWith('```json')) {
+        clean = clean.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+      } else if (clean.startsWith('```')) {
+        clean = clean.replace(/^```\s*/, '').replace(/\s*```$/, '');
+      }
+      clean = clean.trim();
+
+      try {
+        const parsed = JSON.parse(clean);
+        if (Array.isArray(parsed)) return parsed;
+        if (parsed && Array.isArray(parsed.cards)) return parsed.cards;
+      } catch (e) {}
+
+      const lastBraceIndex = clean.lastIndexOf('}');
+      if (lastBraceIndex !== -1) {
+        let candidate = clean.slice(0, lastBraceIndex + 1).trim();
+        if (candidate.endsWith(',')) candidate = candidate.slice(0, -1).trim();
+        const firstBracket = candidate.indexOf('[');
+        if (firstBracket !== -1) candidate = candidate.slice(firstBracket) + ']';
+        else candidate = '[' + candidate + ']';
+        try {
+          const recovered = JSON.parse(candidate);
+          if (Array.isArray(recovered) && recovered.length > 0) return recovered;
+        } catch (e) {}
+      }
+      return [];
     }
 
-    const cards = JSON.parse(cleanJson);
+    const cards = safeParseCardJson(rawOutput);
 
     return NextResponse.json({
       title: extractedTitle,
