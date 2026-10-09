@@ -1,6 +1,6 @@
 import { supabase, isSupabaseConfigured } from './supabase';
 import { Deck, Card, UserStats, Folder, StudyDocument } from '@/types';
-import { INITIAL_DECKS, INITIAL_FOLDERS } from './mockData';
+import { INITIAL_DECKS, INITIAL_FOLDERS, INITIAL_DOCUMENTS } from './mockData';
 
 const LOCAL_STORAGE_DECKS_KEY = 'alwinyah_decks';
 const LOCAL_STORAGE_STATS_KEY = 'alwinyah_stats';
@@ -366,16 +366,18 @@ export function saveLocalFolders(folders: Folder[]): void {
 const LOCAL_STORAGE_DOCUMENTS_KEY = 'alwinyah_documents';
 
 export function getLocalDocuments(): StudyDocument[] {
-  if (typeof window === 'undefined') return [];
+  if (typeof window === 'undefined') return INITIAL_DOCUMENTS;
   try {
     const raw = localStorage.getItem(LOCAL_STORAGE_DOCUMENTS_KEY);
     if (raw !== null) {
       return JSON.parse(raw);
     }
+    localStorage.setItem(LOCAL_STORAGE_DOCUMENTS_KEY, JSON.stringify(INITIAL_DOCUMENTS));
+    return INITIAL_DOCUMENTS;
   } catch (e) {
     console.warn('Error reading local documents', e);
   }
-  return [];
+  return INITIAL_DOCUMENTS;
 }
 
 export function saveLocalDocument(doc: StudyDocument): void {

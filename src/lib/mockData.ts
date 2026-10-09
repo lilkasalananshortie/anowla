@@ -1,4 +1,4 @@
-import { Deck, Folder } from '@/types';
+import { Deck, Folder, StudyDocument } from '@/types';
 
 export const INITIAL_FOLDERS: Folder[] = [
   { id: 'f-pharma', name: 'Pharmacology', icon: 'Pill', color: 'teal', created_at: new Date().toISOString() },
@@ -220,3 +220,120 @@ export const INITIAL_DECKS: Deck[] = [
     ],
   },
 ];
+
+export const INITIAL_DOCUMENTS: StudyDocument[] = [
+  {
+    id: 'doc-pharma-1',
+    title: 'Cardiac Glycosides & Digoxin Protocol',
+    file_name: 'Cardiac_Glycosides_Digoxin_Protocol.pdf',
+    folder_id: 'f-pharma',
+    total_pages: 3,
+    pages: [
+      {
+        pageNumber: 1,
+        text: `CLINICAL PROTOCOL: CARDIAC GLYCOSIDES & INOTROPIC THERAPY\n\n1. Overview & Mechanism of Action\nDigoxin is a cardiac glycoside derived from Digitalis purpurea. It inhibits the myocardial cell membrane Na+/K+-ATPase pump. This increases intracellular sodium, which in turn reduces calcium efflux via the Na+/Ca2+ exchanger. The resulting intracellular calcium accumulation produces a marked positive inotropic effect (increased myocardial contractility) and negative chronotropic effect (decreased heart rate through vagal stimulation).\n\n2. Indications\n• Symptomatic Heart Failure with reduced ejection fraction (HFrEF, NYHA Class II-IV)\n• Rate control in chronic Atrial Fibrillation or Atrial Flutter with rapid ventricular response.`
+      },
+      {
+        pageNumber: 2,
+        text: `HIGH-ALERT ADMINISTRATION RULES & SAFETY PARAMETERS\n\n1. Mandatory Pre-Administration Assessment\n• The nurse MUST auscultate the apical pulse for 1 full minute prior to administering every dose.\n• Withhold dose and immediately notify the provider if:\n  - Heart rate is < 60 bpm in adults\n  - Heart rate is < 70 bpm in children (1-6 years)\n  - Heart rate is < 90 bpm in infants (< 1 year)\n\n2. Therapeutic Serum Range\n• Normal therapeutic target: 0.5 to 2.0 ng/mL.\n• Serum levels > 2.0 ng/mL represent acute toxicity.\n• High-alert warning: Hypokalemia (serum K+ < 3.5 mEq/L) dramatically potentiates Digoxin toxicity, even when serum Digoxin levels are within target range.`
+      },
+      {
+        pageNumber: 3,
+        text: `SIGNS OF TOXICITY & EMERGENCY ANTIDOTE MANAGEMENT\n\n1. Clinical Presentation of Digoxin Toxicity\n• Early Gastrointestinal Signs: Anorexia (often the earliest symptom), nausea, persistent vomiting, abdominal discomfort.\n• Central Nervous System: Lethargy, confusion, headaches, visual disturbances.\n• Classic Visual Hallmarks: Xanthopsia (yellow-green halos or colored chromatopsia around lights), blurred vision, photophobia.\n• Cardiac Dysrhythmias: Sinus bradycardia, premature ventricular contractions (PVCs), bi-directional ventricular tachycardia, complete AV block.\n\n2. Emergency Neutralization\n• Specific Antidote: Digoxin Immune Fab (DigiFab).\n• DigiFab consists of antigen-binding fragments that bind free serum Digoxin molecules, forming an inactive complex excreted renally.\n• Mandatory telemetry monitoring during and after infusion.`
+      }
+    ],
+    highlights: [
+      {
+        id: 'hl-1',
+        pageNumber: 2,
+        text: 'The nurse MUST auscultate the apical pulse for 1 full minute prior to administering every dose.',
+        color: 'yellow',
+        created_at: new Date().toISOString()
+      },
+      {
+        id: 'hl-2',
+        pageNumber: 2,
+        text: 'Hypokalemia (serum K+ < 3.5 mEq/L) dramatically potentiates Digoxin toxicity',
+        color: 'rose',
+        created_at: new Date().toISOString()
+      },
+      {
+        id: 'hl-3',
+        pageNumber: 3,
+        text: 'Classic Visual Hallmarks: Xanthopsia (yellow-green halos or colored chromatopsia around lights)',
+        color: 'blue',
+        created_at: new Date().toISOString()
+      },
+      {
+        id: 'hl-4',
+        pageNumber: 3,
+        text: 'Specific Antidote: Digoxin Immune Fab (DigiFab).',
+        color: 'green',
+        created_at: new Date().toISOString()
+      }
+    ],
+    notes: [
+      {
+        id: 'n-1',
+        pageNumber: 2,
+        text: 'NCLEX Priority: Never administer without checking current serum potassium and apical pulse.',
+        color: 'rose',
+        created_at: new Date().toISOString()
+      },
+      {
+        id: 'n-2',
+        pageNumber: 3,
+        text: 'Telemetry is mandatory during DigiFab infusion.',
+        color: 'green',
+        created_at: new Date().toISOString()
+      }
+    ],
+    content: 'Full protocol text for Cardiac Glycosides & Digoxin Protocol',
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 'doc-medsurg-1',
+    title: 'Acute Coronary Syndrome & STEMI Clinical Guidelines',
+    file_name: 'ACS_STEMI_Clinical_Guidelines.pdf',
+    folder_id: 'f-medsurg',
+    total_pages: 2,
+    pages: [
+      {
+        pageNumber: 1,
+        text: `ACUTE CORONARY SYNDROME (ACS) RAPID TRIAGE & INTERVENTION\n\n1. Immediate MONA Protocol\nUpon presentation with suspected acute myocardial infarction:\n• Morphine: IV 2-4 mg for refractory chest pain (reduces preload and myocardial O2 demand).\n• Oxygen: Administer only if SpO2 < 90% (hyperoxia can cause coronary vasoconstriction).\n• Nitroglycerin: Sublingual 0.4 mg every 5 min up to 3 doses. Contraindicated if SBP < 90 mmHg or recent phosphodiesterase-5 inhibitor use.\n• Aspirin: 162-325 mg non-enteric chewable given immediately for antiplatelet aggregation.`
+      },
+      {
+        pageNumber: 2,
+        text: `DIAGNOSTIC BIOMARKERS & TIMELINES\n\n1. Cardiac Troponin I and T\n• Most specific and sensitive biomarkers for myocardial necrosis.\n• Elevates within 2 to 4 hours of onset, peaks at 12 to 24 hours, and remains elevated for up to 10 to 14 days.\n\n2. STEMI Time Thresholds\n• Door-to-ECG Time: Must obtain 12-lead ECG within 10 minutes of arrival.\n• Door-to-Balloon (PCI) Time: < 90 minutes for primary percutaneous coronary intervention.\n• Door-to-Needle (Fibrinolytics): < 30 minutes if PCI is unavailable.`
+      }
+    ],
+    highlights: [
+      {
+        id: 'hl-201',
+        pageNumber: 1,
+        text: 'Aspirin: 162-325 mg non-enteric chewable given immediately',
+        color: 'green',
+        created_at: new Date().toISOString()
+      },
+      {
+        id: 'hl-202',
+        pageNumber: 2,
+        text: 'Door-to-Balloon (PCI) Time: < 90 minutes for primary percutaneous coronary intervention.',
+        color: 'yellow',
+        created_at: new Date().toISOString()
+      }
+    ],
+    notes: [
+      {
+        id: 'n-201',
+        pageNumber: 1,
+        text: 'Check right ventricular infarction (V4R lead) before giving Nitroglycerin.',
+        color: 'rose',
+        created_at: new Date().toISOString()
+      }
+    ],
+    content: 'ACS and STEMI clinical guidelines',
+    created_at: new Date().toISOString(),
+  }
+];
+

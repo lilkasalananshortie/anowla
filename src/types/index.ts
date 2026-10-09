@@ -41,9 +41,23 @@ export interface Deck {
 
 export interface ClinicalNote {
   id: string;
+  pageNumber?: number;
   text: string;
   color?: string;
   created_at: string;
+}
+
+export interface DocumentHighlight {
+  id: string;
+  pageNumber: number;
+  text: string;
+  color: 'yellow' | 'green' | 'rose' | 'blue';
+  created_at: string;
+}
+
+export interface DocumentPage {
+  pageNumber: number;
+  text: string;
 }
 
 export interface StudyDocument {
@@ -52,6 +66,9 @@ export interface StudyDocument {
   content: string;
   folder_id?: string;
   file_name?: string;
+  total_pages?: number;
+  pages?: DocumentPage[];
+  highlights?: DocumentHighlight[];
   notes?: ClinicalNote[];
   created_at: string;
   updated_at?: string;
