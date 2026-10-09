@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { Deck, Card } from '@/types';
+import { Deck, Card, Folder } from '@/types';
 import { extractPdfHighlights } from '@/lib/pdfExtractor';
 import { 
   X, 
@@ -14,13 +14,16 @@ import {
   Highlighter, 
   Sparkles,
   Zap,
-  HelpCircle
+  HelpCircle,
+  Folder as FolderIcon
 } from 'lucide-react';
 
 interface PdfScannerModalProps {
   isOpen: boolean;
   onClose: () => void;
   onDeckCreated: (deck: Deck) => void;
+  folders?: Folder[];
+  defaultFolderId?: string;
 }
 
 interface ScannedCard {
@@ -32,7 +35,13 @@ interface ScannedCard {
   explanation?: string;
 }
 
-export default function PdfScannerModal({ isOpen, onClose, onDeckCreated }: PdfScannerModalProps) {
+export default function PdfScannerModal({
+  isOpen,
+  onClose,
+  onDeckCreated,
+  folders = [],
+  defaultFolderId,
+}: PdfScannerModalProps) {
   const [file, setFile] = useState<File | null>(null);
   const [scanning, setScanning] = useState(false);
   const [scanStatus, setScanStatus] = useState<string>('');
@@ -40,7 +49,10 @@ export default function PdfScannerModal({ isOpen, onClose, onDeckCreated }: PdfS
   const [targetCount, setTargetCount] = useState<number>(15);
   const [scannedCards, setScannedCards] = useState<ScannedCard[]>([]);
   const [deckTitle, setDeckTitle] = useState('');
-  const [deckCategory, setDeckCategory] = useState('Medical / Science');
+  const [deckCategory, setDeckCategory] = useState('Pharmacology & Nursing');
+  const [selectedFolderId, setSelectedFolderId] = useState<string>(
+    defaultFolderId || folders[0]?.id || ''
+  );
   const [error, setError] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -183,6 +195,7 @@ export default function PdfScannerModal({ isOpen, onClose, onDeckCreated }: PdfS
       title: deckTitle.trim(),
       description: `Generated from "${file?.name || 'PDF'}" (${cards.length} cards)`,
       category: deckCategory.trim() || 'General',
+      folder_id: selectedFolderId || undefined,
       cards_count: cards.length,
       due_count: cards.length,
       created_at: new Date().toISOString(),
@@ -374,7 +387,7 @@ export default function PdfScannerModal({ isOpen, onClose, onDeckCreated }: PdfS
             <div className="space-y-4">
               
               {/* Deck Details */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-stone-700 dark:text-stone-300">Deck Title</label>
                   <input
@@ -392,6 +405,21 @@ export default function PdfScannerModal({ isOpen, onClose, onDeckCreated }: PdfS
                     onChange={(e) => setDeckCategory(e.target.value)}
                     className="mt-1 w-full rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-900 outline-none focus:border-stone-600 dark:border-stone-700 dark:bg-stone-800 dark:text-white"
                   />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 dark:text-stone-300">Clinical Folder</label>
+                  <select
+                    value={selectedFolderId}
+                    onChange={(e) => setSelectedFolderId(e.target.value)}
+                    className="mt-1 w-full rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-900 outline-none focus:border-stone-600 dark:border-stone-700 dark:bg-stone-800 dark:text-white cursor-pointer"
+                  >
+                    <option value="">No Folder (Root)</option>
+                    {folders.map((f) => (
+                      <option key={f.id} value={f.id}>
+                        {f.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 

@@ -5,12 +5,16 @@ import Link from 'next/link';
 import DeckCard from '@/components/DeckCard';
 import StudySession from '@/components/StudySession';
 import CreateDeckModal from '@/components/CreateDeckModal';
+import PdfScannerModal from '@/components/PdfScannerModal';
 import PdfEditorWorkspace from '@/components/PdfEditorWorkspace';
+import UrlScannerModal from '@/components/UrlScannerModal';
 import DeckDetailModal from '@/components/DeckDetailModal';
 import MasteryAnalyticsModal from '@/components/MasteryAnalyticsModal';
 import ExploreModal from '@/components/ExploreModal';
 import SettingsModal from '@/components/SettingsModal';
 import NotificationsModal from '@/components/NotificationsModal';
+import BadgesWidget from '@/components/BadgesWidget';
+import StreakWidget from '@/components/StreakWidget';
 import { INITIAL_DECKS, INITIAL_FOLDERS } from '@/lib/mockData';
 import { Deck, UserStats, Folder } from '@/types';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
@@ -46,7 +50,10 @@ import {
   Check,
   ChevronRight,
   TrendingUp,
-  Award
+  Award,
+  Video,
+  Highlighter,
+  Brain
 } from 'lucide-react';
 
 export default function StudyPage() {
@@ -55,9 +62,14 @@ export default function StudyPage() {
   const [activeFolderId, setActiveFolderId] = useState<string>('all');
   const [filterMode, setFilterMode] = useState<'all' | 'due'>('all');
 
+  // Currently active study deck (opens full screen StudySession)
   const [selectedDeck, setSelectedDeck] = useState<Deck | null>(null);
+
+  // Modals state
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isPdfScannerOpen, setIsPdfScannerOpen] = useState(false);
   const [isPdfEditorOpen, setIsPdfEditorOpen] = useState(false);
+  const [isUrlScannerOpen, setIsUrlScannerOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
   // Inline folder creation
@@ -90,7 +102,6 @@ export default function StudyPage() {
     let mounted = true;
 
     async function init() {
-      // Load saved folders
       try {
         const localFolders = getLocalFolders();
         if (localFolders && localFolders.length > 0 && mounted) {
@@ -102,7 +113,6 @@ export default function StudyPage() {
         }
       } catch (e) {}
 
-      // Supabase session
       if (isSupabaseConfigured && supabase) {
         try {
           const { data } = await supabase.auth.getSession();
@@ -217,7 +227,7 @@ export default function StudyPage() {
   return (
     <div className="min-h-screen bg-[#fefaf3] text-[#19251a] font-sans pb-24 md:pb-16">
       {/* 1. TOP CLINICAL HEADER / NAVBAR */}
-      <header className="sticky top-0 z-40 bg-[#fefaf3]/90 backdrop-blur-md border-b border-[#dfe8dc] px-4 sm:px-8 py-3.5 transition-colors">
+      <header className="sticky top-0 z-40 bg-[#fefaf3]/95 backdrop-blur-md border-b border-[#dfe8dc] px-4 sm:px-8 py-3.5 transition-colors">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link
@@ -234,23 +244,42 @@ export default function StudyPage() {
             </Link>
           </div>
 
-          {/* Quick Metrics & Actions */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-[#dfe8dc] text-xs font-semibold text-[#19251a] shadow-xs">
-              <Flame size={14} className="text-amber-500 fill-amber-500" />
-              <span>{stats.streak} day streak</span>
-            </div>
+          {/* Action Hub */}
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
+            {/* AI SMART SCAN BUTTON (GEMINI AI) */}
+            <button
+              type="button"
+              onClick={() => setIsPdfScannerOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold bg-[#84a282] text-white hover:bg-[#6e8c6c] transition-all shadow-md shadow-[#84a282]/25 cursor-pointer whitespace-nowrap"
+              title="Scan PDF automatically with Gemini 3.8 Flash"
+            >
+              <Sparkles size={14} className="text-amber-200" />
+              <span>AI PDF Scan</span>
+            </button>
 
+            {/* VIDEO / URL SCANNER */}
+            <button
+              type="button"
+              onClick={() => setIsUrlScannerOpen(true)}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 transition-colors cursor-pointer whitespace-nowrap"
+              title="YouTube / Web URL to flashcards"
+            >
+              <Video size={13} className="text-rose-600" />
+              <span>Video / URL</span>
+            </button>
+
+            {/* NOTE EDITOR STUDIO */}
             <button
               type="button"
               onClick={() => setIsPdfEditorOpen(true)}
-              className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-full text-xs font-bold bg-[#84a282] text-white hover:bg-[#6e8c6c] transition-all shadow-md shadow-[#84a282]/20 cursor-pointer"
+              className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold bg-white border border-[#dfe8dc] text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer whitespace-nowrap"
+              title="Open full interactive PDF note editor"
             >
-              <Upload size={13} />
-              <span className="hidden sm:inline">Upload & Edit PDF</span>
-              <span className="sm:hidden">Upload PDF</span>
+              <FileText size={13} className="text-[#84a282]" />
+              <span>Note Studio</span>
             </button>
 
+            {/* MANUAL DECK CREATOR */}
             <button
               type="button"
               onClick={() => setIsCreateOpen(true)}
@@ -260,6 +289,7 @@ export default function StudyPage() {
               <span className="hidden sm:inline">New Deck</span>
             </button>
 
+            {/* EXPLORE COMMUNITY / CURATED */}
             <button
               type="button"
               onClick={() => setIsExploreOpen(true)}
@@ -269,6 +299,17 @@ export default function StudyPage() {
               <Compass size={17} />
             </button>
 
+            {/* MASTERY ANALYTICS */}
+            <button
+              type="button"
+              onClick={() => setIsMasteryOpen(true)}
+              className="p-2 rounded-full bg-white border border-[#dfe8dc] text-[#586c5a] hover:text-[#19251a] hover:bg-[#ebf2e9] transition-colors cursor-pointer"
+              title="Mastery & Memory Analytics"
+            >
+              <Brain size={17} />
+            </button>
+
+            {/* NOTIFICATIONS */}
             <button
               type="button"
               onClick={() => setIsNotificationsOpen(true)}
@@ -278,6 +319,7 @@ export default function StudyPage() {
               <Bell size={17} />
             </button>
 
+            {/* SETTINGS */}
             <button
               type="button"
               onClick={() => setIsSettingsOpen(true)}
@@ -291,10 +333,17 @@ export default function StudyPage() {
       </header>
 
       {/* 2. MAIN WORKSPACE CONTAINER */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-6">
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
+      <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-6 space-y-7">
+        
+        {/* Streak & Weekly Progress Widgets */}
+        <StreakWidget stats={stats} />
+        
+        {/* Badges / Milestones Widget */}
+        <BadgesWidget stats={stats} />
+
+        <div className="flex flex-col lg:flex-row gap-8 items-start pt-2">
           {/* DESKTOP SIDEBAR */}
-          <aside className="hidden lg:flex flex-col w-64 shrink-0 sticky top-22 space-y-6">
+          <aside className="hidden lg:flex flex-col w-64 shrink-0 sticky top-24 space-y-6">
             {/* Quick Study Metrics */}
             <div className="p-4 rounded-2xl bg-white border border-[#dfe8dc] shadow-xs">
               <div className="flex items-center justify-between text-xs font-bold text-[#19251a] mb-2">
@@ -490,6 +539,7 @@ export default function StudyPage() {
                     deck={deck}
                     folderName={folderName}
                     onStudy={() => setSelectedDeck(deck)}
+                    onSelect={() => setSelectedDeck(deck)}
                     onInspect={() => {
                       setInspectingDeck(deck);
                       setIsDetailModalOpen(true);
@@ -505,39 +555,64 @@ export default function StudyPage() {
                 <BookOpen size={36} className="mx-auto text-[#84a282] mb-3 opacity-60" />
                 <h3 className="text-base font-bold text-[#19251a]">No Decks Found</h3>
                 <p className="text-xs text-[#586c5a] mt-1 max-w-sm mx-auto">
-                  No flashcard decks match your search in this folder. Upload a clinical syllabus PDF or create a new deck.
+                  No flashcard decks match your search in this folder. Use AI Scan or create a new deck.
                 </p>
-                <button
-                  type="button"
-                  onClick={() => setIsPdfEditorOpen(true)}
-                  className="mt-5 px-5 py-2.5 rounded-full text-xs font-bold bg-[#84a282] text-white hover:bg-[#6e8c6c] cursor-pointer"
-                >
-                  Upload & Edit Medical PDF
-                </button>
+                <div className="mt-5 flex items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsPdfScannerOpen(true)}
+                    className="px-5 py-2.5 rounded-full text-xs font-bold bg-[#84a282] text-white hover:bg-[#6e8c6c] cursor-pointer"
+                  >
+                    AI Smart Scan PDF
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsCreateOpen(true)}
+                    className="px-5 py-2.5 rounded-full text-xs font-bold bg-white border border-[#dfe8dc] text-[#19251a] hover:bg-[#ebf2e9] cursor-pointer"
+                  >
+                    Create Manually
+                  </button>
+                </div>
               </div>
             )}
           </section>
         </div>
       </main>
 
-      {/* 3. MODALS & WORKSPACES */}
+      {/* 3. FULLSCREEN ACTIVE STUDY SESSION OVERLAY (QUIZ, MNEMONIC, FLIP, SM-2) */}
       {selectedDeck && (
-        <StudySession
-          deck={selectedDeck}
-          onExit={() => setSelectedDeck(null)}
-          onSessionComplete={(xpGained: number, cardsStudied: number) => {
-            const updatedStats: UserStats = {
-              ...stats,
-              xp: stats.xp + xpGained,
-              cards_studied_today: stats.cards_studied_today + cardsStudied,
-            };
-            setStats(updatedStats);
-            localStorage.setItem('alwinyah_stats', JSON.stringify(updatedStats));
-            setSelectedDeck(null);
-          }}
+        <div className="fixed inset-0 z-50 bg-[#141d16]/95 backdrop-blur-xl overflow-y-auto p-4 sm:p-8 flex flex-col items-center justify-center animate-fade-in">
+          <div className="w-full max-w-2xl my-auto">
+            <StudySession
+              deck={selectedDeck}
+              onExit={() => setSelectedDeck(null)}
+              onSessionComplete={(xpGained: number, cardsStudied: number) => {
+                const updatedStats: UserStats = {
+                  ...stats,
+                  xp: stats.xp + xpGained,
+                  cards_studied_today: stats.cards_studied_today + cardsStudied,
+                };
+                setStats(updatedStats);
+                localStorage.setItem('alwinyah_stats', JSON.stringify(updatedStats));
+                setSelectedDeck(null);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* 4. AI SMART PDF SCANNER (GEMINI 3.8 FLASH) */}
+      {isPdfScannerOpen && (
+        <PdfScannerModal
+          isOpen={isPdfScannerOpen}
+          folders={folders}
+          defaultFolderId={activeFolderId !== 'all' ? activeFolderId : undefined}
+          onClose={() => setIsPdfScannerOpen(false)}
+          onDeckCreated={handleSaveDeck}
         />
       )}
 
+      {/* 5. INTERACTIVE PDF NOTE EDITOR WORKSPACE */}
       {isPdfEditorOpen && (
         <PdfEditorWorkspace
           isOpen={isPdfEditorOpen}
@@ -548,6 +623,16 @@ export default function StudyPage() {
         />
       )}
 
+      {/* 6. VIDEO / URL TO CARDS SCANNER */}
+      {isUrlScannerOpen && (
+        <UrlScannerModal
+          isOpen={isUrlScannerOpen}
+          onClose={() => setIsUrlScannerOpen(false)}
+          onDeckCreated={handleSaveDeck}
+        />
+      )}
+
+      {/* 7. MANUAL DECK CREATOR */}
       {isCreateOpen && (
         <CreateDeckModal
           isOpen={isCreateOpen}
@@ -558,6 +643,7 @@ export default function StudyPage() {
         />
       )}
 
+      {/* 8. COMMUNITY & CURATED DECKS EXPLORER */}
       {isExploreOpen && (
         <ExploreModal
           isOpen={isExploreOpen}
@@ -566,6 +652,7 @@ export default function StudyPage() {
         />
       )}
 
+      {/* 9. DECK DETAIL & CARD INSPECTOR */}
       {isDetailModalOpen && inspectingDeck && (
         <DeckDetailModal
           isOpen={isDetailModalOpen}
@@ -579,6 +666,7 @@ export default function StudyPage() {
         />
       )}
 
+      {/* 10. MASTERY ANALYTICS MODAL */}
       {isMasteryOpen && (
         <MasteryAnalyticsModal
           isOpen={isMasteryOpen}
@@ -588,6 +676,7 @@ export default function StudyPage() {
         />
       )}
 
+      {/* 11. SETTINGS MODAL */}
       {isSettingsOpen && (
         <SettingsModal
           isOpen={isSettingsOpen}
@@ -605,6 +694,7 @@ export default function StudyPage() {
         />
       )}
 
+      {/* 12. NOTIFICATIONS MODAL */}
       {isNotificationsOpen && (
         <NotificationsModal
           isOpen={isNotificationsOpen}
