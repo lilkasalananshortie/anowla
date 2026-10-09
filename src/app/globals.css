@@ -1,45 +1,83 @@
 @import "tailwindcss";
 
-/* ─── Clinical Design Tokens (Palette: #f6e2e9, #fefaf3, #b8cfb3, #84a282) ─── */
+/* ─── Earthy High-End Editorial Tokens (#01472e, #ccd5ae, #e9edc9, #fefae0, #a3b18a) ─── */
 :root {
-  --background: #fefaf3;
-  --foreground: #19251a;
+  --background: #fefae0;
+  --foreground: #01472e;
 
-  /* Color Hunt Palette Tokens */
+  /* Earthy Editorial Palette */
+  --earth-forest: #01472e;
+  --earth-sage: #ccd5ae;
+  --earth-olive: #e9edc9;
+  --earth-cream: #fefae0;
+  --earth-moss: #a3b18a;
+
+  /* Color Hunt Clinical Tokens */
   --palette-blush: #f6e2e9;
   --palette-cream: #fefaf3;
   --palette-sage-light: #b8cfb3;
   --palette-sage-primary: #84a282;
 
-  /* Dark register for contrast hero, footer, and editorial bands */
-  --dark-forest: #18251a;
-  --dark-forest-surface: #203023;
-  --dark-forest-border: #2c4030;
-
-  /* Text & Surfaces */
-  --text-ink: #19251a;
+  --dark-forest: #01472e;
+  --text-ink: #01472e;
   --text-muted: #586c5a;
-  --text-faint: #7d917f;
   --surface-white: #ffffff;
-  --surface-cream: #fbf6ec;
   --border-sage: #dfe8dc;
-  --border-sage-subtle: #ebf2e9;
 
-  --font-sans: var(--font-poppins), system-ui, -apple-system, sans-serif;
-  --scrollbar-track: #fefaf3;
-  --scrollbar-thumb: #84a282;
-  --scrollbar-thumb-hover: #6e8c6c;
+  --font-anton: var(--font-anton), Impact, sans-serif;
+  --font-inter: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-inter), var(--font-poppins), system-ui, sans-serif;
+
+  --scrollbar-track: #fefae0;
+  --scrollbar-thumb: #a3b18a;
+  --scrollbar-thumb-hover: #01472e;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-blush: #f6e2e9;
-  --color-cream: #fefaf3;
-  --color-sage-light: #b8cfb3;
-  --color-sage-primary: #84a282;
-  --color-dark-forest: #18251a;
-  --font-sans: var(--font-poppins), system-ui, -apple-system, sans-serif;
+  --color-forest: #01472e;
+  --color-sage: #ccd5ae;
+  --color-olive: #e9edc9;
+  --color-cream: #fefae0;
+  --color-moss: #a3b18a;
+  --font-anton: var(--font-anton), Impact, sans-serif;
+  --font-inter: var(--font-inter), system-ui, -apple-system, sans-serif;
+}
+
+.font-anton {
+  font-family: var(--font-anton), Impact, sans-serif;
+}
+
+.font-inter {
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+}
+
+.shadow-forest {
+  box-shadow: 0 25px 50px -12px rgba(1, 71, 46, 0.22);
+}
+
+.ease-editorial {
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 7.5s ease-in-out 1.8s infinite;
+}
+
+.animate-float-reverse {
+  animation: float 8s ease-in-out 3s infinite reverse;
 }
 
 body {
